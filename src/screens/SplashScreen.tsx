@@ -1,21 +1,47 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-} from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Image, StyleSheet, StatusBar } from 'react-native';
+import ImmersiveMode from 'react-native-immersive-mode';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const SplashScreen = () => {
+type RootStackParamList = {
+  Splash: undefined;
+  Login: undefined;
+};
+
+type SplashProps = {
+  navigation: NativeStackNavigationProp<
+    RootStackParamList,
+    'Splash'
+  >;
+};
+
+const SplashScreen = ({ navigation }: SplashProps) => {
+  useEffect(() => {
+    // Hide both status bar & navigation bar
+    StatusBar.setHidden(true);
+    ImmersiveMode.fullLayout(true);
+    ImmersiveMode.setBarMode('Full');
+
+    const timer = setTimeout(() => {
+      navigation.replace('Login');
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+      // Restore bars when leaving splash
+      StatusBar.setHidden(false);
+      ImmersiveMode.setBarMode('Normal');
+    };
+  }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Welcome 👋</Text>
-        <Text style={styles.subtitle}>
-          Splash Screen New test
-        </Text>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Image
+        source={require('../assets/images/splash.png')}
+        style={styles.logo}
+        resizeMode="cover"
+      />
+    </View>
   );
 };
 
@@ -24,21 +50,10 @@ export default SplashScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 16,
-    marginTop: 10,
-    color: '#666',
+  logo: {
+    width: '100%',
+    height: '100%',
   },
 });

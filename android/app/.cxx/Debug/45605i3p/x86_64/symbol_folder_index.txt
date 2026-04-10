@@ -1,0 +1,1 @@
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/build/intermediates/cxx/Debug/45605i3p/obj/x86_64

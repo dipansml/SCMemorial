@@ -12,7 +12,7 @@ const SplashScreen = () => {
       <View style={styles.content}>
         <Text style={styles.title}>Welcome 👋</Text>
         <Text style={styles.subtitle}>
-          Splash Screen New
+          Splash Screen New test
         </Text>
       </View>
     </SafeAreaView>

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import Colors from '../theme/colors';
 
 const Login = () => {
   return (
@@ -24,7 +25,7 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
@@ -34,11 +35,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#333',
+    color: Colors.text,
   },
   subtitle: {
     fontSize: 16,
     marginTop: 10,
-    color: '#666',
+    color: Colors.text_light,
   },
 });

@@ -2,9 +2,12 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { enableScreens } from 'react-native-screens';
 
 import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/Login';
+
+enableScreens();
 
 export type RootStackParamList = {
   Splash: undefined;

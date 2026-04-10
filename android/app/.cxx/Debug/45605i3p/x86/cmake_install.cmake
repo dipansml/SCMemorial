@@ -45,6 +45,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/x86/safeareacontext_autolinked_build/cmake_install.cmake")
+  include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/x86/rnscreens_autolinked_build/cmake_install.cmake")
 
 endif()
 

@@ -6,12 +6,14 @@ import { enableScreens } from 'react-native-screens';
 
 import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/Login';
+import DashboardParents from './src/screens/DashboardParents';
 
 enableScreens();
 
 export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
+  DashboardParents: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -23,6 +25,7 @@ const App = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="DashboardParents" component={DashboardParents}  options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
     </SafeAreaProvider>

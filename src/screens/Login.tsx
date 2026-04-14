@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Platform,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import Colors from '../theme/colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -30,10 +31,32 @@ type RootStackParamList = {
 
 const Login = ({ navigation }: LoginProps) =>  {
   const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState<'student' | 'parent'>('student');
+  const [studentId, setStudentId] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<{ studentId?: string; password?: string }>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+ const validateLogin = () => {
+      const newErrors: { studentId?: string; password?: string } = {};
+      console.log('studentId:', studentId)
+      if (!studentId.trim()) newErrors.studentId = 'Please enter student ID';
+      if (!password.trim()) newErrors.password = 'Please enter password';
+      setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleLogin = async () => {
+    if (!validateLogin()) return;
     console.log('login click')
     navigation.replace('DashboardParents');
  }
+
+ const forgotPassClick = () => {
+  console.log("Forgot pass click")
+};
+ 
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
@@ -54,13 +77,154 @@ const Login = ({ navigation }: LoginProps) =>  {
               <FullScreenLoader visible={loading} />
               <Text style={styles.title}>Welcome Back</Text>
               <Text style={styles.title_normal}>Please select your account type to continue.</Text>
-              <TouchableOpacity
-                  style={[styles.button, loading && { opacity: 0.7 }]}
-                  onPress={handleLogin}
-                  disabled={loading}>
-                  
-                  <Text style={styles.buttonText}>Sign In</Text>
-            </TouchableOpacity>
+              <View style={styles.toggleContainer}>
+        
+                    <TouchableOpacity
+                      style={[
+                        styles.buttonToggle,
+                        selected === 'student' && styles.activeButton,
+                        ]}
+                        onPress={() => setSelected('student')}
+                    >
+                      <View style={styles.row}>
+                        <Image
+                          source={require('../assets/images/student.png')}
+                          style={[
+                            styles.toggleIconImage,
+                              { tintColor: selected === 'student'
+                                ? Colors.text_theme
+                                : Colors.inactive_text }
+                          ]}
+                          resizeMode="contain"
+                        />
+
+                        <Text
+                          style={[
+                            styles.inactiveText,
+                            selected === 'student' && styles.activeText,
+                          ]}
+                        >
+                          {' '}Student
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.buttonToggle,
+                        selected === 'parent' && styles.activeButton,
+                        ]}
+                        onPress={() => setSelected('parent')}
+                    >
+                      <View style={styles.row}>
+                        <Image
+                          source={require('../assets/images/parent.png')}
+                          style={[
+                            styles.toggleIconImage,
+                            styles.toggleIconImage,
+                              { tintColor: selected === 'parent'
+                                ? Colors.text_theme
+                                : Colors.inactive_text }
+                          ]}
+                          resizeMode="contain"
+                        />
+
+                        <Text
+                          style={[
+                            styles.inactiveText,
+                            selected === 'parent' && styles.activeText,
+                          ]}
+                        >
+                          {' '}Parent
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+              </View>
+                    <Text style={styles.input_header}>Student ID</Text>
+                    <View style={styles.inputContainer}>
+                        <View style={styles.inputWrapper}>
+                          <Image
+                            source={require('../assets/images/student_id.png')}
+                            style={styles.inputIcon}
+                          />
+                          <TextInput
+                            style={[styles.input, errors.studentId && styles.errorInput]}
+                            placeholder="Enter your ID"
+                            placeholderTextColor={Colors.text_hint}
+                            value={studentId}
+                            onChangeText={t => {
+                              setStudentId(t);
+                              setErrors({ ...errors, studentId: undefined });
+                            }}
+                          />
+                        </View>
+                        {errors.studentId && <Text style={styles.errorText}>{errors.studentId}</Text>}
+                    </View>
+                    <Text style={styles.input_header}>Password</Text>
+                      <View style={styles.inputContainer}>
+                      <View style={styles.inputWrapper}>
+                        <Image
+                          source={require('../assets/images/ic_password.png')}
+                          style={styles.inputIcon}
+                        />
+                        <TextInput
+                          style={[styles.input, errors.password && styles.errorInput]}
+                          placeholder="******"
+                          secureTextEntry={!showPassword}
+                          value={password}
+                          onChangeText={t => {
+                            setPassword(t);
+                            if (errors.password) {
+                                setErrors(prev => ({ ...prev, password: undefined }));
+                            }
+                          }}
+                        />
+                        <TouchableOpacity
+                              style={[styles.eyeIcon, loading && { opacity: 0.5 }]}
+                              onPress={() => !loading && setShowPassword(p => !p)}
+                              disabled={loading}
+                            >
+                              <Image
+                                source={
+                                  showPassword
+                                    ? require('../assets/images/pass_visible.png')
+                                    : require('../assets/images/pass_invisible.png')
+                                }
+                                style={styles.eyeImage}
+                              />
+                            </TouchableOpacity>
+                      </View>
+                       <Text style={styles.errorText1}>
+                          {errors.password ? errors.password : ''} {/* 👈 keeps space */}
+                        </Text>
+                    <View style={styles.container_horizontal_without_space}>
+                      <TouchableOpacity
+                            style={styles.rememberMeContainer}
+                            onPress={() => setRememberMe(p => !p)}
+                          >
+                            <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
+                              {rememberMe && (
+                                <Image
+                                  source={require('../assets/images/check.png')}
+                                  style={styles.checkIcon}
+                                />
+                              )}
+                            </View>
+                            <Text style={styles.rememberMeText}>Remember me</Text>
+                          </TouchableOpacity>
+                        <Text style={styles.forget_pass} onPress={forgotPassClick}>
+                          Forgot Password?
+                        </Text>
+                    </View>
+                    </View>  
+ 
+                      <TouchableOpacity
+                              style={[styles.button, loading && { opacity: 0.7 }]}
+                              onPress={handleLogin}
+                              disabled={loading}>
+                              
+                              <Text style={styles.buttonText}>Sign In</Text>
+                        </TouchableOpacity>
             </ScrollView>
           </View>
       </View>
@@ -85,15 +249,13 @@ const FullScreenLoader = ({ visible }: { visible: boolean }) => {
 const styles = StyleSheet.create({
   screen: {
       flex: 1,
-      backgroundColor: '#FFFFFF',
+      backgroundColor: 'Colors.background',
 },
     container: {
       flex: 1,
-      backgroundColor: '#FFFFFF',
-      alignItems: 'center',
+      backgroundColor: 'Colors.background',
       justifyContent: 'flex-start',
-      padding: 10,
-      margin: 10,
+      padding: 20,
 },
  
  scrollContent: {
@@ -103,14 +265,13 @@ const styles = StyleSheet.create({
   title: {
         fontSize: 20,
         textAlign: 'center',
-        marginBottom: 10,
         color: Colors.text,
         fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
   },
   title_normal: {
         fontSize: 12,
         textAlign: 'center',
-        marginBottom: 20,
+        marginTop:10,
         color: Colors.text_light,
         fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
   },
@@ -178,10 +339,174 @@ buttonText_black: {
 button: {
     height: 40,
     backgroundColor: Colors.button_color,
-    borderRadius: 12,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 10,
 },
+toggleContainer: {
+    flexDirection: 'row',
+    backgroundColor: Colors.toggleContainer,
+    borderRadius: 16,
+    marginTop:20,
+    padding: 4,
+  },
+
+  buttonToggle: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  activeButton: {
+    backgroundColor: Colors.white,
+    // elevation: 2, // Android shadow
+    // shadowColor: '#000', // iOS shadow
+    // shadowOpacity: 0.1,
+    // shadowRadius: 3,
+  },
+
+  inactiveText: {
+    color: Colors.inactive_text,
+    fontSize: 14,
+    fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+  },
+
+  activeText: {
+    color: Colors.text_theme,
+    fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5, // optional (RN 0.71+)
+},
+toggleIconImage: {
+  width: 16,
+  height: 16,
+  marginRight: 5,
+},
+input_header: {
+        fontSize: 12,
+        textAlign: 'left',
+        marginBottom: 5,
+        color: Colors.text,
+        fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+        width: '100%',
+        marginTop: 20,
+  },
+ 
+inputContainer: {
+    width: '100%',
+    backgroundColor: Colors.transparent,
+    marginTop: 3,
+},
+ 
+inputWrapper: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  borderWidth: 1,
+  borderColor: Colors.inputBorder,
+  backgroundColor: Colors.inputBackground,
+  borderRadius: 16,
+  paddingHorizontal: 10,
+},
+ input: {
+    padding: 4,
+    fontSize: 12,
+    width: '100%',
+    height: 40,
+    flex: 1,
+    paddingVertical: 12,
+    fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
+    color: Colors.textColorInpuHeader,
+},
+ 
+  errorInput: {
+    borderColor: 'red',
+},
+inputIcon: {
+  width: 16,
+  height: 16,
+  marginRight: 4,
+  tintColor: Colors.tintColor,
+},
+eyeIcon: {
+    position: 'absolute',
+    right: 12,
+    height: '100%',
+    justifyContent: 'center',
+  },
+eyeImage: {
+    width: 20,
+    height: 20,
+    tintColor: Colors.tintColor,
+    resizeMode: 'contain',
+  },
+errorText: {
+   color: 'red',
+   marginTop: 4,
+   fontSize: 12,
+   flexWrap: 'wrap',
+   fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
+  },  
+container_horizontal_without_space: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+},
+ 
+errorText1: {
+  color: 'red',
+  fontSize: 12,
+  flex: 1,  
+  marginRight: 10,
+  marginTop:5,
+  marginBottom: 5,
+  fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
+},
+ 
+forget_pass: {
+  fontSize: 12,
+  color : Colors.text_orange,
+  fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+},  
+rememberMeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+ 
+  checkbox: {
+    width: 16,
+    height: 16,
+    borderWidth: 1,
+    borderColor: Colors.text_light,
+    backgroundColor: Colors.inputBackground,
+    borderRadius: 4,
+    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+ 
+  checkboxChecked: {
+    backgroundColor: Colors.inputBackground,
+  },
+ 
+  checkIcon: {
+    width: 12,
+    height: 12,
+    tintColor: Colors.text_hint,
+    resizeMode: 'contain',
+  },
+ 
+  rememberMeText: {
+    fontSize: 12,
+    color: Colors.textColorInpuHeader,
+    fontFamily: Platform.OS === 'ios' ? 'semibold' : 'semibold',
+  },
+ 
 });

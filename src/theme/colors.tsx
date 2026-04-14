@@ -2,9 +2,21 @@ const Colors = {
   primary: '#4A90E2',
   secondary: '#50E3C2',
   background: '#FFFFFF',
-  text: '##000000',
+  text: '#000000',
+  textColorInpuHeader: '#1E1C1D',
   text_light: '#7393B3',
-  button_color: "#0C83FF"
+  text_theme: '#0C83FF',
+  inactive_text: '#1E1C1D',
+  button_color: "#0C83FF",
+  white: "#FFFFFF",
+  toggleContainer: '#7393B31A',
+  inputBackground: '#7393B31A',
+  inputBorder: '#7393B31A',
+  tintColor: '#7393B3',
+  text_hint: '#7393B3',
+  transparent: '#00000000',
+  text_orange: '#F87C63',
+  check_box: '#7393B333',
 };
 
 export default Colors;

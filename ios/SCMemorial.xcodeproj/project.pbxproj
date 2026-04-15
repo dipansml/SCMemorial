@@ -9,11 +9,11 @@
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-SCMemorial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-SCMemorial.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		452E1CFF44164D4D9B267F37 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 915312BBFED9481EB2FA27BC /* Roboto-Regular.ttf */; };
 		46D2D2A00B70401D995627B1 /* semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E8BA97396EA1452188F08F31 /* semibold.ttf */; };
 		6261749D4D464F429048F151 /* medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A8E87E5A91B94C6DBAF4294B /* medium.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		90B83E0C2F8D03FD0005FE4B /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 90B83E0B2F8D03FD0005FE4B /* Roboto-Regular.ttf */; };
 		CB8A6707AF8F4065A9D16FFC /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F149E697C324DB6A2989BBC /* Roboto-Bold.ttf */; };
 		FD90B0F6225A23A307148D11 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
@@ -29,7 +29,7 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-SCMemorial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SCMemorial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = SCMemorial/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SCMemorial/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		90B83E0B2F8D03FD0005FE4B /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
+		915312BBFED9481EB2FA27BC /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../src/assets/fonts/Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		A8E87E5A91B94C6DBAF4294B /* medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = medium.ttf; path = ../src/assets/fonts/medium.ttf; sourceTree = "<group>"; };
 		E8BA97396EA1452188F08F31 /* semibold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = semibold.ttf; path = ../src/assets/fonts/semibold.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -103,7 +103,7 @@
 			children = (
 				E8BA97396EA1452188F08F31 /* semibold.ttf */,
 				A8E87E5A91B94C6DBAF4294B /* medium.ttf */,
-				90B83E0B2F8D03FD0005FE4B /* Roboto-Regular.ttf */,
+				915312BBFED9481EB2FA27BC /* Roboto-Regular.ttf */,
 				3F149E697C324DB6A2989BBC /* Roboto-Bold.ttf */,
 			);
 			name = Resources;
@@ -180,10 +180,10 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				90B83E0C2F8D03FD0005FE4B /* Roboto-Regular.ttf in Resources */,
 				FD90B0F6225A23A307148D11 /* PrivacyInfo.xcprivacy in Resources */,
 				46D2D2A00B70401D995627B1 /* semibold.ttf in Resources */,
 				6261749D4D464F429048F151 /* medium.ttf in Resources */,
+				452E1CFF44164D4D9B267F37 /* Roboto-Regular.ttf in Resources */,
 				CB8A6707AF8F4065A9D16FFC /* Roboto-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -215,13 +215,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SCMemorial/Pods-SCMemorial-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SCMemorial/Pods-SCMemorial-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -258,13 +254,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SCMemorial/Pods-SCMemorial-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SCMemorial/Pods-SCMemorial-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

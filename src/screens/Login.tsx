@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+
 import Colors from '../theme/colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -56,7 +57,7 @@ const Login = ({ navigation }: LoginProps) =>  {
  const forgotPassClick = () => {
   console.log("Forgot pass click")
 };
- 
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start',
       padding: 20,
 },
- 
+    
  scrollContent: {
     padding: 0,
   },
@@ -265,6 +266,7 @@ const styles = StyleSheet.create({
   title: {
         fontSize: 20,
         textAlign: 'center',
+        marginBottom: 10,
         color: Colors.text,
         fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
   },
@@ -272,6 +274,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textAlign: 'center',
         marginTop:10,
+        marginBottom: 20,
         color: Colors.text_light,
         fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
   },
@@ -508,5 +511,4 @@ rememberMeContainer: {
     color: Colors.textColorInpuHeader,
     fontFamily: Platform.OS === 'ios' ? 'semibold' : 'semibold',
   },
- 
 });

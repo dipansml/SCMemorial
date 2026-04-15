@@ -58,6 +58,8 @@ const Login = ({ navigation }: LoginProps) =>  {
   console.log("Forgot pass click")
 };
 
+//Test
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>

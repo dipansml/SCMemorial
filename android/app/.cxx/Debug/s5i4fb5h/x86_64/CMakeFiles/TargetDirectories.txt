@@ -1,0 +1,9 @@
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/CMakeFiles/appmodules.dir
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/CMakeFiles/edit_cache.dir
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/CMakeFiles/rebuild_cache.dir
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/safeareacontext_autolinked_build/CMakeFiles/edit_cache.dir
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/safeareacontext_autolinked_build/CMakeFiles/rebuild_cache.dir
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/rnscreens_autolinked_build/CMakeFiles/edit_cache.dir
+D:/Dipan/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/s5i4fb5h/x86_64/rnscreens_autolinked_build/CMakeFiles/rebuild_cache.dir

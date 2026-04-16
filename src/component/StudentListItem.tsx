@@ -126,6 +126,7 @@ const StudentListItem = ({ onItemPress } : any) => {
       )}
       scrollEnabled={true}
       showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 30 }}
     />
   );
 };
@@ -137,9 +138,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.white,
-    padding: 14,
+    padding: 16,
     borderRadius: 30,
     marginBottom: 10,
+    marginLeft:10,
+    marginRight:10,
   },
 
   image: {

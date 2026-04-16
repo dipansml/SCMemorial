@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { 
     flex: 1,
+    backgroundColor: Colors.background,
    },
   header: {
     height: Header.height,

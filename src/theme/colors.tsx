@@ -1,7 +1,9 @@
 const Colors = {
   primary: '#4A90E2',
   secondary: '#50E3C2',
-  background: '#FFFFFF',
+  background_login: '#FFFFFF',
+  background: '#F9F9FF',
+  background_list_item: '#FFFFFF',
   text: '#000000',
   textColorInpuHeader: '#1E1C1D',
   text_light: '#7393B3',

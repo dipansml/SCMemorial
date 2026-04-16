@@ -253,11 +253,11 @@ const FullScreenLoader = ({ visible }: { visible: boolean }) => {
 const styles = StyleSheet.create({
   screen: {
       flex: 1,
-      backgroundColor: 'Colors.background',
+      backgroundColor: 'Colors.background_login',
 },
     container: {
       flex: 1,
-      backgroundColor: 'Colors.background',
+      backgroundColor: 'Colors.background_login',
       justifyContent: 'flex-start',
       padding: 20,
 },

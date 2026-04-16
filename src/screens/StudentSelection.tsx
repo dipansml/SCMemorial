@@ -1,7 +1,5 @@
 import React from 'react';
-
-import { View, SafeAreaView, StyleSheet, Text, Platform, StatusBar } from 'react-native';
-import AppHeader from '../component/AppHeader';
+import { View, SafeAreaView, StyleSheet, Text,} from 'react-native';
 import Colors from '../theme/colors';
 import { FontSize, FontFamily, Header } from '../theme/fonts_dimen';
 import StudentListItem from '../component/StudentListItem';
@@ -46,7 +44,9 @@ export default StudentSelection;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { flex: 1 },
+  content: { 
+    flex: 1,
+   },
   header: {
     height: Header.height,
     paddingTop: Header.paddingTop,
@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 15,
   },
   headerTitle: {
     fontSize: FontSize.xlarge,
@@ -64,7 +63,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   list: {
-    padding: 20,
-    marginTop: 5,
+    padding: 10,
   },
 });

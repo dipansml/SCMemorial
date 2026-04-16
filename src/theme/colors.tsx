@@ -17,7 +17,8 @@ const Colors = {
   transparent: '#00000000',
   text_orange: '#F87C63',
   check_box: '#7393B333',
-  NavBarHeader_color: "#0C83FF"
+  NavBarHeader_color: "#0C83FF",
+  light_orange: '#FFDAD3',
 };
 
 export default Colors;

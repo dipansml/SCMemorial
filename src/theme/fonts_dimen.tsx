@@ -1,5 +1,6 @@
 import {
   Platform,
+  StatusBar,
 } from 'react-native';
 
 
@@ -9,7 +10,12 @@ export const FontSize = {
   regular: 14,
   medium: 16,
   large: 18,
-  xlarge: 22,
+  xlarge: 20,
+};
+
+export const Header ={
+  height: Platform.OS === 'android' ? 80 : 60,
+  paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
 };
 
 export const FontFamily = {

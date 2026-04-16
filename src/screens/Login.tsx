@@ -16,17 +16,18 @@ import {
 
 import Colors from '../theme/colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { FontSize, FontFamily } from '../theme/fonts_dimen';
 
 const { width } = Dimensions.get('window');
 
 type RootStackParamList = {
-  DashboardParents: undefined;
+  StudentSelection: undefined;
 };
  
   type LoginProps = {
     navigation: NativeStackNavigationProp<
       RootStackParamList,
-      'DashboardParents'
+      'StudentSelection'
     >;
   };
 
@@ -51,7 +52,7 @@ const Login = ({ navigation }: LoginProps) =>  {
   const handleLogin = async () => {
     if (!validateLogin()) return;
     console.log('login click')
-    navigation.replace('DashboardParents');
+    navigation.replace('StudentSelection');
  }
 
  const forgotPassClick = () => {
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 10,
         color: Colors.text,
-        fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+        fontFamily: FontFamily.bold,
   },
   title_normal: {
         fontSize: 12,
@@ -276,7 +277,7 @@ const styles = StyleSheet.create({
         marginTop:10,
         marginBottom: 20,
         color: Colors.text_light,
-        fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
+        fontFamily: FontFamily.regular,
   },
   content: {
     flex: 1,
@@ -327,16 +328,16 @@ buttonContent: {
  
 buttonText: {
   color: '#fff',
-  fontSize: 14,
-  fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+  fontSize: FontSize.regular,
+  fontFamily: FontFamily.bold,
   textAlignVertical: 'center',
 },
  
  
 buttonText_black: {
   color: '#000',
-  fontSize: 14,
-  fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+  fontSize: FontSize.regular,
+  fontFamily: FontFamily.bold,
   textAlignVertical: 'center',
 },
 button: {
@@ -374,13 +375,13 @@ toggleContainer: {
 
   inactiveText: {
     color: Colors.inactive_text,
-    fontSize: 14,
-    fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+    fontSize: FontSize.regular,
+    fontFamily: FontFamily.bold,
   },
 
   activeText: {
     color: Colors.text_theme,
-    fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+    fontFamily: FontFamily.bold,
   },
   row: {
     flexDirection: 'row',
@@ -397,7 +398,7 @@ input_header: {
         textAlign: 'left',
         marginBottom: 5,
         color: Colors.text,
-        fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+        fontFamily: FontFamily.bold,
         width: '100%',
         marginTop: 20,
   },
@@ -419,12 +420,12 @@ inputWrapper: {
 },
  input: {
     padding: 4,
-    fontSize: 12,
+    fontSize: FontSize.small,
     width: '100%',
     height: 40,
     flex: 1,
     paddingVertical: 12,
-    fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
+    fontFamily: FontFamily.regular,
     color: Colors.textColorInpuHeader,
 },
  
@@ -452,9 +453,9 @@ eyeImage: {
 errorText: {
    color: 'red',
    marginTop: 4,
-   fontSize: 12,
+   fontSize: FontSize.small,
    flexWrap: 'wrap',
-   fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
+   fontFamily: FontFamily.regular,
   },  
 container_horizontal_without_space: {
     flexDirection: 'row',
@@ -465,18 +466,18 @@ container_horizontal_without_space: {
  
 errorText1: {
   color: 'red',
-  fontSize: 12,
+  fontSize: FontSize.small,
   flex: 1,  
   marginRight: 10,
   marginTop:5,
   marginBottom: 5,
-  fontFamily: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
+  fontFamily: FontFamily.regular,
 },
  
 forget_pass: {
-  fontSize: 12,
+  fontSize: FontSize.small,
   color : Colors.text_orange,
-  fontFamily: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
+  fontFamily: FontFamily.bold,
 },  
 rememberMeContainer: {
     flexDirection: 'row',
@@ -507,8 +508,8 @@ rememberMeContainer: {
   },
  
   rememberMeText: {
-    fontSize: 12,
+    fontSize: FontSize.small,
     color: Colors.textColorInpuHeader,
-    fontFamily: Platform.OS === 'ios' ? 'semibold' : 'semibold',
+    fontFamily: FontFamily.semiBold,
   },
 });

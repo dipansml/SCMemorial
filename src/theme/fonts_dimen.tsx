@@ -23,5 +23,6 @@ export const FontFamily = {
   regular: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
   bold: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
   semiBold: Platform.OS === 'ios' ? 'Roboto SemiBold' : 'semibold',
+  medium: Platform.OS === 'ios' ? 'Roboto Medium' : 'medium',
 
 };

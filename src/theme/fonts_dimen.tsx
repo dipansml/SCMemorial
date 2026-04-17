@@ -11,6 +11,8 @@ export const FontSize = {
   medium: 16,
   large: 18,
   xlarge: 20,
+  xxLarge: 24,
+  xxxLarge: 26,
 };
 
 export const Header ={
@@ -23,5 +25,15 @@ export const FontFamily = {
   regular: Platform.OS === 'ios' ? 'Roboto Regular' : 'Roboto-Regular',
   bold: Platform.OS === 'ios' ? 'Roboto Bold' : 'Roboto-Bold',
   semiBold: Platform.OS === 'ios' ? 'Roboto SemiBold' : 'semibold',
+  medium: Platform.OS === 'ios' ? 'Roboto Medium' : 'medium',
+};
 
+export const container ={
+  container_padding: 16,
+  attendance_stat: 50,
+};
+
+export const card ={
+  border_radius_card: 16,
+  border_radius_profile: 20,
 };

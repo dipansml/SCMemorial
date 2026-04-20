@@ -11,8 +11,8 @@ export const FontSize = {
   medium: 16,
   large: 18,
   xlarge: 20,
-  xxLarge: 24,
-  xxxLarge: 26,
+  xxLarge: 22,
+  xxxLarge: 24,
 };
 
 export const Header ={

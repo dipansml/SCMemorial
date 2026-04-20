@@ -23,6 +23,11 @@ const Colors = {
   light_orange: '#FFDAD3',
   light_green: '#86F898',
   light_gray: '#EBEEF4',
+  present: '#DCFCE7',
+  absent: '#FEE2E2',
+  holiday: '#FEF3C7',
+  border_color: '#7393B326',
+
 };
 
 export default Colors;

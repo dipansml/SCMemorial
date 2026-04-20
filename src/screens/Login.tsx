@@ -143,7 +143,7 @@ const Login = ({ navigation }: LoginProps) =>  {
                         </Text>
                       </View>
                     </TouchableOpacity>
-              </View>
+                  </View>
                     <Text style={styles.input_header}>Student ID</Text>
                     <View style={styles.inputContainer}>
                         <View style={styles.inputWrapper}>

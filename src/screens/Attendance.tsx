@@ -1,0 +1,207 @@
+import React from 'react';
+import { View, SafeAreaView, StyleSheet, Image, Text, ImageBackground } from 'react-native';
+import AppHeader from '../component/AppHeader';
+import { container, FontFamily, FontSize, card } from '../theme/fonts_dimen';
+import Colors from '../theme/colors';
+const Attendance = () => {
+  return (
+    <SafeAreaView style={styles.container}>
+      
+      <AppHeader
+        title="Attendance"
+        onMenuPress={() => console.log('Menu')}
+        onBellPress={() => console.log('Bell')}
+        onProfilePress={() => console.log('Profile')}
+      />
+
+      <View style={styles.content}>
+        <View style={styles.profileCard}>
+            <Image
+                source={require('../assets/images/student1.png')}
+                style={styles.avatar}
+            />
+
+            <View style={{ flex: 1 }}>
+            <Text style={styles.name}>Aritra Chakraborty</Text>
+            <Text style={styles.subText}>Class 12th • Roll No: 24</Text>
+
+            <View style={styles.badge}>
+                <Text style={styles.badgeText}>ACADEMIC YEAR 2025-26</Text>
+            </View>
+            </View>
+        </View>
+
+        {/* Bottom Section */}
+        <View style={styles.bottomRow}>
+            {/* Attendance Card */}
+                <ImageBackground 
+                    source={require('../assets/images/attendance_card.png')}
+                    style={styles.attendanceCard}
+                    imageStyle={{ borderRadius: card.border_radius_card }}>
+                        <Image
+                            source={require('../assets/images/graph.png')}
+                            style={styles.graph}
+                        />
+                    <Text style={styles.attendanceTitle}>Monthly Attendance</Text>
+                    <Text style={styles.attendanceValue}>85%</Text>
+                </ImageBackground>
+            {/* Stats */}
+            <View style={styles.statsContainer}>
+
+            <View style={[styles.statBox, styles.present]}>
+                <Text style={styles.statLabel}>PRESENT</Text>
+                <Text style={styles.statValue}>18</Text>
+            </View>
+
+            <View style={[styles.statBox, styles.absent]}>
+                <Text style={styles.statLabel}>ABSENT</Text>
+                <Text style={styles.statValue}>04</Text>
+            </View>
+
+            <View style={[styles.statBox, styles.weekend]}>
+                <Text style={styles.statLabel}>WEEKEND</Text>
+                <Text style={styles.statValue}>04</Text>
+            </View>
+
+            </View>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default Attendance;
+
+const styles = StyleSheet.create({
+  container: {
+     flex: 1,
+     backgroundColor: Colors.background, 
+},
+  content: { 
+        flex: 1,
+        padding: container.container_padding, 
+    },
+   profileCard: {
+        flexDirection: 'row',
+        backgroundColor: Colors.background_list_item,
+        borderRadius: card.border_radius_card,
+        padding: 16,
+        alignItems: 'center',
+        marginBottom: 16,
+        elevation: 3,
+  },
+
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: card.border_radius_profile,
+    marginRight: 12,
+  },
+
+  graph: {
+    width: 40,
+    height: 40,
+    marginBottom:20,
+  },
+
+  name: {
+    fontSize: FontSize.medium,
+    color: Colors.text,
+    fontFamily: FontFamily.bold,
+  },
+
+  subText: {
+    fontSize: FontSize.small,
+    color: Colors.text,
+    marginVertical: 4,
+    fontFamily: FontFamily.regular,
+  },
+
+  badge: {
+    backgroundColor: '#E5ECF6',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+
+  badgeText: {
+    fontSize: FontSize.very_small,
+    color: Colors.text,
+    fontFamily: FontFamily.semiBold,
+    marginVertical: 4,
+  },
+
+  bottomRow: {
+    height: 160,
+    flexDirection: 'row',
+  },
+
+  attendanceCard: {
+    height: 170,
+    width: 160,
+    padding: 16,
+    marginRight: 10,
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+
+  attendanceTitle: {
+    color: Colors.white,
+    width:'90%',
+    fontSize: FontSize.regular,
+    fontFamily: FontFamily.medium,
+    marginBottom: 10,
+  },
+
+  attendanceValue: {
+    color: Colors.white,
+    fontSize: FontSize.xxxLarge,
+    fontWeight: 'bold',
+    fontFamily: FontFamily.bold,
+  },
+
+  statsContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+
+  statBox: {
+    borderRadius: 12,
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+
+  present: {
+    height: container.attendance_stat,
+    backgroundColor: Colors.light_green,
+    alignItems: 'center',
+  },
+
+  absent: {
+    height: container.attendance_stat,
+    backgroundColor: Colors.light_orange,
+    alignItems: 'center',
+  },
+
+  weekend: {
+    height: container.attendance_stat,
+    backgroundColor: Colors.light_gray,
+    alignItems: 'center',
+  },
+
+  statLabel: {
+    fontSize: FontSize.regular,
+    fontFamily: FontFamily.medium,
+    color: Colors.text,
+  },
+
+  statValue: {
+    fontSize: FontSize.xxLarge,
+    fontFamily: FontFamily.bold,
+    fontWeight: 'bold',
+    color: Colors.text,
+  },
+});

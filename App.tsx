@@ -8,6 +8,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/Login';
 import DashboardParents from './src/screens/DashboardParents';
 import StudentSelection from './src/screens/StudentSelection';
+import Attendance from './src/screens/Attendance';
 
 enableScreens();
 
@@ -15,7 +16,8 @@ export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   DashboardParents: undefined;
-  StudentSelection: undefined
+  StudentSelection: undefined;
+  Attendance: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,6 +31,7 @@ const App = () => {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="DashboardParents" component={DashboardParents}  options={{ headerShown: false }} />
         <Stack.Screen name="StudentSelection" component={StudentSelection}  options={{ headerShown: false }} />
+        <Stack.Screen name="Attendance" component={Attendance}  options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
     </SafeAreaProvider>

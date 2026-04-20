@@ -21,6 +21,8 @@ const Colors = {
   check_box: '#7393B333',
   NavBarHeader_color: "#0C83FF",
   light_orange: '#FFDAD3',
+  light_green: '#86F898',
+  light_gray: '#EBEEF4',
 };
 
 export default Colors;

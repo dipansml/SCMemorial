@@ -1,19 +1,21 @@
 import React from 'react';
 import { View, SafeAreaView, StyleSheet, Text,} from 'react-native';
 import Colors from '../theme/colors';
-import { FontSize, FontFamily, Header } from '../theme/fonts_dimen';
+import { FontSize, FontFamily, Header, container } from '../theme/fonts_dimen';
 import StudentListItem from '../component/StudentListItem';
 import { StudentItemType } from '../component/StudentListItem';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   DashboardParents : undefined;
+  Attendance: undefined;
 };
  
   type StudentSelectionProps = {
     navigation: NativeStackNavigationProp<
       RootStackParamList,
-      'DashboardParents'
+      'DashboardParents',
+      'Attendance'
     >;
   };
 
@@ -30,7 +32,7 @@ const StudentSelection = ({ navigation }: StudentSelectionProps) => {
               onItemPress={(item: StudentItemType, index: number) => {
                 console.log('Clicked index:', index);
                 console.log('Item:', item);
-                navigation.replace('DashboardParents');
+                navigation.replace('Attendance');
               }}
             />
         </View>
@@ -47,6 +49,7 @@ const styles = StyleSheet.create({
   content: { 
     flex: 1,
     backgroundColor: Colors.background,
+    padding: container.container_padding,
    },
   header: {
     height: Header.height,

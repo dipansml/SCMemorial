@@ -7,14 +7,14 @@ import { StudentItemType } from '../component/StudentListItem';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
-  DashboardParents : undefined;
+  LandingParents : undefined;
   Attendance: undefined;
 };
  
   type StudentSelectionProps = {
     navigation: NativeStackNavigationProp<
       RootStackParamList,
-      'DashboardParents',
+      'LandingParents',
       'Attendance'
     >;
   };
@@ -32,7 +32,8 @@ const StudentSelection = ({ navigation }: StudentSelectionProps) => {
               onItemPress={(item: StudentItemType, index: number) => {
                 console.log('Clicked index:', index);
                 console.log('Item:', item);
-                navigation.replace('Attendance');
+                //navigation.replace('Attendance');
+                navigation.replace('LandingParents');
               }}
             />
         </View>

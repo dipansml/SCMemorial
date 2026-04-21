@@ -6,16 +6,17 @@ import { enableScreens } from 'react-native-screens';
 
 import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/Login';
-import DashboardParents from './src/screens/DashboardParents';
+//import DashboardParents from './src/screens/DashboardParents';
 import StudentSelection from './src/screens/StudentSelection';
 import Attendance from './src/screens/Attendance';
+import LandingParents from './src/screens/LandingParents';
 
 enableScreens();
 
 export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
-  DashboardParents: undefined;
+  LandingParents: undefined;
   StudentSelection: undefined;
   Attendance: undefined;
 };
@@ -29,7 +30,7 @@ const App = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="DashboardParents" component={DashboardParents}  options={{ headerShown: false }} />
+        <Stack.Screen name="LandingParents" component={LandingParents}  options={{ headerShown: false }} />
         <Stack.Screen name="StudentSelection" component={StudentSelection}  options={{ headerShown: false }} />
         <Stack.Screen name="Attendance" component={Attendance}  options={{ headerShown: false }} />
       </Stack.Navigator>

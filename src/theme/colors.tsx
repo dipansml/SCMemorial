@@ -8,6 +8,7 @@ const Colors = {
   textColorInpuHeader: '#1E1C1D',
   text_light: '#7393B3',
   text_theme: '#0C83FF',
+  theme_color: '#0C83FF',
   inactive_text: '#1E1C1D',
   button_color: "#0C83FF",
   white: "#FFFFFF",

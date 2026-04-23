@@ -5,17 +5,11 @@ import { FontSize, FontFamily, Header, container } from '../theme/fonts_dimen';
 import StudentListItem from '../component/StudentListItem';
 import { StudentItemType } from '../component/StudentListItem';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
-type RootStackParamList = {
-  LandingParents : undefined;
-  Attendance: undefined;
-};
+import type { RootStackParamList } from '../../App';
  
   type StudentSelectionProps = {
     navigation: NativeStackNavigationProp<
-      RootStackParamList,
-      'LandingParents',
-      'Attendance'
+      RootStackParamList
     >;
   };
 
@@ -32,7 +26,6 @@ const StudentSelection = ({ navigation }: StudentSelectionProps) => {
               onItemPress={(item: StudentItemType, index: number) => {
                 console.log('Clicked index:', index);
                 console.log('Item:', item);
-                //navigation.replace('Attendance');
                 navigation.replace('LandingParents');
               }}
             />

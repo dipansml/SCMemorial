@@ -1,5 +1,6 @@
 {
   "buildFiles": [
+    "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
     "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
     "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
@@ -31,6 +32,11 @@
         "/Users/beasios/.gradle/caches/9.3.1/transforms/427eee61930a909b20cb384104452e26/transformed/react-android-0.85.0-debug/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
         "/Users/beasios/.gradle/caches/9.3.1/transforms/427eee61930a909b20cb384104452e26/transformed/react-android-0.85.0-debug/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so"
       ]
+    },
+    "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_rngesturehandler_codegen"
     },
     "react_codegen_rnscreens::@25bcbd507e98d3a854ad": {
       "toolchain": "toolchain",

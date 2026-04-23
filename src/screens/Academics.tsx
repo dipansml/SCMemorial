@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, SafeAreaView, StyleSheet } from 'react-native';
 import AppHeader from '../component/AppHeader';
+import { openParentDrawer } from '../navigation/navigationRef';
 
 const Academics = () => {
   return (
@@ -8,7 +9,7 @@ const Academics = () => {
       
       <AppHeader
         title="Academics"
-        onMenuPress={() => console.log('Menu')}
+        onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
       />

@@ -4,6 +4,7 @@ import AppHeader from '../component/AppHeader';
 import { container, FontFamily, FontSize, card } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
 import Calendar from '../component/Calendar';
+import { openParentDrawer } from '../navigation/navigationRef';
 
 type StatusType = 'present' | 'absent' | 'holiday' | 'default';
 
@@ -43,7 +44,7 @@ const Attendance = () => {
       
       <AppHeader
         title="Attendance"
-        onMenuPress={() => console.log('Menu')}
+        onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
       />

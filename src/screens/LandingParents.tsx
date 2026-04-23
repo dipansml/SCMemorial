@@ -39,13 +39,13 @@ const LandingParents = () => {
           let icon;
 
           if (route.name === 'DashboardParents') {
-            icon = require('../assets/images/dashboard.png');
+            icon = require('../assets/images/icons/dashboard.png');
           } else if (route.name === 'Academics') {
-            icon = require('../assets/images/academic.png');
+            icon = require('../assets/images/icons/academic.png');
           } else if (route.name === 'Messages') {
-            icon = require('../assets/images/messages.png');
+            icon = require('../assets/images/icons/messages.png');
           } else if (route.name === 'Settings') {
-            icon = require('../assets/images/settings.png');
+            icon = require('../assets/images/icons/settings.png');
           }
           return (
             <Image

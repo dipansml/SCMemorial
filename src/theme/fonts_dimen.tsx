@@ -39,3 +39,7 @@ export const card ={
   border_radius_card: 16,
   border_radius_profile: 20,
 };
+
+export const Menu ={
+  menuSize: 16,
+};

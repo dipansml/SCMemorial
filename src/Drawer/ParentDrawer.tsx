@@ -1,0 +1,330 @@
+import React from 'react';
+import {
+  Image,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../App';
+import Colors from '../theme/colors';
+import { FontFamily, FontSize, Header, Menu } from '../theme/fonts_dimen';
+
+type DrawerNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+
+type MenuItem = {
+  key: string;
+  label: string;
+  route: keyof RootStackParamList;
+  icon: any;
+};
+
+const menuItems: MenuItem[] = [
+  {
+    key: 'home',
+    label: 'Home',
+    route: 'LandingParents',
+    icon: require('../assets/images/icons/home.png'),
+  },
+  {
+    key: 'attendance',
+    label: 'Attendance Tracking',
+    route: 'Attendance',
+    icon: require('../assets/images/icons/attendance.png'),
+  },
+  {
+    key: 'Fees',
+    label: 'Fee Payment & Payment History',
+    route: 'Fees',
+    icon: require('../assets/images/icons/fees.png'),
+  },
+  {
+    key: 'events',
+    label: 'Events',
+    route: 'Events',
+    icon: require('../assets/images/icons/events.png'),
+  },
+  {
+    key: 'notice',
+    label: 'Notices & Announcements',
+    route: 'Notice',
+    icon: require('../assets/images/icons/notice.png'),
+  },
+  {
+    key: 'homework',
+    label: 'Homework & Updates',
+    route: 'Homework',
+    icon: require('../assets/images/icons/homework.png'),
+  },
+  {
+    key: 'messages',
+    label: 'Direct Chat with Teacher',
+    route: 'Messages',
+    icon: require('../assets/images/icons/messages.png'),
+  },
+];
+
+const ParentDrawer = () => {
+  const navigation = useNavigation<DrawerNavigationProp>();
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+
+  const drawerWidth = Math.min(360, Math.max(280, Math.round(width * 0.72)));
+  const footerBottomInset = Platform.OS === 'android'
+    ? Math.max(insets.bottom, 16)
+    : insets.bottom;
+
+  // ✅ Get current active screen behind drawer
+  const state = navigation.getState();
+
+  // Last route = Drawer, second last = actual screen
+  const currentRoute =
+    state.routes[state.routes.length - 2]?.name || 'LandingParents';
+
+  return (
+    <SafeAreaView style={styles.screen}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={Colors.NavBarHeader_color}
+      />
+
+      <View style={styles.backdrop}>
+        {/* Drawer */}
+        <View style={[styles.drawer, { width: drawerWidth }]}>
+          {/* Header */}
+          <View style={styles.schoolHeader}>
+            <Image
+              source={require('../assets/images/title_logo.png')}
+              style={styles.schoolLogo}
+            />
+          </View>
+
+          {/* Menu */}
+          <ScrollView
+            style={styles.menuScroll}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.menuContent}
+          >
+            {menuItems.map((item) => {
+              const isActive = currentRoute === item.route;
+
+              return (
+                <TouchableOpacity
+                  key={item.key}
+                  activeOpacity={0.75}
+                  style={[
+                    styles.menuItem,
+                    isActive && styles.menuItemActive,
+                  ]}
+                  onPress={() => {
+                    navigation.replace(item.route);
+                  }}
+                >
+                  <View style={styles.menuIconWrap}>
+                    <Image source={item.icon} 
+                          style={[
+                          styles.menuIcon,
+                          isActive && styles.menuIconActive,
+                  ]}/>
+                  </View>
+
+                  <Text
+                    style={[
+                      styles.menuLabel,
+                      isActive && styles.menuLabelActive,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+
+          {/* Sign Out */}
+          <View style={styles.devider}/>
+          <Pressable
+             style={[
+                      styles.signOutContainer,
+                      Platform.OS === 'android' && { marginBottom: 30},
+                    ]}
+              onPress={() => navigation.replace('Login')}> 
+          <Image
+            source={require('../assets/images/icons/logout.png')} // add logout icon
+            style={styles.signOutIcon}
+          />
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </Pressable>
+        </View>
+        <Pressable
+          style={styles.overlay}
+          onPress={() => navigation.goBack()}
+        />
+
+      
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default ParentDrawer;
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+
+  backdrop: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+
+  drawer: {
+    backgroundColor: Colors.white,
+    justifyContent: 'space-between',
+    marginTop: Header.paddingTop,
+
+    ...Platform.select({
+      android: {
+        elevation: 8,
+        paddingBottom: 16,
+      },
+      ios: {
+        shadowColor: '#000',
+        shadowOpacity: 0.18,
+        shadowRadius: 12,
+        shadowOffset: { width: 2, height: 0 },
+      },
+    }),
+  },
+
+  schoolHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: '15%',
+    backgroundColor: Colors.theme_color,
+    padding: 14,
+    marginBottom: 18,
+  },
+
+  schoolLogo: {
+    flex:2,
+    resizeMode: 'contain',
+  },
+
+  schoolCopy: {
+    flex: 1,
+  },
+
+  schoolTitle: {
+    color: Colors.white,
+    fontFamily: FontFamily.bold,
+    fontSize: FontSize.regular,
+  },
+
+  schoolSubtitle: {
+    color: Colors.white,
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.very_small,
+    opacity: 0.95,
+  },
+
+  menuContent: {
+    paddingBottom: 20,
+    paddingHorizontal: 10,
+  },
+
+  menuScroll: {
+    flex: 1,
+  },
+
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 11,
+    paddingHorizontal: 10,
+    borderRadius: 7,
+    marginBottom: 8,
+  },
+
+  menuItemActive: {
+    backgroundColor: Colors.drawerItemActive,
+  },
+
+  menuIconWrap: {
+    width: 28,
+    alignItems: 'center',
+    marginRight: 10,
+  },
+
+  menuIcon: {
+    width: Menu.menuSize,
+    height: Menu.menuSize,
+    resizeMode: 'contain',
+    tintColor: Colors.menu_tint,
+  },
+
+   menuIconActive: {
+    width: Menu.menuSize,
+    height: Menu.menuSize,
+    resizeMode: 'contain',
+    tintColor: Colors.primary,
+  },
+
+  menuLabel: {
+    color: Colors.textColorInpuHeader,
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.regular,
+  },
+
+  menuLabelActive: {
+    color: Colors.theme_color,
+    fontFamily: FontFamily.regular,
+  },
+
+  signOut: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.border_color,
+  },
+
+  signOutText: {
+    color: Colors.textColorInpuHeader,
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.regular,
+  },
+
+  overlay: {
+    flex: 1,
+  },
+
+  signOutContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 20,
+    height: 50,
+    backgroundColor: Colors.background,
+  },
+
+signOutIcon: {
+  width: 18,
+  height: 18,
+  marginRight: 10,
+  tintColor: Colors.menu_tint,
+},
+devider: {
+    borderTopWidth: 1,
+    borderTopColor: Colors.border_color,
+  },
+});

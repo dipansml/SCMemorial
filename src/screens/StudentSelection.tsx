@@ -61,6 +61,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   list: {
-    padding: 10,
+    padding: 0,
   },
 });

@@ -17,8 +17,10 @@ const Colors = {
   inputBorder: '#7393B31A',
   tintColor: '#7393B3',
   text_hint: '#7393B3',
+  text_box_back: '#7393B31A',
   transparent: '#00000000',
   text_orange: '#F87C63',
+  orange: '#F87C63',
   check_box: '#7393B333',
   NavBarHeader_color: "#0C83FF",
   light_orange: '#FFDAD3',
@@ -30,6 +32,10 @@ const Colors = {
   border_color: '#7393B326',
   menu_tint: '#3F5F7C',
   drawerItemActive: '#DBEAFE',
+  card_background_grey: '#EBEDF8',
+  bar_max_text: '#1E1C1DB2',
+  iconBackGrey :'#D3DAE9',
+  yellow: '#FFDFA0',
 
 };
 

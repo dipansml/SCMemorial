@@ -18,7 +18,8 @@ export const FontSize = {
 export const Header ={
   height: Platform.OS === 'android' ? 80 : 60,
   paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-
+  icon: 24,
+  textSize: 20,
 };
 
 export const FontFamily = {
@@ -37,9 +38,21 @@ export const container ={
 
 export const card ={
   border_radius_card: 16,
+  border_radius_card_small: 8,
   border_radius_profile: 20,
+  padding : 16,
+
+};
+
+export const iconBox ={
+  border_radius_card: 10,
+
 };
 
 export const Menu ={
   menuSize: 16,
+};
+
+export const Button ={
+  buttonRadius: 24,
 };

@@ -9,6 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import Colors from '../theme/colors';
+import { FontFamily, FontSize, Header } from '../theme/fonts_dimen';
 
 //Test
 
@@ -52,7 +53,7 @@ const AppHeader = ({
         <TouchableOpacity onPress={onProfilePress}>
           <View style={styles.profileColumn}>
             <Image
-              source={{ uri: 'https://i.pravatar.cc/100' }}
+              source={require('../assets/images/student1.png')}
               style={styles.avatar}
             />
             <Image
@@ -84,17 +85,16 @@ const styles = StyleSheet.create({
     color: Colors.background,
   },
   menuImage: {
-    width: 28,
-    height: 28,
+    width: Header.icon,
+    height: Header.icon,
     resizeMode: 'contain',
     tintColor: Colors.background,
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: Header.textSize,
     color: 'white',
     marginLeft: 10,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: FontFamily.bold,
   },
   left: {
     flexDirection: 'row',
@@ -122,8 +122,7 @@ const styles = StyleSheet.create({
   switchImage: {
     width: 36,
     height: 18,
-    marginTop: -10,
+    marginTop: -7,
     resizeMode: 'contain',
-    tintColor: 'white',
   },
 });

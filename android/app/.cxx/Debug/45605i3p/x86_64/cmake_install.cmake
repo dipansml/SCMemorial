@@ -47,6 +47,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/x86_64/rngesturehandler_codegen_autolinked_build/cmake_install.cmake")
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/x86_64/safeareacontext_autolinked_build/cmake_install.cmake")
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/x86_64/rnscreens_autolinked_build/cmake_install.cmake")
+  include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/x86_64/rnsvg_autolinked_build/cmake_install.cmake")
 
 endif()
 

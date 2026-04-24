@@ -51,8 +51,8 @@ const LandingParents = () => {
             <Image
               source={icon}
               style={{
-                width: 22,
-                height: 22,
+                width:18,
+                height: 18,
                 resizeMode: 'contain',
                 margin:1,
                 //Change color on select

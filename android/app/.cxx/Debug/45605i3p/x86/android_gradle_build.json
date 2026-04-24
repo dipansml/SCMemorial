@@ -3,6 +3,7 @@
     "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
     "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
+    "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
     "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
   ],
   "cleanCommandsComponents": [
@@ -28,6 +29,7 @@
       "runtimeFiles": [
         "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/build/intermediates/cxx/Debug/45605i3p/obj/x86/libreact_codegen_safeareacontext.so",
         "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/build/intermediates/cxx/Debug/45605i3p/obj/x86/libreact_codegen_rnscreens.so",
+        "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/build/intermediates/cxx/Debug/45605i3p/obj/x86/libreact_codegen_rnsvg.so",
         "/Users/beasios/.gradle/caches/9.3.1/transforms/3c01aea05d2737e987399f1309ae090e/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
         "/Users/beasios/.gradle/caches/9.3.1/transforms/427eee61930a909b20cb384104452e26/transformed/react-android-0.85.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
         "/Users/beasios/.gradle/caches/9.3.1/transforms/427eee61930a909b20cb384104452e26/transformed/react-android-0.85.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
@@ -43,6 +45,17 @@
       "abi": "x86",
       "artifactName": "react_codegen_rnscreens",
       "output": "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/build/intermediates/cxx/Debug/45605i3p/obj/x86/libreact_codegen_rnscreens.so",
+      "runtimeFiles": [
+        "/Users/beasios/.gradle/caches/9.3.1/transforms/427eee61930a909b20cb384104452e26/transformed/react-android-0.85.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so",
+        "/Users/beasios/.gradle/caches/9.3.1/transforms/427eee61930a909b20cb384104452e26/transformed/react-android-0.85.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/Users/beasios/.gradle/caches/9.3.1/transforms/3c01aea05d2737e987399f1309ae090e/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so"
+      ]
+    },
+    "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_rnsvg",
+      "output": "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/build/intermediates/cxx/Debug/45605i3p/obj/x86/libreact_codegen_rnsvg.so",
       "runtimeFiles": [
         "/Users/beasios/.gradle/caches/9.3.1/transforms/427eee61930a909b20cb384104452e26/transformed/react-android-0.85.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so",
         "/Users/beasios/.gradle/caches/9.3.1/transforms/427eee61930a909b20cb384104452e26/transformed/react-android-0.85.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",

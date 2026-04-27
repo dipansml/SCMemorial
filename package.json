@@ -21,7 +21,8 @@
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0",
     "react-native-svg": "^15.15.4",
-    "react-native-svg-charts": "^5.4.0"
+    "react-native-svg-charts": "^5.4.0",
+    "victory-native": "^41.20.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

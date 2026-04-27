@@ -12,6 +12,7 @@ import {
   Platform,
   TouchableOpacity,
   TextInput,
+  KeyboardAvoidingView,
 } from 'react-native';
 
 import Colors from '../theme/colors';
@@ -75,7 +76,8 @@ const Login = ({ navigation }: LoginProps) =>  {
             />    
           </ImageBackground>
           <View style={styles.container}>
-            <ScrollView
+            <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+              <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}>
               <FullScreenLoader visible={loading} />
@@ -230,6 +232,7 @@ const Login = ({ navigation }: LoginProps) =>  {
                               <Text style={styles.buttonText}>Sign In</Text>
                         </TouchableOpacity>
             </ScrollView>
+            </KeyboardAvoidingView>
           </View>
       </View>
     </SafeAreaView>
@@ -264,6 +267,7 @@ const styles = StyleSheet.create({
     
  scrollContent: {
     padding: 0,
+    flexGrow: 1,
   },
  
   title: {

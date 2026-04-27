@@ -59,3 +59,7 @@ export const Button ={
   buttonRadius: 24,
   height : 40,
 };
+
+ const getBottomSpacing = (insets: any) => {
+  return Platform.OS === 'android' ? insets.bottom : 0;
+};

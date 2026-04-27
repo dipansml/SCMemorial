@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  SafeAreaView,
   StyleSheet,
   Text,
   ScrollView,
@@ -14,7 +13,7 @@ import FeesBreakdownComponent from '../component/FeesBreakdownComponent';
 import { card, FontFamily, FontSize, iconBox } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
 import { CommonStyles } from '../style/CommonStyles';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 // types
 type FeeItem = {
   id: string;
@@ -50,7 +49,7 @@ const Fees = () => {
         onProfilePress={() => console.log('Profile')}
       />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>
 
         {/* 🔵 TOP CARD */}
         <View style={styles.topCard}>
@@ -97,7 +96,7 @@ const Fees = () => {
             {/* 📋 CHILD COMPONENT (FlatList) */}
             <FeesBreakdownComponent data={feesData} />
         </View>
-        <TouchableOpacity  style={[CommonStyles.button, { marginBottom: 30 }]}>    
+        <TouchableOpacity  style={[CommonStyles.button, {marginBottom: 20}]}>    
             <Text style={CommonStyles.buttonText}>Pay Now</Text>
          </TouchableOpacity>
       </ScrollView>

@@ -13,6 +13,7 @@ export const FontSize = {
   xlarge: 20,
   xxLarge: 22,
   xxxLarge: 24,
+  xxxxLarge: 26,
 };
 
 export const Header ={
@@ -38,6 +39,7 @@ export const container ={
 
 export const card ={
   border_radius_card: 16,
+  border_radius_card_medium: 10,
   border_radius_card_small: 8,
   border_radius_profile: 20,
   padding : 16,
@@ -55,4 +57,5 @@ export const Menu ={
 
 export const Button ={
   buttonRadius: 24,
+  height : 40,
 };

@@ -9,7 +9,19 @@ import {
 import Colors from '../theme/colors';
 import { card, FontFamily, FontSize, iconBox } from '../theme/fonts_dimen';
 
-class ExamScheduleComponent extends Component {
+type ExamItem = {
+  id: string;
+  subject: string;
+  date: string;
+  time: string;
+  status: string;
+};
+
+type ExamScheduleProps = {
+  examList: ExamItem[];
+};
+
+class ExamScheduleComponent extends Component<ExamScheduleProps> {
 
   getStatusStyle = (status : any) => {
     switch (status) {
@@ -116,6 +128,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.small,
     color: Colors.text_hint,
     fontFamily: FontFamily.regular,
+    marginTop: 4,
   },
   status: {
     paddingHorizontal: 8,

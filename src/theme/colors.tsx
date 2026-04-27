@@ -9,6 +9,7 @@ const Colors = {
   text_light: '#7393B3',
   text_theme: '#0C83FF',
   theme_color: '#0C83FF',
+  button_text: '#FFFFFF',
   inactive_text: '#1E1C1D',
   button_color: "#0C83FF",
   white: "#FFFFFF",
@@ -25,6 +26,7 @@ const Colors = {
   NavBarHeader_color: "#0C83FF",
   light_orange: '#FFDAD3',
   light_green: '#86F898',
+  light_red: '#FFDAD6',
   light_gray: '#EBEEF4',
   present: '#DCFCE7',
   absent: '#FEE2E2',
@@ -36,6 +38,8 @@ const Colors = {
   bar_max_text: '#1E1C1DB2',
   iconBackGrey :'#D3DAE9',
   yellow: '#FFDFA0',
+  instruction_box : '#F9F1E2',
+  instruction_text : '#6A4300',
 
 };
 

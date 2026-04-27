@@ -5,14 +5,28 @@ import {
   StyleSheet,
   Text,
   ScrollView,
+  ImageBackground,
+  Image,
+  TouchableOpacity
 } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { openParentDrawer } from '../navigation/navigationRef';
 import ExamScheduleComponent from '../component/ExamScheduleComponent';
+import { card, FontFamily, FontSize } from '../theme/fonts_dimen';
+import Colors from '../theme/colors';
+import { CommonStyles } from '../style/CommonStyles';
+
+type ExamItem = {
+  id: string;
+  subject: string;
+  date: string;
+  time: string;
+  status: string;
+};
 
 const Academics = () => {
 
-  const [examList, setExamList] = useState([]);
+  const [examList, setExamList] = useState<ExamItem[]>([]);
 
   useEffect(() => {
     // simulate API
@@ -43,13 +57,50 @@ const Academics = () => {
         <ExamScheduleComponent examList={examList} />
 
         {/* 🔹 Static Instructions */}
-        <View style={styles.instructionsBox}>
-          <Text style={styles.instructionsTitle}>Exam Instructions</Text>
-          <Text style={styles.instructionsText}>• Carry original Admit Cards.</Text>
-          <Text style={styles.instructionsText}>• Reach 30 minutes early.</Text>
-          <Text style={styles.instructionsText}>• No mobile phones allowed.</Text>
-        </View>
-
+        <View style={styles.cardWrapper}>
+            <ImageBackground
+                source={require('../assets/images/instruction_bg.png')}
+                style={styles.cardImage}>   
+                  <View style={styles.cardPadding}>
+                    <Text style={styles.instructionsTitle}>Exam Instructions</Text>
+                    <View style={styles.instructions}>
+                      <Image
+                          source={require('../assets/images/icons/instruction_yes.png')}
+                          style={styles.instructionIcon}
+                          resizeMode="contain"/>
+                      <Text style={styles.instructionsText}>Carry original Admit Cards to every examination.</Text>
+                    </View>
+                    <View style={styles.instructions}>
+                      <Image
+                          source={require('../assets/images/icons/instruction_yes.png')}
+                          style={styles.instructionIcon}
+                          resizeMode="contain"/>
+                      <Text style={styles.instructionsText}>Report to the examination hall 30 minutes before the start time.</Text>
+                    </View>
+                    <View style={styles.instructions}>
+                        <Image
+                            source={require('../assets/images/icons/instruction_yes.png')}
+                            style={styles.instructionIcon}
+                            resizeMode="contain"/>
+                        <Text style={styles.instructionsText}>Only transparent stationary pouches are allowed.</Text>
+                    </View>
+                    <View style={styles.instructions}>
+                        <Image
+                            source={require('../assets/images/icons/instruction_no.png')}
+                            style={styles.instructionIcon}
+                            resizeMode="contain"/>
+                        <Text style={styles.instructionsText}>Mobile phones and smartwatches are strictly prohibited.</Text>
+                    </View>
+                  </View>
+            </ImageBackground>
+         </View>
+         <TouchableOpacity  style={[CommonStyles.button, { marginBottom: 30 }]}>    
+              <Image
+                source={require('../assets/images/icons/download.png')}
+                style={CommonStyles.buttonIcon}
+                resizeMode="contain"/>                                  
+              <Text style={CommonStyles.buttonText}>Download PDF Schedule</Text>
+         </TouchableOpacity>
       </ScrollView>
 
     </SafeAreaView>
@@ -63,18 +114,53 @@ const styles = StyleSheet.create({
   content: { flex: 1, padding: 16 },
 
   instructionsBox: {
-    backgroundColor: '#F5E6C8',
     borderRadius: 12,
     padding: 12,
     marginTop: 10,
+    overflow: 'hidden',
+},
+
+ cardWrapper: {
+    borderRadius: card.border_radius_card,
+    overflow: 'hidden',
+    backgroundColor: Colors.instruction_box,
+    elevation: 3,
+    marginTop: 10,
+    marginBottom: 10,
   },
-  instructionsTitle: {
-    fontWeight: '700',
-    marginBottom: 6,
-  },
+  
+cardImage: {
+  justifyContent: 'center', 
+},
+
+cardPadding: {
+  padding: card.padding, 
+},
+
+instructionsTitle: {
+    marginBottom:10,
+    color: Colors.textColorInpuHeader,
+    fontSize: FontSize.medium,
+    fontFamily: FontFamily.medium,
+
+},
   instructionsText: {
-    fontSize: 12,
+    color: Colors.instruction_text,
+    fontSize: FontSize.very_small,
+    fontFamily: FontFamily.regular,
+  },
+
+  instructions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    alignContent: 'center',
     marginBottom: 4,
-    color: '#444',
+}, 
+instructionIcon: {
+    width: 10,
+    height: 10,
+    marginRight: 3,
+    tintColor: Colors.instruction_text,
   },
 });

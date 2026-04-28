@@ -30,7 +30,7 @@ const DATA: StudentItemType[] = [
     image: require('../assets/images/student2.png'),
   },
   {
-    id: '2',
+    id: '3',
     title: 'Aritra Chakraborty',
     participants: 'Class 12th Standard',
     rollNo: '25',
@@ -38,7 +38,7 @@ const DATA: StudentItemType[] = [
     image: require('../assets/images/student2.png'),
   },
   {
-    id: '2',
+    id: '4',
     title: 'Aritra Chakraborty',
     participants: 'Class 12th Standard',
     rollNo: '25',
@@ -46,7 +46,7 @@ const DATA: StudentItemType[] = [
     image: require('../assets/images/student2.png'),
   },
   {
-    id: '2',
+    id: '5',
     title: 'Aritra Chakraborty',
     participants: 'Class 12th Standard',
     rollNo: '25',
@@ -54,7 +54,7 @@ const DATA: StudentItemType[] = [
     image: require('../assets/images/student2.png'),
   },
   {
-    id: '2',
+    id: '6',
     title: 'Aritra Chakraborty',
     participants: 'Class 12th Standard',
     rollNo: '25',
@@ -62,7 +62,7 @@ const DATA: StudentItemType[] = [
     image: require('../assets/images/student2.png'),
   },
   {
-    id: '2',
+    id: '7',
     title: 'Aritra Chakraborty',
     participants: 'Class 12th Standard',
     rollNo: '25',
@@ -70,7 +70,7 @@ const DATA: StudentItemType[] = [
     image: require('../assets/images/student2.png'),
   },
   {
-    id: '2',
+    id: '8',
     title: 'Aritra Chakraborty',
     participants: 'Class 12th Standard',
     rollNo: '25',

@@ -1,4 +1,4 @@
-import React, { useEffect }from 'react';
+import React, { useCallback }from 'react';
 import {
   View,
   Text,
@@ -15,22 +15,24 @@ import { Button, card, container, FontFamily, FontSize, iconBox } from '../theme
 import GroupedBarChart from '../component/GroupedBarChart';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackHandler } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const DashboardParents = () => {
-  useEffect(() => {
-        const backAction = () => {
-          BackHandler.exitApp(); // 👈 closes the app
-          return true; // prevent default behavior
-        };
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        BackHandler.exitApp();
+        return true;
+      };
 
-        const backHandler = BackHandler.addEventListener(
-          'hardwareBackPress',
-          backAction
-        );
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress
+      );
 
-        return () => backHandler.remove();
-      }, []);
-
+      return () => subscription.remove();
+    }, [])
+  );
   
 
 

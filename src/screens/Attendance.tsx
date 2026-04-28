@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, SafeAreaView, StyleSheet, Image, Text, ImageBackground, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, Text, ImageBackground, ScrollView } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { container, FontFamily, FontSize, card } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
 import Calendar from '../component/Calendar';
 import { openParentDrawer } from '../navigation/navigationRef';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type StatusType = 'present' | 'absent' | 'holiday' | 'default';
 
@@ -119,7 +120,6 @@ const styles = StyleSheet.create({
 },
 scrollContent: {
     padding: 0,
-    paddingBottom: 100,
   },
   content: { 
         flex: 1,

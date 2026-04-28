@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, SafeAreaView, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { openParentDrawer } from '../navigation/navigationRef';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Messages = () => {
   return (

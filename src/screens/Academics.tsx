@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  SafeAreaView,
   StyleSheet,
   Text,
   ScrollView,
@@ -15,6 +14,7 @@ import ExamScheduleComponent from '../component/ExamScheduleComponent';
 import { card, FontFamily, FontSize } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
 import { CommonStyles } from '../style/CommonStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type ExamItem = {
   id: string;
@@ -42,7 +42,7 @@ const Academics = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       
       <AppHeader
         title="Academics"
@@ -51,7 +51,7 @@ const Academics = () => {
         onProfilePress={() => console.log('Profile')}
       />
 
-      <ScrollView style={styles.content}>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 28 }}>
 
         {/* 🔹 List Component */}
         <ExamScheduleComponent examList={examList} />
@@ -94,7 +94,7 @@ const Academics = () => {
                   </View>
             </ImageBackground>
          </View>
-         <TouchableOpacity  style={[CommonStyles.button, { marginBottom: 30 }]}>    
+         <TouchableOpacity  style={[CommonStyles.button, { marginBottom: 10 }]}>    
               <Image
                 source={require('../assets/images/icons/download.png')}
                 style={CommonStyles.buttonIcon}
@@ -102,7 +102,6 @@ const Academics = () => {
               <Text style={CommonStyles.buttonText}>Download PDF Schedule</Text>
          </TouchableOpacity>
       </ScrollView>
-
     </SafeAreaView>
   );
 };
@@ -111,7 +110,7 @@ export default Academics;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { flex: 1, padding: 16 },
+  content: { padding: 16 },
 
   instructionsBox: {
     borderRadius: 12,

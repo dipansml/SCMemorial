@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   Dimensions,
   ImageBackground,
   Image,
@@ -18,6 +17,7 @@ import {
 import Colors from '../theme/colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontSize, FontFamily } from '../theme/fonts_dimen';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 

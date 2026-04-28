@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect }from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
   ImageBackground,
@@ -14,8 +13,27 @@ import { openParentDrawer } from '../navigation/navigationRef';
 import Colors from '../theme/colors';
 import { Button, card, container, FontFamily, FontSize, iconBox } from '../theme/fonts_dimen';
 import GroupedBarChart from '../component/GroupedBarChart';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BackHandler } from 'react-native';
 
 const DashboardParents = () => {
+  useEffect(() => {
+        const backAction = () => {
+          BackHandler.exitApp(); // 👈 closes the app
+          return true; // prevent default behavior
+        };
+
+        const backHandler = BackHandler.addEventListener(
+          'hardwareBackPress',
+          backAction
+        );
+
+        return () => backHandler.remove();
+      }, []);
+
+  
+
+
    const chartData = [
     { subject: 'English', halfYearly: 92, annual: 95 },
     { subject: 'Math', halfYearly: 88, annual: 96 },
@@ -24,7 +42,7 @@ const DashboardParents = () => {
     { subject: 'Chemistry', halfYearly: 84, annual: 94 },
   ];
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       
       <AppHeader
         title="Dashboard"
@@ -34,7 +52,7 @@ const DashboardParents = () => {
       />
 
       <View style={styles.content}>
-        <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ padding: container.container_padding }}>
             
             {/* Profile Card */}
@@ -167,7 +185,7 @@ const DashboardParents = () => {
                 </View>
             </View>
           </ScrollView>
-        </SafeAreaView>
+        </View>
       </View>
     </SafeAreaView>
   );

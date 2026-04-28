@@ -17,10 +17,10 @@ export const FontSize = {
 };
 
 export const Header ={
-  height: Platform.OS === 'android' ? 80 : 60,
+  height: Platform.OS === 'android' ? 50 : 50,
   paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   icon: 24,
-  textSize: 20,
+  textSize: FontSize.large,
 };
 
 export const FontFamily = {

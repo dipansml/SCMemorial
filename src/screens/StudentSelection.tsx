@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, SafeAreaView, StyleSheet, Text,} from 'react-native';
+import { View, StyleSheet, Text,} from 'react-native';
 import Colors from '../theme/colors';
 import { FontSize, FontFamily, Header, container } from '../theme/fonts_dimen';
 import StudentListItem from '../component/StudentListItem';
 import { StudentItemType } from '../component/StudentListItem';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
+import { SafeAreaView } from 'react-native-safe-area-context';
  
   type StudentSelectionProps = {
     navigation: NativeStackNavigationProp<
@@ -47,7 +48,6 @@ const styles = StyleSheet.create({
    },
   header: {
     height: Header.height,
-    paddingTop: Header.paddingTop,
     backgroundColor: Colors.NavBarHeader_color,
     flexDirection: 'row',
     alignItems: 'center',

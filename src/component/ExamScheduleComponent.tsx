@@ -52,7 +52,6 @@ class ExamScheduleComponent extends Component<ExamScheduleProps> {
 
           <View style={{ flex: 1 }}>
             <Text style={styles.subject}>{item.subject}</Text>
-            {/* <Text style={styles.meta}>{item.date}</Text> */}
             <View style={styles.rowTextIcon}>
                 <Image
                     source={require('../assets/images/icons/attendance.png')}
@@ -92,6 +91,9 @@ class ExamScheduleComponent extends Component<ExamScheduleProps> {
         keyExtractor={(item) => item.id}
         renderItem={this.renderItem}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
+        removeClippedSubviews={false}
+        initialNumToRender={10}
       />
     );
   }

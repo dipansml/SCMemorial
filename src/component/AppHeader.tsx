@@ -72,8 +72,6 @@ export default AppHeader;
 
 const styles = StyleSheet.create({
   container: {
-    height: Platform.OS === 'android' ? 80 : 60,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     backgroundColor: Colors.NavBarHeader_color,
     flexDirection: 'row',
     alignItems: 'center',

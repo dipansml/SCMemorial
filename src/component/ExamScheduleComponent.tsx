@@ -62,14 +62,14 @@ class ExamScheduleComponent extends Component<ExamScheduleProps> {
             </View>
 
             {/* <Text style={styles.meta}>{item.time}</Text> */}
-            <View style={styles.rowTextIcon}>
-                <Image
-                    source={require('../assets/images/icons/clock.png')}
-                    style={[styles.iconSmall, { marginRight: 2 }]}
-                    resizeMode="contain"
-                  />
-                  <Text style={styles.meta}>{item.time}</Text>
-            </View>
+           <View style={styles.rowTextIcon}>
+          <Image
+            source={require('../assets/images/icons/clock.png')}
+            style={styles.iconSmall}
+            resizeMode="contain"
+          />
+          <Text style={styles.meta}>{item.time}</Text>
+        </View>
           </View>
 
           <View style={[styles.status, { backgroundColor: statusStyle.backgroundColor }]}>
@@ -152,5 +152,6 @@ iconSmall: {
     width: 12,
     height: 12,
     tintColor: Colors.text_hint,
+    marginTop: 4,
 },  
 });

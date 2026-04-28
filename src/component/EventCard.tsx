@@ -27,36 +27,6 @@ const EventCard = ({ title, date, time, status }: Props) => {
   const statusStyle = getStatusStyle();
 
   return (
-    // <View style={styles.card}>
-    //  <View style={styles.iconBack}>
-    //   <Image
-    //     source={require('../assets/images/icons/event.png')}
-    //     style={styles.icon}
-    //   />
-    //   </View>
-
-    //   <View style={styles.details}>
-    //     <View style={styles.topRow}>
-    //       <Text style={styles.title} numberOfLines={1}>
-    //         {title}
-    //       </Text>
-
-    //       <View style={[styles.badge, { backgroundColor: statusStyle.backgroundColor }]}>
-    //         <Text style={[styles.badgeText, { color: statusStyle.color }]}>
-    //           {status}
-    //         </Text>
-    //       </View>
-    //     </View>
-
-    //     <Text style={styles.date}>{date}</Text>
-    //     <Text style={styles.time}>{time}</Text>
-
-    //     <TouchableOpacity>
-    //       <Text style={styles.link}>Details ↗</Text>
-    //     </TouchableOpacity>
-    //   </View>
-    // </View>
-
       <View style={styles.card}>
             <View style={styles.row}>
               <View style={styles.icon}>
@@ -155,6 +125,7 @@ iconSmall: {
     width: 12,
     height: 12,
     tintColor: Colors.text_hint,
+    marginTop: 4,
 },  
 link: {
     fontSize: FontSize.small,

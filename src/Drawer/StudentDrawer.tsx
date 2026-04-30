@@ -44,15 +44,9 @@ const menuItems: MenuItem[] = [
   },
   {
     key: 'Fees',
-    label: 'Fees Overview',
+    label: 'Fee Payment & Payment History',
     route: 'Fees',
-    icon: require('../assets/images/icons/fees_overview.png'),
-  },
-  {
-    key: 'PaymentHistory',
-    label: 'Payment History',
-    route: 'PaymentHistory',
-    icon: require('../assets/images/icons/payment.png'),
+    icon: require('../assets/images/icons/fees.png'),
   },
   {
     key: 'events',
@@ -73,10 +67,10 @@ const menuItems: MenuItem[] = [
     icon: require('../assets/images/icons/homework.png'),
   },
   {
-    key: 'library',
+    key: 'Library',
     label: 'Library',
     route: 'Library',
-    icon: require('../assets/images/icons/book.png'),
+    icon: require('../assets/images/icons/library.png'),
   },
   {
     key: 'messages',

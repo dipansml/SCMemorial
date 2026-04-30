@@ -43,6 +43,9 @@ export const card ={
   border_radius_card_small: 8,
   border_radius_profile: 20,
   padding : 16,
+  padding_samll: 8,
+  padding_card_medium: 12,
+  margin_bottom: 12,
 
 };
 

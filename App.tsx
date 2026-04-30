@@ -18,6 +18,12 @@ import Homework from './src/screens/Homework';
 import Messages from './src/screens/Messages';
 import LandingParents from './src/screens/LandingParents';
 import ParentDrawer from './src/Drawer/ParentDrawer';
+import Library from './src/screens/Library';
+import AllBooksScreen from './src/screens/AllBooksScreen';
+import DueBooksScreen from './src/screens/DueBooksScreen';
+import ReturnBookScreen from './src/screens/ReturnBookScreen';
+import IssueBookScreen from './src/screens/IssueBookScreen';
+import PaymentHistory from './src/screens/PaymentHistory';
 
 enableScreens();
 
@@ -33,6 +39,8 @@ export type RootStackParamList = {
   Events: undefined;
   Homework: undefined;
   Messages: undefined;
+  Library: undefined;
+  PaymentHistory: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -62,6 +70,9 @@ const App = () => {
             <Stack.Screen name="Events" component={Events}  options={{ headerShown: false }} />
             <Stack.Screen name="Homework" component={Homework}  options={{ headerShown: false }} />
             <Stack.Screen name="Messages" component={Messages}  options={{ headerShown: false }} />
+            <Stack.Screen name="Library" component={Library}  options={{ headerShown: false }} />
+            <Stack.Screen name="PaymentHistory" component={PaymentHistory}  options={{ headerShown: false }} />
+          
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

@@ -22,10 +22,12 @@ const Colors = {
   transparent: '#00000000',
   text_orange: '#F87C63',
   orange: '#F87C63',
+  orange_dark: '#FD7D02',
   check_box: '#7393B333',
   NavBarHeader_color: "#0C83FF",
   light_orange: '#FFDAD3',
   light_green: '#86F898',
+  dark_green:'#089B60',
   light_red: '#FFDAD6',
   light_gray: '#EBEEF4',
   present: '#DCFCE7',
@@ -40,7 +42,8 @@ const Colors = {
   yellow: '#FFDFA0',
   instruction_box : '#F9F1E2',
   instruction_text : '#6A4300',
-
+  red: '#EA2932',
+  tab_icon_back: '#E3ECFE',
 };
 
 export default Colors;

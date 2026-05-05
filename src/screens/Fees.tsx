@@ -14,6 +14,10 @@ import { card, FontFamily, FontSize, iconBox } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
 import { CommonStyles } from '../style/CommonStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
+import FeePayment from './FeesPayment';
 // types
 type FeeItem = {
   id: string;
@@ -23,9 +27,15 @@ type FeeItem = {
   status: 'Paid' | 'Unpaid' | 'Pending';
 };
 
-const Fees = () => {
-  const [feesData, setFeesData] = useState<FeeItem[]>([]);
+type FeesProps = {
+      navigation: NativeStackNavigationProp<
+        RootStackParamList
+      >;
+    };
 
+const Fees = ({ navigation }: FeesProps) => {
+  const [feesData, setFeesData] = useState<FeeItem[]>([]);
+   
   useEffect(() => {
     // simulate API
     const data: FeeItem[] = [
@@ -96,7 +106,9 @@ const Fees = () => {
             {/* 📋 CHILD COMPONENT (FlatList) */}
             <FeesBreakdownComponent data={feesData} />
         </View>
-        <TouchableOpacity  style={[CommonStyles.button, {marginBottom: 20}]}>    
+        <TouchableOpacity  
+            style={[CommonStyles.button, {marginBottom: 20}]}
+            onPress={() => navigation.navigate('FeePayment')}>    
             <Text style={CommonStyles.buttonText}>Pay Now</Text>
          </TouchableOpacity>
       </ScrollView>

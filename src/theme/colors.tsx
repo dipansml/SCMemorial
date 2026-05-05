@@ -10,8 +10,10 @@ const Colors = {
   text_theme: '#0C83FF',
   theme_color: '#0C83FF',
   button_text: '#FFFFFF',
+  button_text_dark: '#1E1C1D',
   inactive_text: '#1E1C1D',
   button_color: "#0C83FF",
+  button_color_light: "#E6E8EA",
   white: "#FFFFFF",
   toggleContainer: '#7393B31A',
   inputBackground: '#7393B31A',
@@ -44,6 +46,7 @@ const Colors = {
   instruction_text : '#6A4300',
   red: '#EA2932',
   tab_icon_back: '#E3ECFE',
+  button_text_inactive: '#1E1C1D80',
 };
 
 export default Colors;

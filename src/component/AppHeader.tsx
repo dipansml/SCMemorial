@@ -15,6 +15,7 @@ import { FontFamily, FontSize, Header } from '../theme/fonts_dimen';
 
 type Props = {
   title: string;
+  showBack?: boolean;
   onMenuPress?: () => void;
   onBellPress?: () => void;
   onProfilePress?: () => void;
@@ -22,6 +23,7 @@ type Props = {
 
 const AppHeader = ({
   title,
+  showBack,
   onMenuPress,
   onBellPress,
   onProfilePress,
@@ -33,8 +35,12 @@ const AppHeader = ({
       <View style={styles.left}>
         <TouchableOpacity onPress={onMenuPress}>
           <Image
-            source={require('../assets/images/SideMenu.png')}
-            style={styles.menuImage}
+            source={
+            showBack
+              ? require('../assets/images/icons/back.png')   
+              : require('../assets/images/SideMenu.png')
+            }
+            style={[styles.menuImage, showBack && { width: 18, height: 18 }]}
           />
         </TouchableOpacity>
 

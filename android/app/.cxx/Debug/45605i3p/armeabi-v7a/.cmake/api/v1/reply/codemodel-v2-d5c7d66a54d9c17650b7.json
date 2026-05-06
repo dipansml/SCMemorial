@@ -13,8 +13,7 @@
 						3,
 						4,
 						5,
-						6,
-						7
+						6
 					],
 					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
@@ -85,7 +84,7 @@
 					"source" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-safe-area-context/android/src/main/jni",
 					"targetIndexes" : 
 					[
-						7
+						6
 					]
 				},
 				{
@@ -104,21 +103,6 @@
 					]
 				},
 				{
-					"build" : "rnsvg_autolinked_build",
-					"jsonFile" : "directory-rnsvg_autolinked_build-Debug-e37a2001aa35c9c79667.json",
-					"minimumCMakeVersion" : 
-					{
-						"string" : "3.13"
-					},
-					"parentIndex" : 0,
-					"projectIndex" : 0,
-					"source" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-svg/android/src/main/jni",
-					"targetIndexes" : 
-					[
-						5
-					]
-				},
-				{
 					"build" : "rnworklets_autolinked_build",
 					"jsonFile" : "directory-rnworklets_autolinked_build-Debug-330e6aa489aa995825e1.json",
 					"minimumCMakeVersion" : 
@@ -130,7 +114,7 @@
 					"source" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-worklets/android/build/generated/source/codegen/jni",
 					"targetIndexes" : 
 					[
-						6
+						5
 					]
 				}
 			],
@@ -146,8 +130,7 @@
 						3,
 						4,
 						5,
-						6,
-						7
+						6
 					],
 					"name" : "appmodules",
 					"targetIndexes" : 
@@ -158,8 +141,7 @@
 						3,
 						4,
 						5,
-						6,
-						7
+						6
 					]
 				}
 			],
@@ -168,56 +150,49 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appmodules::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appmodules-Debug-23cca8a73fd2729556ba.json",
+					"jsonFile" : "target-appmodules-Debug-6af943d1c38b808c0c89.json",
 					"name" : "appmodules",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "react_codegen_AsyncStorageSpec::@15af80695a6281ecf900",
-					"jsonFile" : "target-react_codegen_AsyncStorageSpec-Debug-dedea3d706b62c2b31db.json",
+					"jsonFile" : "target-react_codegen_AsyncStorageSpec-Debug-4ea1231165874061539a.json",
 					"name" : "react_codegen_AsyncStorageSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec",
-					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-Debug-03e870c518334c7b6a16.json",
+					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-Debug-c8d1924cf10d9e7cb943.json",
 					"name" : "react_codegen_rngesturehandler_codegen",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 3,
 					"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a",
-					"jsonFile" : "target-react_codegen_rnreanimated-Debug-2c50428abc032ab54e01.json",
+					"jsonFile" : "target-react_codegen_rnreanimated-Debug-fd0c73bc4aba5ee443b5.json",
 					"name" : "react_codegen_rnreanimated",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 5,
 					"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad",
-					"jsonFile" : "target-react_codegen_rnscreens-Debug-947a71aa82e4175f42f3.json",
+					"jsonFile" : "target-react_codegen_rnscreens-Debug-24525d47df2492347b29.json",
 					"name" : "react_codegen_rnscreens",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 6,
-					"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65",
-					"jsonFile" : "target-react_codegen_rnsvg-Debug-473ab1a5738c96f2d2f5.json",
-					"name" : "react_codegen_rnsvg",
-					"projectIndex" : 0
-				},
-				{
-					"directoryIndex" : 7,
 					"id" : "react_codegen_rnworklets::@68f58d84d4754f193387",
-					"jsonFile" : "target-react_codegen_rnworklets-Debug-747ffe9f78a75c772c75.json",
+					"jsonFile" : "target-react_codegen_rnworklets-Debug-d014038131df2566430d.json",
 					"name" : "react_codegen_rnworklets",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 4,
 					"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a",
-					"jsonFile" : "target-react_codegen_safeareacontext-Debug-0f133c995696082ae302.json",
+					"jsonFile" : "target-react_codegen_safeareacontext-Debug-77b35eb5696c4ae6302b.json",
 					"name" : "react_codegen_safeareacontext",
 					"projectIndex" : 0
 				}
@@ -227,7 +202,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a",
+		"build" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/armeabi-v7a",
 		"source" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
 	},
 	"version" : 

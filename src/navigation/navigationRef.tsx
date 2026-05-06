@@ -1,12 +1,17 @@
 import { createNavigationContainerRef } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/native';
 import type { RootStackParamList } from '../../App';
+import StorageManager from '../services/StorageManager';
 
 export const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
-export function openParentDrawer() {
+export async function openParentDrawer() {
   if (navigationRef.isReady()) {
-    navigationRef.dispatch(StackActions.push('ParentDrawer'));
-    //navigationRef.dispatch(StackActions.push('StudentDrawer'));
+    const userDetail = await StorageManager.getUser();
+    if (userDetail?.user_role === 'Student') {
+      navigationRef.dispatch(StackActions.push('StudentDrawer'));
+    } else{
+      navigationRef.dispatch(StackActions.push('ParentDrawer'));
+    }
   }
 }

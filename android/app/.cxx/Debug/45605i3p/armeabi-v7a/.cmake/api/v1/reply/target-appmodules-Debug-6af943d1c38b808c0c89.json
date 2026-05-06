@@ -254,26 +254,6 @@
 				},
 				{
 					"backtrace" : 4,
-					"path" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-svg/android/src/main/jni/."
-				},
-				{
-					"backtrace" : 4,
-					"path" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-svg/android/src/main/jni/../../../../common/cpp"
-				},
-				{
-					"backtrace" : 4,
-					"path" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni"
-				},
-				{
-					"backtrace" : 4,
-					"path" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg"
-				},
-				{
-					"backtrace" : 4,
-					"path" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-svg/android/src/main/jni"
-				},
-				{
-					"backtrace" : 4,
 					"path" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/."
 				},
 				{
@@ -332,10 +312,6 @@
 		},
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65"
-		},
-		{
-			"backtrace" : 4,
 			"id" : "react_codegen_rnworklets::@68f58d84d4754f193387"
 		}
 	],
@@ -356,11 +332,6 @@
 			{
 				"backtrace" : 4,
 				"fragment" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/build/intermediates/cxx/Debug/45605i3p/obj/armeabi-v7a/libreact_codegen_rnscreens.so",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 4,
-				"fragment" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/build/intermediates/cxx/Debug/45605i3p/obj/armeabi-v7a/libreact_codegen_rnsvg.so",
 				"role" : "libraries"
 			},
 			{

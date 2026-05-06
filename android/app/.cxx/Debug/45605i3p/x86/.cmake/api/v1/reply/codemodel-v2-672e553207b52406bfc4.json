@@ -13,8 +13,7 @@
 						3,
 						4,
 						5,
-						6,
-						7
+						6
 					],
 					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
@@ -85,7 +84,7 @@
 					"source" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-safe-area-context/android/src/main/jni",
 					"targetIndexes" : 
 					[
-						7
+						6
 					]
 				},
 				{
@@ -104,21 +103,6 @@
 					]
 				},
 				{
-					"build" : "rnsvg_autolinked_build",
-					"jsonFile" : "directory-rnsvg_autolinked_build-Debug-e37a2001aa35c9c79667.json",
-					"minimumCMakeVersion" : 
-					{
-						"string" : "3.13"
-					},
-					"parentIndex" : 0,
-					"projectIndex" : 0,
-					"source" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-svg/android/src/main/jni",
-					"targetIndexes" : 
-					[
-						5
-					]
-				},
-				{
 					"build" : "rnworklets_autolinked_build",
 					"jsonFile" : "directory-rnworklets_autolinked_build-Debug-330e6aa489aa995825e1.json",
 					"minimumCMakeVersion" : 
@@ -130,7 +114,7 @@
 					"source" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native-worklets/android/build/generated/source/codegen/jni",
 					"targetIndexes" : 
 					[
-						6
+						5
 					]
 				}
 			],
@@ -146,8 +130,7 @@
 						3,
 						4,
 						5,
-						6,
-						7
+						6
 					],
 					"name" : "appmodules",
 					"targetIndexes" : 
@@ -158,8 +141,7 @@
 						3,
 						4,
 						5,
-						6,
-						7
+						6
 					]
 				}
 			],
@@ -168,7 +150,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appmodules::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appmodules-Debug-6853d888bcfda35efacc.json",
+					"jsonFile" : "target-appmodules-Debug-4117a3d4d9f7f660fc12.json",
 					"name" : "appmodules",
 					"projectIndex" : 0
 				},
@@ -202,13 +184,6 @@
 				},
 				{
 					"directoryIndex" : 6,
-					"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65",
-					"jsonFile" : "target-react_codegen_rnsvg-Debug-a76c2fd03df6371ee22e.json",
-					"name" : "react_codegen_rnsvg",
-					"projectIndex" : 0
-				},
-				{
-					"directoryIndex" : 7,
 					"id" : "react_codegen_rnworklets::@68f58d84d4754f193387",
 					"jsonFile" : "target-react_codegen_rnworklets-Debug-747ffe9f78a75c772c75.json",
 					"name" : "react_codegen_rnworklets",

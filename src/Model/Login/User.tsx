@@ -7,5 +7,6 @@ export interface User {
   dept_id: string;
   session_year_id: string;
   session_year_name: string;
+  user_role: string;
   user_details: UserDetails;
 }

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { User } from '../Model/Login/User';
 
 class StorageManager {
   // 🔑 Keys (centralized)
@@ -27,7 +28,7 @@ class StorageManager {
   }
 
   // ✅ Save User Object
-  static async setUser(user: any): Promise<void> {
+  static async setUser(user: User): Promise<void> {
     try {
       await AsyncStorage.setItem(
         this.KEYS.USER,
@@ -39,7 +40,7 @@ class StorageManager {
   }
 
   // ✅ Get User Object
-  static async getUser(): Promise<any | null> {
+  static async getUser(): Promise<User | null> {
     try {
       const data = await AsyncStorage.getItem(this.KEYS.USER);
       return data ? JSON.parse(data) : null;

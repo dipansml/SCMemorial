@@ -94,6 +94,10 @@ const callStudentLoginApi = async () => {
           await StorageManager.setToken(token);
       }
 
+      if (user) {
+          await StorageManager.setUser(user);
+      }
+
       // ✅ Navigate after success
       navigation.replace('LandingStudent');
 

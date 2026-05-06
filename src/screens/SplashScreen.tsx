@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { View, Image, StyleSheet, StatusBar } from 'react-native';
 import ImmersiveMode from 'react-native-immersive-mode';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import StorageManager from '../services/StorageManager';
 
 type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
+  LandingStudent: undefined;
 };
 
 type SplashProps = {
@@ -22,8 +24,14 @@ const SplashScreen = ({ navigation }: SplashProps) => {
     ImmersiveMode.fullLayout(true);
     ImmersiveMode.setBarMode('Full');
 
-    const timer = setTimeout(() => {
-      navigation.replace('Login');
+    console.log('Checking login status on Splash Screen...', StorageManager.isLoggedIn());
+
+    const timer = setTimeout(async () => {
+      if(await StorageManager.isLoggedIn()){
+        navigation.replace('LandingStudent');
+      } else {
+        navigation.replace('Login');
+      }
     }, 2000);
 
     return () => {

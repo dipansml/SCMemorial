@@ -50,7 +50,7 @@ class FeesBreakdownComponent extends Component<Props> {
       return require('../assets/images/icons/exam.png');
 
     case 'Library Fee':
-      return require('../assets/images/icons/library.png');
+      return require('../assets/images/icons/book.png');
 
     case 'Transport Fee':
       return require('../assets/images/icons/transport.png');

@@ -1,9 +1,15 @@
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/CMakeFiles/appmodules.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/CMakeFiles/edit_cache.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/CMakeFiles/rebuild_cache.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/AsyncStorageSpec_autolinked_build/CMakeFiles/edit_cache.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/AsyncStorageSpec_autolinked_build/CMakeFiles/rebuild_cache.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rngesturehandler_codegen_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rngesturehandler_codegen_autolinked_build/CMakeFiles/rebuild_cache.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnreanimated_autolinked_build/CMakeFiles/edit_cache.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnreanimated_autolinked_build/CMakeFiles/rebuild_cache.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/safeareacontext_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/safeareacontext_autolinked_build/CMakeFiles/rebuild_cache.dir
@@ -13,3 +19,6 @@
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnsvg_autolinked_build/CMakeFiles/react_codegen_rnsvg.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnsvg_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnsvg_autolinked_build/CMakeFiles/rebuild_cache.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnworklets_autolinked_build/CMakeFiles/edit_cache.dir
+/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnworklets_autolinked_build/CMakeFiles/rebuild_cache.dir

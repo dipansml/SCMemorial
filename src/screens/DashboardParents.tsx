@@ -16,8 +16,15 @@ import GroupedBarChart from '../component/GroupedBarChart';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackHandler } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { RootStackParamList } from '../../App';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const DashboardParents = () => {
+type DashboardParentsProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList>;
+};
+
+
+const DashboardParents = ({ navigation }: DashboardParentsProps) => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -50,7 +57,7 @@ const DashboardParents = () => {
         title="Dashboard"
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
-        onProfilePress={() => console.log('Profile')}
+        onProfilePress={() => navigation.replace('StudentSelection')}
       />
 
       <View style={styles.content}>

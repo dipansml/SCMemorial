@@ -18,6 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize, Header, Menu } from '../theme/fonts_dimen';
+import StorageManager from '../services/StorageManager';
 
 type DrawerNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -103,6 +104,11 @@ const ParentDrawer = () => {
   const currentRoute =
     state.routes[state.routes.length - 2]?.name || 'LandingParents';
 
+    const handleLogout = async () => {
+      await StorageManager.clearLoginData();
+      navigation.replace('Login')
+    };
+
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar
@@ -170,7 +176,7 @@ const ParentDrawer = () => {
                       styles.signOutContainer,
                       Platform.OS === 'android' && { marginBottom: 30},
                     ]}
-              onPress={() => navigation.replace('Login')}> 
+              onPress={handleLogout}> 
           <Image
             source={require('../assets/images/icons/logout.png')} // add logout icon
             style={styles.signOutIcon}

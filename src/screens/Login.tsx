@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -36,7 +36,7 @@ type RootStackParamList = {
     >;
   };
 
-const Login = ({ navigation }: LoginProps) =>  {
+const Login = ({ navigation }: LoginProps) => {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<'student' | 'parent'>('student');
   const [studentId, setStudentId] = useState('');
@@ -44,6 +44,7 @@ const Login = ({ navigation }: LoginProps) =>  {
   const [errors, setErrors] = useState<{ studentId?: string; password?: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
 
  const validateLogin = () => {
       const newErrors: { studentId?: string; password?: string } = {};
@@ -56,19 +57,15 @@ const Login = ({ navigation }: LoginProps) =>  {
 
   const handleLogin = async () => {
     if (!validateLogin()) return;
-    console.log('login click')
-    if (selected === 'parent') {
-      navigation.replace('StudentSelection');
-    } else {
-       callStudentLoginApi();
-    }
+    console.log('login click');
+    callLoginApi();
  }
 
  const forgotPassClick = () => {
   console.log("Forgot pass click")
 };
 
-const callStudentLoginApi = async () => {
+const callLoginApi = async () => {
   if (loading) return; // prevent multiple clicks
 
   setLoading(true);
@@ -77,6 +74,7 @@ const callStudentLoginApi = async () => {
     const res = await Api.studentLogin({
       username: studentId.trim(),
       password: password.trim(),
+      role: selected === 'student' ? 'Student' : 'Parent',
     });
 
     console.log('Login API Response:', res);
@@ -98,8 +96,32 @@ const callStudentLoginApi = async () => {
           await StorageManager.setUser(user);
       }
 
+      if (selected === 'student') {
+        if (rememberMe) {
+          await StorageManager.saveLoginDataStudent(studentId.trim(), password.trim(), rememberMe);
+        } else{
+          await StorageManager.removeLoginDataStudent();
+        }
+      } else {
+        if (rememberMe) {
+          await StorageManager.saveLoginDataParents(studentId.trim(), password.trim(), rememberMe);
+        } else{
+          await StorageManager.removeLoginDataParents();
+        }
+      }
+
+      await StorageManager.setRole(user.user_role);
+
+
       // ✅ Navigate after success
-      navigation.replace('LandingStudent');
+      if (user.user_role === 'Student') {
+        navigation.replace('LandingStudent');
+        await StorageManager.setStudentId(user.user_id);
+      } else {
+        navigation.replace('StudentSelection');
+        await StorageManager.setParentId(user.user_id);
+        await StorageManager.setStudentId("");
+      } 
 
     } else {
       // ❌ API returned failure
@@ -124,6 +146,43 @@ const callStudentLoginApi = async () => {
     setLoading(false);
   }
 };
+
+
+const loadLoginData = async (role?: 'student' | 'parent') => {
+  const target = role || selected;
+
+  if (target === 'student') {
+    const loginDataStudent = await StorageManager.getLoginDataStudent();
+    console.log('loginDataStudent', loginDataStudent);
+
+    if (loginDataStudent && loginDataStudent.rememberMe) {
+      setStudentId(loginDataStudent.username || '');
+      setPassword(loginDataStudent.password || '');
+      setRememberMe(true);
+    } else {
+      setStudentId('');
+      setPassword('');
+      setRememberMe(false);
+    }
+  } else {
+    const loginDataParent = await StorageManager.getLoginDataParents();
+    console.log('loginDataParent', loginDataParent);
+
+    if (loginDataParent && loginDataParent.rememberMe) {
+      setStudentId(loginDataParent.username || '');
+      setPassword(loginDataParent.password || '');
+      setRememberMe(true);
+    } else {
+      setStudentId('');
+      setPassword('');
+      setRememberMe(false);
+    }
+  }
+};
+
+useEffect(() => {
+  loadLoginData(selected);
+}, [selected]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -184,7 +243,7 @@ const callStudentLoginApi = async () => {
                         selected === 'parent' && styles.activeButton,
                         ]}
                         onPress={() => setSelected('parent')}
-                    >
+                      >
                       <View style={styles.row}>
                         <Image
                           source={require('../assets/images/parent.png')}
@@ -209,7 +268,9 @@ const callStudentLoginApi = async () => {
                       </View>
                     </TouchableOpacity>
                   </View>
-                    <Text style={styles.input_header}>Student ID</Text>
+                    <Text style={styles.input_header}>
+                      {selected === 'parent' ? 'Parent ID' : 'Student ID'}
+                    </Text>
                     <View style={styles.inputContainer}>
                         <View style={styles.inputWrapper}>
                           <Image

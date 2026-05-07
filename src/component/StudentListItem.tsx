@@ -1,143 +1,133 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from 'react-native';
-import { FontFamily, FontSize } from '../theme/fonts_dimen';
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+
+import {
+  FontFamily,
+  FontSize,
+} from '../theme/fonts_dimen';
+
 import Colors from '../theme/colors';
-
-export type StudentItemType = {
-  id: string;
-  title: string;
-  participants: string;
-  rollNo: string;
-  section: string;
-  image: any;
-};
-
-const DATA: StudentItemType[] = [
-  {
-    id: '1',
-    title: 'Anwesha Chakraborty',
-    participants: 'Class 12th Standard',
-    rollNo: '24',
-    section: 'B',
-    image: require('../assets/images/student1.png'),
-  },
-  {
-    id: '2',
-    title: 'Aritra Chakraborty',
-    participants: 'Class 12th Standard',
-    rollNo: '25',
-    section: 'B',
-    image: require('../assets/images/student2.png'),
-  },
-  {
-    id: '3',
-    title: 'Aritra Chakraborty',
-    participants: 'Class 12th Standard',
-    rollNo: '25',
-    section: 'B',
-    image: require('../assets/images/student2.png'),
-  },
-  {
-    id: '4',
-    title: 'Aritra Chakraborty',
-    participants: 'Class 12th Standard',
-    rollNo: '25',
-    section: 'B',
-    image: require('../assets/images/student2.png'),
-  },
-  {
-    id: '5',
-    title: 'Aritra Chakraborty',
-    participants: 'Class 12th Standard',
-    rollNo: '25',
-    section: 'B',
-    image: require('../assets/images/student2.png'),
-  },
-  {
-    id: '6',
-    title: 'Aritra Chakraborty',
-    participants: 'Class 12th Standard',
-    rollNo: '25',
-    section: 'B',
-    image: require('../assets/images/student2.png'),
-  },
-  {
-    id: '7',
-    title: 'Aritra Chakraborty',
-    participants: 'Class 12th Standard',
-    rollNo: '25',
-    section: 'B',
-    image: require('../assets/images/student2.png'),
-  },
-  {
-    id: '8',
-    title: 'Aritra Chakraborty',
-    participants: 'Class 12th Standard',
-    rollNo: '25',
-    section: 'B',
-    image: require('../assets/images/student2.png'),
-  },
-];
+import { Student } from '../Model/StudentList/Student';
 
 type Props = {
-  item: StudentItemType;
+  item: Student;
   index: number;
-  onPress?: (item: StudentItemType, index: number) => void;
+  onPress?: (
+    item: Student,
+    index: number
+  ) => void;
 };
 
-const Student: React.FC<Props> = ({ item, index, onPress }) => {
+const StudentItem: React.FC<Props> = ({
+  item,
+  index,
+  onPress,
+}) => {
+
   return (
+
     <TouchableOpacity
       style={styles.card}
-      onPress={() => onPress?.(item, index)}
+      onPress={() =>
+        onPress?.(item, index)
+      }
       activeOpacity={0.7}
     >
-      <Image source={item.image} style={styles.image} />
+
+      <Image
+          source={
+            item.gender === 'Male'
+              ? require('../assets/images/student1.png')
+              : require('../assets/images/student2.png')
+          }
+          style={styles.image}
+        />
 
       <View style={styles.info}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.subtitle}>{item.participants}</Text>
+
+        <Text style={styles.title}>
+          {item.first_name}
+        </Text>
+
+        <Text style={styles.subtitle}>
+          {item.class_name}
+        </Text>
 
         <View style={styles.tagContainer}>
+
           <View style={styles.rollTag}>
-            <Text style={styles.rollText}>ROLL NO. {item.rollNo}</Text>
+            <Text style={styles.rollText}>
+              ROLL NO. {item.roll_num || 'N/A'}
+            </Text>
           </View>
 
           <View style={styles.sectionTag}>
-            <Text style={styles.sectionText}>SECTION {item.section}</Text>
+            <Text style={styles.sectionText}>
+              SECTION {item.section_name || 'N/A'}
+            </Text>
           </View>
+
         </View>
+
       </View>
+
     </TouchableOpacity>
   );
 };
 
-const StudentListItem = ({ onItemPress } : any) => {
+type StudentListProps = {
+  data: Student[];
+  onItemPress?: (
+    item: Student,
+    index: number
+  ) => void;
+};
+
+const StudentListItem = ({
+  data,
+  onItemPress,
+}: StudentListProps) => {
+
   return (
+
     <FlatList
-      data={DATA}
-      keyExtractor={(item) => item.id}
+      data={data}
+      keyExtractor={(item) => item.user_id}
       renderItem={({ item, index }) => (
-        <Student 
+
+        <StudentItem
           item={item}
           index={index}
           onPress={onItemPress}
         />
+
       )}
-      scrollEnabled={true}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 30 }}
+      contentContainerStyle={{
+        paddingBottom: 30,
+      }}
     />
+
   );
 };
 
 export default StudentListItem;
 
 const styles = StyleSheet.create({
+
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.background_list_item,
+    backgroundColor:
+      Colors.background_list_item,
     padding: 16,
     borderRadius: 30,
     marginBottom: 10,
@@ -187,7 +177,8 @@ const styles = StyleSheet.create({
   },
 
   sectionTag: {
-    backgroundColor: Colors.inputBackground,
+    backgroundColor:
+      Colors.inputBackground,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 30,
@@ -198,4 +189,5 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontFamily: FontFamily.regular,
   },
+
 });

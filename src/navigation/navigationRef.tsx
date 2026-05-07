@@ -7,8 +7,7 @@ export const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 export async function openParentDrawer() {
   if (navigationRef.isReady()) {
-    const userDetail = await StorageManager.getUser();
-    if (userDetail?.user_role === 'Student') {
+    if (await StorageManager.isLoggedInStudent()) {
       navigationRef.dispatch(StackActions.push('StudentDrawer'));
     } else{
       navigationRef.dispatch(StackActions.push('ParentDrawer'));

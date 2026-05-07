@@ -8,6 +8,7 @@ type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   LandingStudent: undefined;
+  LandingParents: undefined;
 };
 
 type SplashProps = {
@@ -28,7 +29,12 @@ const SplashScreen = ({ navigation }: SplashProps) => {
 
     const timer = setTimeout(async () => {
       if(await StorageManager.isLoggedIn()){
-        navigation.replace('LandingStudent');
+        if(await StorageManager.getRole() === 'Student'){
+          navigation.replace('LandingStudent');
+        } else {
+          navigation.replace('LandingParents');
+        }
+        
       } else {
         navigation.replace('Login');
       }

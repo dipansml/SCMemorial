@@ -27,13 +27,13 @@ const AppHeader = ({
   onProfilePress,
 }: Props) => {
 
-  const [userDetail, setUserDetail] = useState<any>(null);
+  const [isStudentLoggedIn, setIsStudentLoggedIn] =
+  useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const user = await StorageManager.getUser();
-        setUserDetail(user);
+        setIsStudentLoggedIn(await StorageManager.isLoggedInStudent());
       } catch (error) {
         console.log('Error fetching user:', error);
       }
@@ -76,7 +76,7 @@ const AppHeader = ({
         </TouchableOpacity>
 
         {/* Profile (Hidden for Student) */}
-        {userDetail?.user_role !== 'Student' && (
+        {!isStudentLoggedIn&& (
           <TouchableOpacity onPress={onProfilePress}>
             <View style={styles.profileColumn}>
               <Image

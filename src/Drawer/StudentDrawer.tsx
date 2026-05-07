@@ -99,7 +99,7 @@ const StudentDrawer = () => {
     state.routes[state.routes.length - 2]?.name || 'LandingStudent';
 
     const handleLogout = async () => {
-      await StorageManager.clearAll();
+      await StorageManager.clearLoginData();
       navigation.replace('Login')
     };
 

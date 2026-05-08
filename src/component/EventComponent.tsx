@@ -5,10 +5,10 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
-import EventCard from './EventCard';
-import { card } from '../theme/fonts_dimen';
 
-type EventItem = {
+import EventCard from './EventCard';
+
+export type EventItem = {
   id: string;
   title: string;
   date: string;
@@ -18,16 +18,26 @@ type EventItem = {
 
 type Props = {
   data: EventItem[];
+
+  onItemPress?: (item: EventItem) => void;
 };
 
-const EventComponent = ({ data }: Props) => {
+const EventComponent = ({
+  data,
+  onItemPress,
+}: Props) => {
 
-  const renderItem = ({ item }: { item: EventItem }) => (
+  const renderItem = ({
+    item,
+  }: {
+    item: EventItem;
+  }) => (
     <EventCard
       title={item.title}
       date={item.date}
       time={item.time}
       status={item.status}
+      onPress={() => onItemPress?.(item)}
     />
   );
 
@@ -38,7 +48,9 @@ const EventComponent = ({ data }: Props) => {
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.list}
-      ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+      ItemSeparatorComponent={() => (
+        <View style={{ height: 10 }} />
+      )}
       ListEmptyComponent={() => (
         <View style={styles.empty}>
           <Text>No Events Found</Text>
@@ -55,8 +67,9 @@ export default EventComponent;
 
 const styles = StyleSheet.create({
   list: {
-    padding: 16
+    padding: 16,
   },
+
   empty: {
     alignItems: 'center',
   },

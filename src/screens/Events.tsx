@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import AppHeader from '../component/AppHeader';
-import EventComponent from '../component/EventComponent';
+import EventComponent, { EventItem } from '../component/EventComponent';
 import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Events = ({ navigation }: { navigation: any }) => {
-   const eventData = [
+   const eventData: EventItem[] = [
     {
       id: '1',
       title: 'Event 1',
@@ -55,7 +55,16 @@ const Events = ({ navigation }: { navigation: any }) => {
       />
 
       <View style={styles.content}>
-        <EventComponent data={eventData} />
+        <EventComponent 
+          data={eventData} 
+          onItemPress={(item) => {
+            console.log('Clicked Event:', item);
+
+            navigation.navigate('EventDetail', {
+              event: item,
+            });
+          }}
+        />
       </View>
 
     </SafeAreaView>

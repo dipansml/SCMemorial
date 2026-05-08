@@ -8,9 +8,10 @@ type Props = {
   date: string;
   time: string;
   status: 'Ongoing' | 'UpComing' | 'Past';
+  onPress?: () => void;
 };
 
-const EventCard = ({ title, date, time, status }: Props) => {
+const EventCard = ({ title, date, time, status, onPress }: Props) => {
   const getStatusStyle = () => {
     switch (status) {
       case 'Ongoing':
@@ -27,7 +28,7 @@ const EventCard = ({ title, date, time, status }: Props) => {
   const statusStyle = getStatusStyle();
 
   return (
-      <View style={styles.card}>
+      <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75}>
             <View style={styles.row}>
               <View style={styles.icon}>
                  <Image
@@ -60,17 +61,17 @@ const EventCard = ({ title, date, time, status }: Props) => {
               </View>
             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
               <View style={[styles.status, { backgroundColor: statusStyle.backgroundColor }]}>
-                <Text style={{ color: statusStyle.color, fontSize: FontSize.small, fontFamily: FontFamily.regular }}>
+                <Text style={{ color: Colors.textColorInpuHeader, fontSize: FontSize.small, fontFamily: FontFamily.medium }}>
                   {status}
                 </Text>
               </View>
-               <TouchableOpacity>
+               {/* <TouchableOpacity >
                     <Text style={styles.link}>Details ↗</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 </View>
             </View>
-          </View>
-  );
+          </TouchableOpacity>
+          );
 };
 
 export default EventCard;

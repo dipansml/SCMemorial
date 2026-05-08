@@ -16,7 +16,7 @@ import BookListComponent from '../component/BookListComponent';
 
 type TabType = 'All' | 'Issue' | 'Return' | 'Due';
 
-const Library = () => {
+const Library = ({ navigation }: { navigation: any }) => {
   const [activeTab, setActiveTab] = useState<TabType>('All');
 
   // ✅ Tabs
@@ -83,6 +83,7 @@ const Library = () => {
       <AppHeader
         title="Library"
         onMenuPress={openParentDrawer}
+        navigation={navigation}
       />
 
       {/* ✅ Tabs */}

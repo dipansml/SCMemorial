@@ -5,7 +5,7 @@ import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeworkComponent from '../component/HomeworkComponent';
 
-const Homework = () => {
+const Homework = ({ navigation }: { navigation: any }) => {
    const homeworkData = [
         { id: 'h1', type: 'header', title: 'Today' },
 
@@ -77,6 +77,7 @@ const Homework = () => {
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>

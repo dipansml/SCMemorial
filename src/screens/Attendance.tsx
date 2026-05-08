@@ -14,7 +14,7 @@ interface AttendanceItem {
   status: StatusType;
 }
 
-const Attendance = () => {
+const Attendance = ({ navigation }: { navigation: any }) => {
    const attendanceData: AttendanceItem[] = [
     { date: '2026-04-01', status: 'present' },
     { date: '2026-04-02', status: 'present' },
@@ -48,6 +48,7 @@ const Attendance = () => {
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
       <ScrollView
           contentContainerStyle={styles.scrollContent}

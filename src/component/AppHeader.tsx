@@ -10,6 +10,8 @@ import {
 import Colors from '../theme/colors';
 import { FontFamily, Header } from '../theme/fonts_dimen';
 import StorageManager from '../services/StorageManager';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 type Props = {
   title: string;
@@ -17,6 +19,7 @@ type Props = {
   onMenuPress?: () => void;
   onBellPress?: () => void;
   onProfilePress?: () => void;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
 const AppHeader = ({
@@ -25,6 +28,7 @@ const AppHeader = ({
   onMenuPress,
   onBellPress,
   onProfilePress,
+  navigation
 }: Props) => {
 
   const [isStudentLoggedIn, setIsStudentLoggedIn] =
@@ -77,7 +81,9 @@ const AppHeader = ({
 
         {/* Profile (Hidden for Student) */}
         {!isStudentLoggedIn&& (
-          <TouchableOpacity onPress={onProfilePress}>
+          // <TouchableOpacity onPress={onProfilePress}>
+          <TouchableOpacity 
+            onPress={() => navigation.replace('StudentSelection')}>
             <View style={styles.profileColumn}>
               <Image
                 source={require('../assets/images/student1.png')}

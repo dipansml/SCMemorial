@@ -21,7 +21,7 @@ const tabs = ['All', 'Online', 'Offline'] as const;
 type TabType = typeof tabs[number];
 
   
-const PaymentHistory = () => {
+const PaymentHistory = ({ navigation }: { navigation: any }) => {
 const [activeTab, setActiveTab] = useState<TabType>('All');
 
   // ✅ Data (typed properly)
@@ -67,6 +67,7 @@ const [activeTab, setActiveTab] = useState<TabType>('All');
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>

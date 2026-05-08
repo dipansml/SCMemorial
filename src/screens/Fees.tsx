@@ -57,6 +57,7 @@ const Fees = ({ navigation }: FeesProps) => {
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={{flexGrow: 1}}>

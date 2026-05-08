@@ -4,7 +4,7 @@ import AppHeader from '../component/AppHeader';
 import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const DueBooksScreen = () => {
+const DueBooksScreen = ({ navigation }: { navigation: any }) => {
   return (
     <SafeAreaView style={styles.container}>
       
@@ -12,6 +12,7 @@ const DueBooksScreen = () => {
         title="Due Books"
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>

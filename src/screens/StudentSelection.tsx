@@ -18,7 +18,6 @@ import {
 import StudentListItem from '../component/StudentListItem';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import type { RootStackParamList } from '../../App';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,7 +25,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Api } from '../services/Api';
 import { StudentListResponse } from '../Model/StudentList/StudentListResponse';
 import { Student } from '../Model/StudentList/Student';
-import StorageManager from '../services/StorageManager'; 
+import StorageManager from '../services/StorageManager';
 
 type StudentSelectionProps = {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -35,60 +34,38 @@ type StudentSelectionProps = {
 const StudentSelection = ({
   navigation,
 }: StudentSelectionProps) => {
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] = useState(false);
-
-  const [studentList, setStudentList] =
-    useState<Student[]>([]);
+  const [studentList, setStudentList] = useState<Student[]>([]);
 
   useEffect(() => {
     loadStudentList();
   }, []);
 
   const loadStudentList = async () => {
-
     try {
-
       setLoading(true);
 
       const response: StudentListResponse =
         await Api.getStudentList();
 
-      console.log(
-        'Student List Response:',
-        response
-      );
+      console.log('Student List Response:', response);
 
-      if (
-        response &&
-        response.status === 200
-      ) {
-
-        setStudentList(
-          response.data.student_list || []
-        );
-
+      if (response && response.status === 200) {
+        setStudentList(response.data.student_list || []);
       } else {
-
         Alert.alert(
           'Error',
-          response.message ||
-            'Failed to load students'
+          response.message || 'Failed to load students',
         );
       }
-
     } catch (error: any) {
-
-      console.log(
-        'Student List Error:',
-        error
-      );
+      console.log('Student List Error:', error);
 
       Alert.alert(
         'Error',
-        'Something went wrong'
+        'Something went wrong',
       );
-
     } finally {
       setLoading(false);
     }
@@ -96,7 +73,6 @@ const StudentSelection = ({
 
   return (
     <SafeAreaView style={styles.container}>
-
       <View style={styles.header}>
         <Text style={styles.headerTitle}>
           Select Student
@@ -104,47 +80,45 @@ const StudentSelection = ({
       </View>
 
       <View style={styles.content}>
-
         {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator
+              size="large"
+              color={Colors.button_color}
+            />
 
-          <ActivityIndicator
-            size="large"
-            color={Colors.button_color}
-          />
-
+            <Text style={styles.loadingText}>
+              Loading Students...
+            </Text>
+          </View>
         ) : (
-
           <View style={styles.list}>
-
             <StudentListItem
               data={studentList}
               onItemPress={async (
                 item: Student,
-                index: number
+                index: number,
               ) => {
+                console.log('Clicked index:', index);
 
-                console.log(
-                  'Clicked index:',
-                  index
+                console.log('Item:', item);
+
+                setLoading(true);
+
+                await StorageManager.setStudentId(
+                  item.user_id,
                 );
 
-                console.log(
-                  'Item:',
-                  item
-                );
-                await StorageManager.setStudentId(item.user_id);
+                setLoading(false);
+
                 navigation.replace(
-                  'LandingParents'
+                  'LandingParents',
                 );
               }}
             />
-
           </View>
-
         )}
-
       </View>
-
     </SafeAreaView>
   );
 };
@@ -164,8 +138,7 @@ const styles = StyleSheet.create({
 
   header: {
     height: Header.height,
-    backgroundColor:
-      Colors.NavBarHeader_color,
+    backgroundColor: Colors.NavBarHeader_color,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -180,7 +153,19 @@ const styles = StyleSheet.create({
   },
 
   list: {
-    padding: 0,
     flex: 1,
+  },
+
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  loadingText: {
+    marginTop: 12,
+    fontSize: FontSize.medium,
+    color: Colors.textColorInpuHeader,
+    fontFamily: FontFamily.medium,
   },
 });

@@ -14,8 +14,7 @@ import { card, FontFamily, FontSize } from '../theme/fonts_dimen';
 import { CommonStyles } from '../style/CommonStyles';
 
 
-const FeePayment = () => {
-const navigation = useNavigation();
+const FeePayment = ({ navigation }: { navigation: any }) => {
 const [selectedAmount, setSelectedAmount] = useState('full');
 const [paymentMode, setPaymentMode] = useState('online');
   return (
@@ -27,6 +26,7 @@ const [paymentMode, setPaymentMode] = useState('online');
         onMenuPress={() => navigation.goBack()}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>

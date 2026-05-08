@@ -57,7 +57,8 @@ const DashboardParents = ({ navigation }: DashboardParentsProps) => {
         title="Dashboard"
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
-        onProfilePress={() => navigation.replace('StudentSelection')}
+        navigation={navigation}
+        //onProfilePress={() => navigation.replace('StudentSelection')}
       />
 
       <View style={styles.content}>

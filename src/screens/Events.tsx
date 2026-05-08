@@ -5,7 +5,7 @@ import EventComponent from '../component/EventComponent';
 import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const Events = () => {
+const Events = ({ navigation }: { navigation: any }) => {
    const eventData = [
     {
       id: '1',
@@ -51,6 +51,7 @@ const Events = () => {
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>

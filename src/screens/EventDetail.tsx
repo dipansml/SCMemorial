@@ -41,7 +41,7 @@ const EventDetail = ({ navigation }: { navigation: any }) => {
 
             <View style={styles.dateRow}> 
                 <Image
-                    source={require('../assets/images/icons/clock.png')}
+                    source={require('../assets/images/icons/attendance.png')}
                     style={styles.smallIcon}
                     resizeMode="contain"/>
 
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.large,
     color: Colors.textColorInpuHeader,
     fontFamily: FontFamily.bold,
-    marginBottom: 6,
+    marginBottom: 2,
   },
 
   dateRow: {
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.regular,
     fontFamily: FontFamily.medium,
     color: Colors.textColorInpuHeader,
-    marginBottom: 4,
+    marginBottom: 2,
   },
 
   infoSubtitle: {
@@ -230,8 +230,7 @@ const styles = StyleSheet.create({
   aboutCard: {
     backgroundColor: Colors.background_list_item,
     borderRadius: card.border_radius_card,
-    padding: 16,
-    marginTop: 2,
+    padding: card.padding,
   },
 
   aboutTitle: {
@@ -246,11 +245,11 @@ const styles = StyleSheet.create({
     color: Colors.text_light,
     fontFamily: FontFamily.regular,
     lineHeight: 20,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   smallIcon: {
-    width: 10,
-    height: 10,
+    width: 14,
+    height: 14,
     marginRight: 3,
     tintColor: Colors.text_light,
   },

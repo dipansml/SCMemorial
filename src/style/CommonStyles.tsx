@@ -58,4 +58,18 @@ buttonGray: {
     fontFamily: FontFamily.regular,
     color: Colors.textColorInpuHeader,
 },
+loaderOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: Colors.loaderBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+
+  loaderText: {
+    marginTop: 12,
+    color: Colors.loaderText,
+    fontSize: FontSize.medium,
+    fontFamily: FontFamily.medium,
+  },
 });

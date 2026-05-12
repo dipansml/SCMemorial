@@ -5,18 +5,133 @@ import { View,
   TouchableOpacity,
   TextInput,
   Image,
-  ScrollView,} from 'react-native';
+  ScrollView,
+  Platform,
+  PermissionsAndroid,
+  Alert,} from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Colors from '../theme/colors';
 import { card, FontFamily, FontSize } from '../theme/fonts_dimen';
 import { CommonStyles } from '../style/CommonStyles';
+import {
+  launchCamera,
+  launchImageLibrary,
+  CameraOptions,
+  ImageLibraryOptions,
+} from 'react-native-image-picker';
+import { RouteProp } from '@react-navigation/native';
 
+type FeePaymentRouteProp = RouteProp<
+  {
+    FeePayment: {
+      outstanding_amount: string;
+    };
+  },
+  'FeePayment'
+>;
 
-const FeePayment = ({ navigation }: { navigation: any }) => {
+type Props = {
+  navigation: any;
+  route: FeePaymentRouteProp;
+};
+
+const FeePayment = ({ navigation, route }: Props) => {
 const [selectedAmount, setSelectedAmount] = useState('full');
 const [paymentMode, setPaymentMode] = useState('online');
+const [receiptImage, setReceiptImage] = useState<string | null>(null);
+const { outstanding_amount } = route.params;
+
+ const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'App needs camera permission',
+          buttonPositive: 'OK',
+        },
+      );
+
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    }
+
+    return true;
+  };
+
+  const openCamera = async () => {
+    const hasPermission = await requestCameraPermission();
+
+    if (!hasPermission) {
+      Alert.alert('Permission denied');
+      return;
+    }
+
+    const options: CameraOptions = {
+      mediaType: 'photo',
+      cameraType: 'back',
+      quality: 0.8,
+      saveToPhotos: true,
+    };
+
+    launchCamera(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled camera');
+      } else if (response.errorCode) {
+        console.log('Camera Error: ', response.errorMessage);
+      } else {
+        console.log('Camera Image:', response.assets);
+        if (response.assets && response.assets.length > 0) {
+          setReceiptImage(response.assets[0].uri || null);
+        }
+      }
+    });
+  };
+
+  const openGallery = () => {
+    const options: ImageLibraryOptions = {
+      mediaType: 'photo',
+      quality: 0.8,
+      selectionLimit: 1,
+    };
+
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled gallery');
+      } else if (response.errorCode) {
+        console.log('Gallery Error: ', response.errorMessage);
+      } else {
+        console.log('Gallery Image:', response.assets);
+        if (response.assets && response.assets.length > 0) {
+          setReceiptImage(response.assets[0].uri || null);
+        }
+      }
+    });
+  };
+
+  const showImagePicker = () => {
+    Alert.alert(
+      'Upload Receipt',
+      'Choose an option',
+      [
+        {
+          text: 'Camera',
+          onPress: openCamera,
+        },
+        {
+          text: 'Gallery',
+          onPress: openGallery,
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true },
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       
@@ -40,7 +155,7 @@ const [paymentMode, setPaymentMode] = useState('online');
                 >
                 <View>
                     <Text style={styles.title}>Pay Full Amount</Text>
-                    <Text style={styles.amount}>₹5,500.00</Text>
+                    <Text style={styles.amount}>₹{outstanding_amount}</Text>
                 </View>
                 <View style={[styles.radio, selectedAmount === 'full' && styles.radioActive]} />
             </TouchableOpacity>
@@ -127,7 +242,7 @@ const [paymentMode, setPaymentMode] = useState('online');
                 <View style={styles.rowCard}>
                     <View style={styles.iconBack}>
                         <Image
-                            source={require('../assets/images/icons/attendance.png')}
+                            source={require('../assets/images/icons/qr_icon.png')}
                             style={styles.icon}
                             resizeMode="contain"/>
                     </View>
@@ -144,7 +259,7 @@ const [paymentMode, setPaymentMode] = useState('online');
                <View style={styles.rowCard}>
                     <View style={styles.iconBack}>
                         <Image
-                            source={require('../assets/images/icons/attendance.png')}
+                            source={require('../assets/images/icons/online_banking.png')}
                             style={styles.icon}
                             resizeMode="contain"/>
                     </View>
@@ -186,12 +301,14 @@ const [paymentMode, setPaymentMode] = useState('online');
                 </View>
                 </View>
 
-                <TouchableOpacity style={styles.uploadBox}>
+                <TouchableOpacity 
+                  style={styles.uploadBox}
+                  onPress={showImagePicker}>
                      <Image
-                        source={require('../assets/images/icons/upload.png')}
-                        style={styles.iconLarge}
-                        resizeMode="contain"/>
-                    <Text style={styles.labelDarkLarge}>Upload Receipt Photo</Text>
+                        source={receiptImage ? { uri: receiptImage } : require('../assets/images/icons/upload.png')}
+                        style={receiptImage ? styles.receiptImage : styles.iconLarge}
+                        resizeMode="cover"/>
+                    {!receiptImage && <Text style={styles.labelDarkLarge}>Upload Receipt Photo</Text>}
                 </TouchableOpacity>
             </View>
             </>
@@ -388,5 +505,10 @@ columnCard: {
     marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  receiptImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: card.border_radius_card_medium,
   },
 });

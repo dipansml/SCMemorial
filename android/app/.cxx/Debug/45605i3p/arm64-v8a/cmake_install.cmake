@@ -46,6 +46,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/AsyncStorageSpec_autolinked_build/cmake_install.cmake")
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rngesturehandler_codegen_autolinked_build/cmake_install.cmake")
+  include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/RNImagePickerSpec_autolinked_build/cmake_install.cmake")
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnreanimated_autolinked_build/cmake_install.cmake")
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/safeareacontext_autolinked_build/cmake_install.cmake")
   include("/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/arm64-v8a/rnscreens_autolinked_build/cmake_install.cmake")

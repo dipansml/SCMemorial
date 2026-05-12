@@ -186,6 +186,7 @@ useEffect(() => {
 
   return (
     <SafeAreaView style={styles.screen}>
+      <FullScreenLoader visible={loading} />
       <View style={styles.content}>
          <ImageBackground
             source={require('../assets/images/login_top.png')} 
@@ -202,7 +203,6 @@ useEffect(() => {
               <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}>
-              <FullScreenLoader visible={loading} />
               <Text style={styles.title}>Welcome Back</Text>
               <Text style={styles.title_normal}>Please select your account type to continue.</Text>
               <View style={styles.toggleContainer}>
@@ -423,15 +423,11 @@ const styles = StyleSheet.create({
     height: 150,
 },
 loaderOverlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.25)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 999,
+  ...StyleSheet.absoluteFill,
+  backgroundColor: 'rgba(0,0,0,0.25)',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 999,
 },
  
 loaderText: {

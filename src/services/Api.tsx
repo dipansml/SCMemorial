@@ -1,5 +1,7 @@
 import { StudentExamResponse } from '../Model/ExamList/StudentExamResponse';
+import { FeeStructureResponse } from '../Model/FeesStructure/FeeStructureResponse';
 import { LoginResponse } from '../Model/Login/LoginResponse';
+import { PaymentHistoryResponse } from '../Model/PaymentHistory/PaymentHistoryResponse';
 import { StudentListResponse } from '../Model/StudentList/StudentListResponse';
 import { RestApi } from './RestApi';
 
@@ -11,6 +13,14 @@ export interface LoginPayload {
 }
 
 export interface ExamListPayload {
+  user_id: string;
+}
+
+export interface FeesStructurePayload {
+  user_id: string;
+}
+
+export interface PaymentHistoryPayload {
   user_id: string;
 }
 
@@ -29,6 +39,16 @@ export const Api = {
 
    getStudentExamList: async (payload: ExamListPayload): Promise<StudentExamResponse> => {
     const response = await RestApi.post('/student-exam-date', payload);
+    return response.data;
+  },
+
+  getStudentFeesStructure: async (payload: FeesStructurePayload): Promise<FeeStructureResponse> => {
+    const response = await RestApi.post('/student-fee-structure', payload);
+    return response.data;
+  },
+
+  getStudentPaymentHistory: async (payload: PaymentHistoryPayload): Promise<PaymentHistoryResponse> => {
+    const response = await RestApi.post('/student-payment-history', payload);
     return response.data;
   },
 };

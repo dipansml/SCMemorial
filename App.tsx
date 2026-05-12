@@ -19,10 +19,6 @@ import Messages from './src/screens/Messages';
 import LandingParents from './src/screens/LandingParents';
 import ParentDrawer from './src/Drawer/ParentDrawer';
 import Library from './src/screens/Library';
-import AllBooksScreen from './src/screens/AllBooksScreen';
-import DueBooksScreen from './src/screens/DueBooksScreen';
-import ReturnBookScreen from './src/screens/ReturnBookScreen';
-import IssueBookScreen from './src/screens/IssueBookScreen';
 import PaymentHistory from './src/screens/PaymentHistory';
 import FeePayment from './src/screens/FeesPayment';
 import LandingStudent from './src/screens/LandingStudent';
@@ -45,7 +41,9 @@ export type RootStackParamList = {
   Messages: undefined;
   Library: undefined;
   PaymentHistory: undefined;
-  FeePayment: undefined;
+  FeePayment: {
+    outstanding_amount: string;
+  };
   LandingStudent: undefined;
   StudentDrawer: undefined;
   EventDetail: undefined; 

@@ -10,18 +10,11 @@ import {
 import Colors from '../theme/colors';
 import { Button, card, FontFamily, FontSize } from '../theme/fonts_dimen';
 import { CommonStyles } from '../style/CommonStyles';
+import { PaymentHistoryItem } from '../Model/PaymentHistory/PaymentHistoryItem';
 
-type Payment = {
-  id: string;
-  type: string;
-  amount: string;
-  status: 'Success' | 'Pending' | 'Failed';
-  date: string;
-  txnId: string;
-};
 
 type Props = {
-  paymentList: Payment[];
+  paymentList: PaymentHistoryItem[];
 };
 
 const PaymentListComponent = ({ paymentList }: Props) => {
@@ -65,12 +58,12 @@ const PaymentListComponent = ({ paymentList }: Props) => {
         <View style={styles.rowBetween}>
           <View>
             <Text style={styles.label}>Date & Time</Text>
-            <Text style={styles.value}>{item.date}</Text>
+            <Text style={styles.value}>{formatDateTime(item.payment_date)}</Text>
           </View>
 
           <View>
             <Text style={styles.label}>Transaction ID</Text>
-            <Text style={styles.value}>{item.txnId}</Text>
+            <Text style={styles.value}>#{item.txnid}</Text>
           </View>
         </View>
 
@@ -122,6 +115,24 @@ const PaymentListComponent = ({ paymentList }: Props) => {
 };
 
 export default PaymentListComponent;
+
+export const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+
+  const formattedDate = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  });
+
+  const formattedTime = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  return `${formattedDate} • ${formattedTime.toLowerCase()}`;
+};
 
 const styles = StyleSheet.create({
   card: {

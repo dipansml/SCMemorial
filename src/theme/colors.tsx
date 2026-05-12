@@ -47,6 +47,9 @@ const Colors = {
   red: '#EA2932',
   tab_icon_back: '#E3ECFE',
   button_text_inactive: '#1E1C1D80',
+  loaderBackground: '#00000040',
+  loaderText: '#FFFFFF',
+  loaderColor: '#007AFF'
 };
 
 export default Colors;

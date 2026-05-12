@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 
 import AppHeader from '../component/AppHeader';
@@ -93,8 +94,20 @@ const Academics = ({ navigation }: { navigation: any }) => {
     loadExamList();
   }, []);
 
+  const FullScreenLoader = ({ visible }: { visible: boolean }) => {
+    if (!visible) return null;
+
+    return (
+      <View style={CommonStyles.loaderOverlay}>
+        <ActivityIndicator size="large" color={Colors.loaderColor} />
+        <Text style={CommonStyles.loaderText}>Loading...</Text>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <FullScreenLoader visible={loading} />
 
       <AppHeader
         title="Academics"

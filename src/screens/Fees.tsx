@@ -6,6 +6,8 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { openParentDrawer } from '../navigation/navigationRef';
@@ -18,13 +20,15 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import FeePayment from './FeesPayment';
+import { RestApi } from '../services/RestApi';
+import StorageManager from '../services/StorageManager';
+import { Api } from '../services/Api';
+import { FeeStructureData } from '../Model/FeesStructure/FeeStructureData';
 // types
 type FeeItem = {
-  id: string;
-  title: string;
-  subtitle: string;
+  fee_type: string;
   amount: string;
-  status: 'Paid' | 'Unpaid' | 'Pending';
+  status: 'paid' | 'unpaid' | 'pending';
 };
 
 type FeesProps = {
@@ -35,23 +39,101 @@ type FeesProps = {
 
 const Fees = ({ navigation }: FeesProps) => {
   const [feesData, setFeesData] = useState<FeeItem[]>([]);
+  const [feeData, setFeeData] = useState<FeeStructureData | null>(null);
+  const [loading, setLoading] = useState(false);
    
   useEffect(() => {
-    // simulate API
-    const data: FeeItem[] = [
-      { id: '1', title: 'Tuition Fee', subtitle: 'Q4 Academic Term', amount: '25000', status: 'Paid' },
-      { id: '2', title: 'Admission Fee', subtitle: 'One-time payment', amount: '10000', status: 'Paid' },
-      { id: '3', title: 'Exam Fee', subtitle: 'Mid-term Examination', amount: '2500', status: 'Unpaid' },
-      { id: '4', title: 'Library Fee', subtitle: 'Annual Access', amount: '1500', status: 'Pending' },
-      { id: '5', title: 'Transport Fee', subtitle: 'Monthly Commute', amount: '3000', status: 'Unpaid' },
-    ];
-
-    setFeesData(data);
+    loadFeeStructure();
   }, []);
+
+
+  const loadFeeStructure = async () => {
+
+    try {
+      setLoading(true);
+
+      const response =
+        await Api.getStudentFeesStructure({
+          user_id:
+            await StorageManager.getStudentId(),
+        });
+
+      console.log(
+        'Fee Structure Response:',
+        response
+      );
+
+      if (
+        response &&
+        response.status === 200 &&
+        response.data
+      ) {
+
+        setFeeData({
+          outstanding_amount:
+            response.data.outstanding_amount,
+
+          paid_amount:
+            response.data.paid_amount,
+
+          due_amount:
+            response.data.due_amount,
+
+          late_fee:
+            response.data.late_fee,
+
+          current_month:
+            response.data.current_month,
+
+          due_month:
+            response.data.due_month,
+
+          fees_breakdown:
+            response.data.fees_breakdown,
+
+        });
+
+      } else {
+
+        Alert.alert(
+          'Error',
+          response?.message ||
+            'Failed to load fee structure'
+        );
+      }
+
+    } catch (error: any) {
+
+      console.log(
+        'Fee Structure Error:',
+        error?.response?.data || error.message
+      );
+
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message ||
+          'Something went wrong'
+      );
+
+    } finally {
+      setLoading(false);
+    }
+};
+
+const FullScreenLoader = ({ visible }: { visible: boolean }) => {
+    if (!visible) return null;
+
+    return (
+      <View style={CommonStyles.loaderOverlay}>
+        <ActivityIndicator size="large" color={Colors.loaderColor} />
+        <Text style={CommonStyles.loaderText}>Loading...</Text>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Fees Overview"
         onMenuPress={openParentDrawer}
@@ -65,19 +147,19 @@ const Fees = ({ navigation }: FeesProps) => {
         {/* 🔵 TOP CARD */}
         <View style={styles.topCard}>
           <Text style={styles.smallText}>TOTAL OUTSTANDING</Text>
-          <Text style={styles.bigAmount}>₹ 42,000.00</Text>
+          <Text style={styles.bigAmount}>₹ {feeData?.outstanding_amount || '0.00'}</Text>
         </View>
 
         {/* 🟦 SUMMARY */}
         <View style={styles.row}>
           <View style={styles.box}>
             <Text style={styles.label}>PAID AMOUNT</Text>
-            <Text style={styles.value}>₹36,500</Text>
+            <Text style={styles.value}>₹ {feeData?.paid_amount || '0.00'}</Text>
           </View>
 
           <View style={styles.box}>
             <Text style={styles.label}>DUE AMOUNT</Text>
-            <Text style={styles.value}>₹5,500</Text>
+            <Text style={styles.value}>₹ {feeData?.due_amount || '0.00'}</Text>
           </View>
         </View>
 
@@ -91,12 +173,12 @@ const Fees = ({ navigation }: FeesProps) => {
                   />
               </View>
               <View style={styles.leftSection}>
-                <Text style={styles.date}>15 October 2026</Text>
+                <Text style={styles.date}>{feeData?.due_month || feeData?.current_month}</Text>
                 <Text style={styles.sub}>Next Due Date</Text>
               </View>
               <View style={styles.rightSection}>
                     <Text style={styles.sub}>Late Fee</Text> 
-                    <Text style={styles.lateFee}>+ ₹500/mo</Text> 
+                    <Text style={styles.lateFee}>+₹ {feeData?.late_fee || '0.00'}</Text> 
               </View>
             </View>
 
@@ -105,15 +187,25 @@ const Fees = ({ navigation }: FeesProps) => {
 
          <View style={styles.cardWhite}>
             {/* 📋 CHILD COMPONENT (FlatList) */}
-            <FeesBreakdownComponent data={feesData} />
+            <FeesBreakdownComponent data={feeData?.fees_breakdown || []} />
         </View>
-        <TouchableOpacity  
-            style={[CommonStyles.button, {marginBottom: 20}]}
-            onPress={() => navigation.navigate('FeePayment')}>    
-            <Text style={CommonStyles.buttonText}>Pay Now</Text>
-         </TouchableOpacity>
+       <TouchableOpacity
+          style={[
+            CommonStyles.button,
+            { marginBottom: 20 },
+          ]}
+          onPress={() =>
+            navigation.navigate('FeePayment', {
+              outstanding_amount:
+                feeData?.outstanding_amount || '0',
+            })
+          }
+          >
+          <Text style={CommonStyles.buttonText}>
+            Pay Now
+         </Text>
+       </TouchableOpacity>
       </ScrollView>
-
     </SafeAreaView>
   );
 };

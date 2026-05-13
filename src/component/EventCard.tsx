@@ -2,18 +2,20 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Colors from '../theme/colors';
 import { card, FontFamily, FontSize, iconBox } from '../theme/fonts_dimen';
+import { changeDateFormat, getStatus } from '../utils/helper';
 
 type Props = {
-  title: string;
-  date: string;
-  time: string;
+  event_name: string;
+  event_date: string;
+  event_fee: string;
+  event_description: string;
   status: 'Ongoing' | 'UpComing' | 'Past';
   onPress?: () => void;
 };
 
-const EventCard = ({ title, date, time, status, onPress }: Props) => {
+const EventCard = ({ event_name, event_date, event_fee, event_description, status, onPress }: Props) => {
   const getStatusStyle = () => {
-    switch (status) {
+    switch (getStatus(event_date)) {
       case 'Ongoing':
         return { backgroundColor: Colors.yellow, color: Colors.textColorInpuHeader };
       case 'UpComing':
@@ -39,30 +41,30 @@ const EventCard = ({ title, date, time, status, onPress }: Props) => {
     
     
               <View style={{ flex: 1 }}>
-                <Text style={styles.subject}>{title}</Text>
+                <Text style={styles.subject}>{event_name}</Text>
                 <View style={styles.rowTextIcon}>
                     <Image
                         source={require('../assets/images/icons/attendance.png')}
-                        style={[styles.iconSmall, { marginRight: 2 }]}
+                        style={[styles.iconSmall]}
                         resizeMode="contain"
                       />
-                      <Text style={styles.meta}>{date}</Text>
+                      <Text style={styles.meta}>{changeDateFormat(event_date)}</Text>
                 </View>
     
                 {/* <Text style={styles.meta}>{item.time}</Text> */}
                 <View style={styles.rowTextIcon}>
                     <Image
-                        source={require('../assets/images/icons/clock.png')}
-                        style={[styles.iconSmall, { marginRight: 2 }]}
+                        source={require('../assets/images/icons/fees.png')}
+                        style={[styles.iconSmall]}
                         resizeMode="contain"
                       />
-                      <Text style={styles.meta}>{time}</Text>
+                      <Text style={styles.meta}>₹{event_fee}</Text>
                 </View>
               </View>
             <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
               <View style={[styles.status, { backgroundColor: statusStyle.backgroundColor }]}>
                 <Text style={{ color: Colors.textColorInpuHeader, fontSize: FontSize.small, fontFamily: FontFamily.medium }}>
-                  {status}
+                  {getStatus(event_date)}
                 </Text>
               </View>
                {/* <TouchableOpacity >
@@ -127,6 +129,7 @@ iconSmall: {
     height: 12,
     tintColor: Colors.text_hint,
     marginTop: 4,
+    marginRight: 3,
 },  
 link: {
     fontSize: FontSize.small,

@@ -10,9 +10,10 @@ import EventCard from './EventCard';
 
 export type EventItem = {
   id: string;
-  title: string;
-  date: string;
-  time: string;
+  event_name: string;
+  event_date: string;
+  event_fee: string;
+  event_description: string;
   status: 'Ongoing' | 'UpComing' | 'Past';
 };
 
@@ -33,9 +34,10 @@ const EventComponent = ({
     item: EventItem;
   }) => (
     <EventCard
-      title={item.title}
-      date={item.date}
-      time={item.time}
+      event_name={item.event_name}
+      event_date={item.event_date}
+      event_fee={item.event_fee}
+      event_description={item.event_description}
       status={item.status}
       onPress={() => onItemPress?.(item)}
     />

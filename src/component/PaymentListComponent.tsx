@@ -6,6 +6,8 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Linking,
+  Alert,
 } from 'react-native';
 import Colors from '../theme/colors';
 import { Button, card, FontFamily, FontSize } from '../theme/fonts_dimen';
@@ -34,6 +36,21 @@ const PaymentListComponent = ({ paymentList }: Props) => {
 
   const renderItem = ({ item }: any) => {
     const statusStyle = getStatusStyle(item.status);
+
+    const downloadReceipt = async (receiptUrl: string) => {
+      try {
+        const supported = await Linking.canOpenURL(receiptUrl);
+
+        if (supported) {
+          await Linking.openURL(receiptUrl);
+        } else {
+          Alert.alert('Error', 'Unable to open receipt');
+        }
+      } catch (error) {
+        console.log('Download error:', error);
+        Alert.alert('Error', 'Something went wrong');
+      }
+    };
 
     return (
       <View style={styles.card}>
@@ -69,7 +86,7 @@ const PaymentListComponent = ({ paymentList }: Props) => {
 
         {/* Action Button */}
         {item.status === 'Success' && (
-          <TouchableOpacity style={[CommonStyles.buttonGray, { marginTop: 12 }, { marginBottom: 0 }]}>
+          <TouchableOpacity style={[CommonStyles.buttonGray, { marginTop: 12 }, { marginBottom: 0 }]} onPress={() => downloadReceipt(item.download_url)}>
                 <Image
                     source={require('../assets/images/icons/download.png')}
                     style={[CommonStyles.buttonIcon, { tintColor: Colors.textColorInpuHeader }]}

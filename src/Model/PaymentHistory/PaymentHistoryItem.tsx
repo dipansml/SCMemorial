@@ -5,5 +5,6 @@ export interface PaymentHistoryItem {
   payment_date: string;
   status: string;
   txnid: string;
+  download_url: string;
 }
 

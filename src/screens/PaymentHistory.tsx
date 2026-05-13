@@ -69,6 +69,7 @@ const loadPaymentHistory = async () => {
             payment_date: item.payment_date,
             status: item.status,
             txnid: item.txnid,
+            download_url: item.download_url,
           })
         );
 

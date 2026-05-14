@@ -44,3 +44,78 @@ export function getStatus(item: any): string {
     return 'Past';
   }
 }
+
+export const formatHeaderTitle = (
+  dateString: string,
+) => {
+
+  // Example: "09 May 2026"
+
+  const parts =
+    dateString.split(' ');
+
+  if (parts.length !== 3) {
+    return dateString;
+  }
+
+  const day = parseInt(parts[0]);
+
+  const monthMap: any = {
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11,
+  };
+
+  const month =
+    monthMap[parts[1]];
+
+  const year = parseInt(
+    parts[2],
+  );
+
+  const itemDate = new Date(
+    year,
+    month,
+    day,
+  );
+
+  // ✅ Check invalid date
+  if (
+    isNaN(itemDate.getTime())
+  ) {
+    return dateString;
+  }
+
+  const today = new Date();
+
+  const yesterday =
+    new Date();
+
+  yesterday.setDate(
+    today.getDate() - 1,
+  );
+
+  if (
+    itemDate.toDateString() ===
+    today.toDateString()
+  ) {
+    return 'Today';
+  }
+
+  if (
+    itemDate.toDateString() ===
+    yesterday.toDateString()
+  ) {
+    return 'Yesterday';
+  }
+  return dateString;
+};

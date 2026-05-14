@@ -21,6 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Api } from '../services/Api';
 import { ExamDetail } from '../Model/ExamList/ExamDetail';
 import StorageManager from '../services/StorageManager';
+import FullScreenLoader from '../view/FullScreenLoader';
 
 type ExamItem = {
   id: string;
@@ -94,16 +95,7 @@ const Academics = ({ navigation }: { navigation: any }) => {
     loadExamList();
   }, []);
 
-  const FullScreenLoader = ({ visible }: { visible: boolean }) => {
-    if (!visible) return null;
-
-    return (
-      <View style={CommonStyles.loaderOverlay}>
-        <ActivityIndicator size="large" color={Colors.loaderColor} />
-        <Text style={CommonStyles.loaderText}>Loading...</Text>
-      </View>
-    );
-  };
+  
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

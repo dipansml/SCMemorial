@@ -17,6 +17,7 @@ import BookListComponent from '../component/BookListComponent';
 import { LibraryItem } from '../Model/StudentLibrary/LibraryItem';
 import StorageManager from '../services/StorageManager';
 import { Api } from '../services/Api';
+import FullScreenLoader from '../view/FullScreenLoader';
 
 type TabType = 'All' | 'Issue' | 'Return' | 'Due';
 
@@ -121,6 +122,7 @@ const [loading, setLoading] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Library"
         onMenuPress={openParentDrawer}

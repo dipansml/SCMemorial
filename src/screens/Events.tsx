@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
 import { EventDetail } from '../Model/EventList/EventDetailData';
+import FullScreenLoader from '../view/FullScreenLoader';
 
 const Events = ({ navigation }: { navigation: any }) => {
  const [eventData, setEventData] =
@@ -94,7 +95,7 @@ const Events = ({ navigation }: { navigation: any }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Events"
         onMenuPress={openParentDrawer}

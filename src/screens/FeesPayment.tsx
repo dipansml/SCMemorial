@@ -22,6 +22,8 @@ import {
   ImageLibraryOptions,
 } from 'react-native-image-picker';
 import { RouteProp } from '@react-navigation/native';
+import RazorpayCheckout from 'react-native-razorpay';
+import { razorPay } from '../utils/CommonUtils';
 
 type FeePaymentRouteProp = RouteProp<
   {
@@ -130,6 +132,58 @@ const { outstanding_amount } = route.params;
       ],
       { cancelable: true },
     );
+  };
+
+   const openPaymentGateway = () => {
+
+    const options = {
+      description: 'School Fees Payment',
+      image: 'http://192.168.1.18/scms.beas.in/uploads/scms_logo.png',
+      currency: 'INR',
+      key: razorPay.razorPayKey, // Your Razorpay Key
+      amount: (Number(outstanding_amount) * 100).toString(), // Convert to paise
+      name: 'SC Memorial School',
+
+      prefill: {
+        email: 'student@gmail.com',
+        contact: '9876543210',
+        name: 'Student Name',
+      },
+
+      theme: {
+        color: '#0A8FDC',
+      },
+    };
+
+    RazorpayCheckout.open(options)
+
+      .then((data) => {
+
+        console.log('Payment Success:', data);
+
+        Alert.alert(
+          'Success',
+          'Payment completed successfully',
+        );
+
+        // Redirect to success screen
+        navigation.replace('PaymentSuccess', {
+          paymentId: data.razorpay_payment_id,
+        });
+      })
+
+      .catch((error) => {
+
+        console.log('Payment Error:', error);
+
+        Alert.alert(
+          'Payment Failed',
+          error.description,
+        );
+
+        // Optional redirect on failure
+        // navigation.navigate('PaymentFailed');
+      });
   };
 
   return (
@@ -315,7 +369,7 @@ const { outstanding_amount } = route.params;
         )}
 
         {/* Button */}
-        <TouchableOpacity style={[CommonStyles.button, {marginTop: 0}]}>
+        <TouchableOpacity style={[CommonStyles.button, {marginTop: 0}]} onPress={openPaymentGateway}>
             <Text style={CommonStyles.buttonText}>PAY NOW</Text>
         </TouchableOpacity>
 

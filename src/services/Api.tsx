@@ -1,6 +1,7 @@
 import { EventResponse } from '../Model/EventList/EventResponse';
 import { StudentExamResponse } from '../Model/ExamList/StudentExamResponse';
 import { FeeStructureResponse } from '../Model/FeesStructure/FeeStructureResponse';
+import { StudentHomeworkResponse } from '../Model/Homework/StudentHomeworkResponse';
 import { LoginResponse } from '../Model/Login/LoginResponse';
 import { PaymentHistoryResponse } from '../Model/PaymentHistory/PaymentHistoryResponse';
 import { StudentLibraryResponse } from '../Model/StudentLibrary/StudentLibraryResponse';
@@ -31,6 +32,10 @@ export interface EventListPayload {
 }
 
 export interface StudentLibraryPayload {
+  user_id: string;
+}
+
+export interface StudentHomeworkPayload {
   user_id: string;
 }
 
@@ -69,6 +74,11 @@ export const Api = {
 
   getStudentLibrary: async (payload: StudentLibraryPayload): Promise<StudentLibraryResponse> => {
     const response = await RestApi.post('/student-library', payload);
+    return response.data;
+  },
+
+   getStudentHomework: async (payload: StudentHomeworkPayload): Promise<StudentHomeworkResponse> => {
+    const response = await RestApi.post('/student-homework', payload);
     return response.data;
   },
 };

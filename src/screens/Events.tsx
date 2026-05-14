@@ -6,7 +6,7 @@ import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
-import { EventDetail } from '../Model/EventList/EventDetail';
+import { EventDetail } from '../Model/EventList/EventDetailData';
 
 const Events = ({ navigation }: { navigation: any }) => {
  const [eventData, setEventData] =

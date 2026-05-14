@@ -1,4 +1,4 @@
-import {EventDetail} from '../EventList/EventDetail';
+import {EventDetail} from './EventDetailData';
 
 export interface EventData {
   event_details: EventDetail[];

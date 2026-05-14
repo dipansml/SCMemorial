@@ -9,8 +9,27 @@ import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { card, container, FontFamily, FontSize } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
+import { RouteProp } from '@react-navigation/native';
+import { EventDetail as EventDetailModel } from '../Model/EventList/EventDetailData';
+import { changeDateFormat } from '../utils/helper';
 
-const EventDetail = ({ navigation }: { navigation: any }) => {
+type EventDetailRouteProp = RouteProp<
+  {
+    EventDetail: {
+      event: EventDetailModel;
+    };
+  },
+  'EventDetail'
+>;
+
+type Props = {
+  navigation: any;
+  route: EventDetailRouteProp;
+};
+
+const EventDetail = ({ navigation, route }: Props) => {
+  const { event } = route.params;
+
   return (
     <SafeAreaView style={styles.container}>
       <AppHeader
@@ -37,7 +56,7 @@ const EventDetail = ({ navigation }: { navigation: any }) => {
           />
 
           <View style={styles.contentContainer}>
-            <Text style={styles.title}>Science Fair 2026</Text>
+            <Text style={styles.title}>{event.event_name}</Text>
 
             <View style={styles.dateRow}> 
                 <Image
@@ -46,13 +65,13 @@ const EventDetail = ({ navigation }: { navigation: any }) => {
                     resizeMode="contain"/>
 
               <Text style={styles.dateText}>
-                October 24, 2026
+                {changeDateFormat(event.event_date)}
               </Text>
 
-              <Text style={styles.dot}>•</Text>
+              {/* <Text style={styles.dot}>•</Text> */}
 
               <Text style={styles.timeText}>
-                10:00 AM - 4:00 PM
+                {event.event_time}
               </Text>
             </View>
           </View>
@@ -96,29 +115,7 @@ const EventDetail = ({ navigation }: { navigation: any }) => {
         <View style={styles.aboutCard}>
           <Text style={styles.aboutTitle}>About the Event</Text>
 
-          <Text style={styles.aboutText}>
-            Join us for the annual flagship Science Fair where students
-            showcase groundbreaking research and innovative projects.
-            This year's event focuses on sustainable technology and local
-            environmental solutions.
-          </Text>
-
-          <Text style={styles.aboutText}>
-            Don't miss out on interactive demonstrations and expert-led
-            panels.
-          </Text>
-
-          <Text style={styles.aboutText}>
-            This year's theme, "Sustainability Through Innovation,"
-            focuses on practical solutions for global environmental
-            challenges.
-          </Text>
-
-          <Text style={styles.aboutText}>
-            Participants will have the chance to interact with industry
-            experts, win prestigious awards, and secure scholarships for
-            further studies.
-          </Text>
+          <Text style={styles.aboutText}>{event.event_description}</Text>
         </View>
       </ScrollView>
       </View>

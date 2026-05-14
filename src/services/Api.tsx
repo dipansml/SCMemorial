@@ -1,3 +1,4 @@
+import { DashboardResponse } from '../Model/Dashboard/DashboardResponse';
 import { EventResponse } from '../Model/EventList/EventResponse';
 import { StudentExamResponse } from '../Model/ExamList/StudentExamResponse';
 import { FeeStructureResponse } from '../Model/FeesStructure/FeeStructureResponse';
@@ -36,6 +37,10 @@ export interface StudentLibraryPayload {
 }
 
 export interface StudentHomeworkPayload {
+  user_id: string;
+}
+
+export interface DashboardPayload {
   user_id: string;
 }
 
@@ -79,6 +84,11 @@ export const Api = {
 
    getStudentHomework: async (payload: StudentHomeworkPayload): Promise<StudentHomeworkResponse> => {
     const response = await RestApi.post('/student-homework', payload);
+    return response.data;
+  },
+
+  getDashboard: async (payload: DashboardPayload): Promise<DashboardResponse> => {
+    const response = await RestApi.post('/student-dashboard', payload);
     return response.data;
   },
 };

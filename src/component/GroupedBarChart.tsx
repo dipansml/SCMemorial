@@ -83,7 +83,12 @@ class GroupedBarChart extends Component<Props, State> {
                 <SimpleBar value={item.halfYearly ?? 0} color = {Colors.orange} />
                 <SimpleBar value={item.annual ?? 0} color = {Colors.primary} />
               </View>
-              <Text style={styles.subjectName}>{item.subject ?? ''}</Text>
+              <Text 
+                style={styles.subjectName}
+                numberOfLines={1}
+              >
+                {item.subject ?? ''}
+              </Text>
               <Text style={styles.maxLabel}>{MAX_VALUE}</Text>
             </View>
           ))}
@@ -163,7 +168,7 @@ const styles = StyleSheet.create({
   },
 
   subjectName: {
-    fontSize: FontSize.small,
+    fontSize: FontSize.very_small,
     color: Colors.textColorInpuHeader,
     fontFamily: FontFamily.medium,
     marginTop: 6,
@@ -171,7 +176,7 @@ const styles = StyleSheet.create({
   },
 
   maxLabel: {
-    fontSize: FontSize.very_small,
+    fontSize: FontSize.vv_small,
     color: Colors.bar_max_text,
     marginTop: 2,
   },
@@ -196,7 +201,7 @@ const styles = StyleSheet.create({
   },
 
   legendText: {
-    fontSize: FontSize.small,
+    fontSize: FontSize.very_small,
     color: Colors.textColorInpuHeader,
     fontFamily: FontFamily.semiBold,
   },

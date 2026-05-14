@@ -13,6 +13,7 @@ import StorageManager from '../services/StorageManager';
 import { Api } from '../services/Api';
 import { formatHeaderTitle } from '../utils/helper';
 import FullScreenLoader from '../view/FullScreenLoader';
+import { HomeworkItem } from '../Model/Homework/HomeworkItem';
 
 const Homework = ({
   navigation,
@@ -21,7 +22,7 @@ const Homework = ({
 }) => {
 
   const [homeworkData, setHomeworkData] =
-    useState<any[]>([]);
+    useState<HomeworkItem[]>([]);
 
   const [loading, setLoading] =
     useState(false);
@@ -58,7 +59,7 @@ const Homework = ({
         let lastHeader = '';
 
         response.data.homework.forEach(
-          (item: any, index: number) => {
+          (item: HomeworkItem, index: number) => {
 
             console.log(
               'Date:',

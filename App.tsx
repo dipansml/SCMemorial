@@ -39,14 +39,21 @@ export type RootStackParamList = {
   Events: undefined;
   Homework: undefined;
   Messages: undefined;
-  Library: undefined;
+  Library: { isback?: boolean };
   PaymentHistory: undefined;
   FeePayment: {
     outstanding_amount: string;
   };
   LandingStudent: undefined;
   StudentDrawer: undefined;
-  EventDetail: undefined; 
+  EventDetail: {
+    event: {
+      event_name: string;
+      event_date: string;
+      event_time: string;
+      event_description: string;
+    };
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

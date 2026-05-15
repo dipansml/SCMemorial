@@ -18,10 +18,27 @@ import { LibraryItem } from '../Model/StudentLibrary/LibraryItem';
 import StorageManager from '../services/StorageManager';
 import { Api } from '../services/Api';
 import FullScreenLoader from '../view/FullScreenLoader';
+import { RouteProp } from '@react-navigation/native';
+
 
 type TabType = 'All' | 'Issue' | 'Return' | 'Due';
 
-const Library = ({ navigation }: { navigation: any }) => {
+type LibraryRouteProp = RouteProp<
+  {
+    Library: {
+      isback?: boolean;
+    };
+  },
+  'Library'
+>;
+
+
+type Props = {
+  navigation: any;
+  route: LibraryRouteProp;
+};
+
+const Library = ({ navigation, route }: { navigation: any; route: LibraryRouteProp }) => {
   const [activeTab, setActiveTab] = useState<TabType>('All');
   const [libraryList, setLibraryList] = useState<
   LibraryItem[]
@@ -125,10 +142,10 @@ const [loading, setLoading] = useState(false);
       <FullScreenLoader visible={loading} />
       <AppHeader
         title="Library"
-        onMenuPress={openParentDrawer}
+        showBack={route.params?.isback}
+        onMenuPress={!route.params?.isback ? openParentDrawer : navigation.goBack}
         navigation={navigation}
       />
-
       {/* ✅ Tabs */}
       <View style={styles.tabsContainer}>
         {tabs.map((tab, index) => (

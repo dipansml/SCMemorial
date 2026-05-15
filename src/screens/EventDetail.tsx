@@ -5,27 +5,14 @@ import { View,
         Text,
         Image, } from 'react-native';
 import AppHeader from '../component/AppHeader';
-import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { card, container, FontFamily, FontSize } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
-import { RouteProp } from '@react-navigation/native';
-import { EventDetail as EventDetailModel } from '../Model/EventList/EventDetailData';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../App';
 import { changeDateFormat } from '../utils/helper';
 
-type EventDetailRouteProp = RouteProp<
-  {
-    EventDetail: {
-      event: EventDetailModel;
-    };
-  },
-  'EventDetail'
->;
-
-type Props = {
-  navigation: any;
-  route: EventDetailRouteProp;
-};
+type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
 const EventDetail = ({ navigation, route }: Props) => {
   const { event } = route.params;

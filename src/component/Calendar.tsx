@@ -9,21 +9,17 @@ import {
 } from 'react-native';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
+import { AttendanceItem, StatusType } from '../Model/StudentAttendance/AttendanceItem';
 
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = width / 8.2;
 
 const daysHeader: string[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-type StatusType = 'present' | 'absent' | 'holiday' | 'default';
-
-interface AttendanceItem {
-  date: string; // YYYY-MM-DD
-  status: StatusType;
-}
 
 interface CalendarProps {
   attendanceData: AttendanceItem[];
+  onMonthChange?: (date: Date) => void;
 }
 
 const getMonthDays = (year: number, month: number): (Date | null)[] => {
@@ -49,11 +45,11 @@ const getMonthDays = (year: number, month: number): (Date | null)[] => {
 
 const getStatusColor = (status: StatusType): string => {
   switch (status) {
-    case 'present':
+    case 'Present':
       return Colors.present;
-    case 'absent':
+    case 'Absent':
       return Colors.absent;
-    case 'holiday':
+    case 'Holiday':
       return Colors.holiday;
     default:
       return Colors.light_gray;
@@ -69,27 +65,30 @@ const formatDate = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
-const Calendar: React.FC<CalendarProps> = ({ attendanceData }) => {
+const Calendar: React.FC<CalendarProps> = ({ attendanceData, onMonthChange }) => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
   const days = getMonthDays(year, month);
+  console.log(attendanceData);
 
   const changeMonth = (type: 'next' | 'prev') => {
     const newDate = new Date(currentDate);
     newDate.setMonth(month + (type === 'next' ? 1 : -1));
     setCurrentDate(newDate);
+     // send date to parent
+    onMonthChange?.(newDate);
   };
 
   const getStatus = (day: Date | null): StatusType => {
-    if (!day) return 'default';
+    if (!day) return 'Default';
 
     const formatted = formatDate(day);
     const found = attendanceData.find((d) => d.date === formatted);
 
-    return found ? found.status : 'default';
+    return found ? found.status : 'Default';
   };
 
   const monthName = currentDate.toLocaleString('default', {

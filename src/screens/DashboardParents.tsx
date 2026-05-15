@@ -474,6 +474,13 @@ const DashboardParents = ({
                     styles.cardSmallRadius
                   }
                 >
+                   <TouchableOpacity
+                      style={styles.button}
+                      onPress={() =>
+                        navigation.navigate(
+                          'Library', { isback: true })
+                      }
+                    >
                   <View
                     style={
                       styles.rowLibrary
@@ -541,6 +548,7 @@ const DashboardParents = ({
 
                     </View>
                   </View>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>

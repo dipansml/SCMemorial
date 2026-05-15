@@ -384,73 +384,79 @@ const DashboardStudent = ({
                     styles.cardSmallRadius
                   }
                 >
-                  <View
-                    style={
-                      styles.rowLibrary
-                    }
-                  >
-
-                    <View
-                      style={
-                        styles.iconBoxGrey
-                      }
-                    >
-                      <Image
-                        source={require('../assets/images/icons/book.png')}
-                        style={
-                          styles.iconLarge
-                        }
-                        resizeMode="contain"
-                      />
-                    </View>
-
-                    <View
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-                      <Text
-                        style={
-                          styles.subValue
-                        }
-                      >
-                        {firstBook.title}
-                      </Text>
-
-                      <Text
-                        style={
-                          styles.subLabel
-                        }
-                      >
-                        Author:{' '}
-                        {
-                          firstBook.author
-                        }
-                      </Text>
-
+                   <TouchableOpacity
+                      style={styles.button}
+                      onPress={() =>
+                      navigation.navigate(
+                      'Library', { isback: true })}>
                       <View
-                        style={[
-                          styles.badgeGrey,
-                          {
-                            marginTop: 10,
-                          },
-                        ]}
+                        style={
+                          styles.rowLibrary
+                        }
                       >
-                        <Text
+
+                        <View
                           style={
-                            styles.badgeTextBlue
+                            styles.iconBoxGrey
                           }
                         >
-                          Due:
-                          {' '}
-                          {
-                            firstBook.dueDate
-                          }
-                        </Text>
-                      </View>
+                          <Image
+                            source={require('../assets/images/icons/book.png')}
+                            style={
+                              styles.iconLarge
+                            }
+                            resizeMode="contain"
+                          />
+                        </View>
 
-                    </View>
-                  </View>
+                        <View
+                          style={{
+                            flex: 1,
+                          }}
+                        >
+                          <Text
+                            style={
+                              styles.subValue
+                            }
+                          >
+                            {firstBook.title}
+                          </Text>
+
+                          <Text
+                            style={
+                              styles.subLabel
+                            }
+                          >
+                            Author:{' '}
+                            {
+                              firstBook.author
+                            }
+                          </Text>
+
+                          <View
+                            style={[
+                              styles.badgeGrey,
+                              {
+                                marginTop: 10,
+                              },
+                            ]}
+                          >
+                            <Text
+                              style={
+                                styles.badgeTextBlue
+                              }
+                            >
+                              Due:
+                              {' '}
+                              {
+                                firstBook.dueDate
+                              }
+                            </Text>
+                          </View>
+
+                        </View>
+                      </View>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>

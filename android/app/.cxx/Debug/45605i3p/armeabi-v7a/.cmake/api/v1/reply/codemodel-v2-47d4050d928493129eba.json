@@ -186,63 +186,63 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appmodules::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appmodules-Debug-650697162f73db47b285.json",
+					"jsonFile" : "target-appmodules-Debug-e192cf977d9848b919dc.json",
 					"name" : "appmodules",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "react_codegen_AsyncStorageSpec::@15af80695a6281ecf900",
-					"jsonFile" : "target-react_codegen_AsyncStorageSpec-Debug-dedea3d706b62c2b31db.json",
+					"jsonFile" : "target-react_codegen_AsyncStorageSpec-Debug-4ea1231165874061539a.json",
 					"name" : "react_codegen_AsyncStorageSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 3,
 					"id" : "react_codegen_RNImagePickerSpec::@f66ee9a2efecfb28bee4",
-					"jsonFile" : "target-react_codegen_RNImagePickerSpec-Debug-69802914ca1dfc5860fa.json",
+					"jsonFile" : "target-react_codegen_RNImagePickerSpec-Debug-8cd00bbb85ccad7893e3.json",
 					"name" : "react_codegen_RNImagePickerSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 4,
 					"id" : "react_codegen_RNRazorpayCheckoutSpec::@ba471378ee2eecf9e7b3",
-					"jsonFile" : "target-react_codegen_RNRazorpayCheckoutSpec-Debug-88a221e8e0e11f7254e8.json",
+					"jsonFile" : "target-react_codegen_RNRazorpayCheckoutSpec-Debug-a841b7f80b8d56ca3f30.json",
 					"name" : "react_codegen_RNRazorpayCheckoutSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec",
-					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-Debug-03e870c518334c7b6a16.json",
+					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-Debug-c8d1924cf10d9e7cb943.json",
 					"name" : "react_codegen_rngesturehandler_codegen",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 5,
 					"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a",
-					"jsonFile" : "target-react_codegen_rnreanimated-Debug-2c50428abc032ab54e01.json",
+					"jsonFile" : "target-react_codegen_rnreanimated-Debug-fd0c73bc4aba5ee443b5.json",
 					"name" : "react_codegen_rnreanimated",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 7,
 					"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad",
-					"jsonFile" : "target-react_codegen_rnscreens-Debug-193c9b7e2a3d922bcbb3.json",
+					"jsonFile" : "target-react_codegen_rnscreens-Debug-24525d47df2492347b29.json",
 					"name" : "react_codegen_rnscreens",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 8,
 					"id" : "react_codegen_rnworklets::@68f58d84d4754f193387",
-					"jsonFile" : "target-react_codegen_rnworklets-Debug-747ffe9f78a75c772c75.json",
+					"jsonFile" : "target-react_codegen_rnworklets-Debug-d014038131df2566430d.json",
 					"name" : "react_codegen_rnworklets",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 6,
 					"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a",
-					"jsonFile" : "target-react_codegen_safeareacontext-Debug-845a39dd98b8ae7548e3.json",
+					"jsonFile" : "target-react_codegen_safeareacontext-Debug-77b35eb5696c4ae6302b.json",
 					"name" : "react_codegen_safeareacontext",
 					"projectIndex" : 0
 				}
@@ -252,7 +252,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/x86",
+		"build" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/android/app/.cxx/Debug/45605i3p/armeabi-v7a",
 		"source" : "/Users/beasios/Desktop/ReactNativeProject/SchoolManagementSystem/SCMemorial/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
 	},
 	"version" : 

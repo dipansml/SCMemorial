@@ -44,10 +44,13 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/arm64-v8a/AsyncStorageSpec_autolinked_build/cmake_install.cmake")
   include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/arm64-v8a/rngesturehandler_codegen_autolinked_build/cmake_install.cmake")
+  include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/arm64-v8a/rnreanimated_autolinked_build/cmake_install.cmake")
   include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/arm64-v8a/safeareacontext_autolinked_build/cmake_install.cmake")
   include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/arm64-v8a/rnscreens_autolinked_build/cmake_install.cmake")
   include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/arm64-v8a/rnsvg_autolinked_build/cmake_install.cmake")
+  include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/arm64-v8a/rnworklets_autolinked_build/cmake_install.cmake")
 
 endif()
 

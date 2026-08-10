@@ -12,17 +12,21 @@ import {
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 
 import Colors from '../theme/colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontSize, FontFamily } from '../theme/fonts_dimen';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Api } from '../services/Api';
+import StorageManager from '../services/StorageManager';
 
 const { width } = Dimensions.get('window');
 
 type RootStackParamList = {
   StudentSelection: undefined;
+  LandingStudent: undefined;
 };
  
   type LoginProps = {
@@ -53,14 +57,69 @@ const Login = ({ navigation }: LoginProps) =>  {
   const handleLogin = async () => {
     if (!validateLogin()) return;
     console.log('login click')
-    navigation.replace('StudentSelection');
+    if (selected === 'parent') {
+      navigation.replace('StudentSelection');
+    } else {
+       callStudentLoginApi();
+    }
  }
 
  const forgotPassClick = () => {
   console.log("Forgot pass click")
 };
 
-//Test
+const callStudentLoginApi = async () => {
+  if (loading) return; // prevent multiple clicks
+
+  setLoading(true);
+
+  try {
+    const res = await Api.studentLogin({
+      username: studentId.trim(),
+      password: password.trim(),
+    });
+
+    console.log('Login API Response:', res);
+
+    // ✅ Validate response safely
+    if (res && res.status === 200 && res.data) {
+      const token = res.data.token;
+      const user = res.data.user;
+
+      console.log('Token:', token);
+      console.log('User:', user?.name);
+
+      // ✅ Save token (important for future APIs)
+      if (token) {
+          await StorageManager.setToken(token);
+      }
+
+      // ✅ Navigate after success
+      navigation.replace('LandingStudent');
+
+    } else {
+      // ❌ API returned failure
+      Alert.alert(
+        'Login Failed',
+        res?.message || 'Invalid username or password'
+      );
+    }
+
+  } catch (error: any) {
+    console.log('Login Error:', error?.response?.data || error.message);
+
+    // ❌ Network / server error
+    Alert.alert(
+      'Login Error',
+      error?.response?.data?.message ||
+        error?.message ||
+        'Something went wrong. Please try again.'
+    );
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <SafeAreaView style={styles.screen}>

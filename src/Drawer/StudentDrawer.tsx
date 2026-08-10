@@ -18,6 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize, Header, Menu } from '../theme/fonts_dimen';
+import StorageManager from '../services/StorageManager';
 
 type DrawerNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -33,7 +34,7 @@ const menuItems: MenuItem[] = [
   {
     key: 'home',
     label: 'Home',
-    route: 'LandingParents',
+    route: 'LandingStudent',
     icon: require('../assets/images/icons/home.png'),
   },
   {
@@ -42,12 +43,12 @@ const menuItems: MenuItem[] = [
     route: 'Attendance',
     icon: require('../assets/images/icons/attendance.png'),
   },
-  {
-    key: 'Fees',
-    label: 'Fee Payment & Payment History',
-    route: 'Fees',
-    icon: require('../assets/images/icons/fees.png'),
-  },
+  // {
+  //   key: 'Fees',
+  //   label: 'Fee Payment',
+  //   route: 'Fees',
+  //   icon: require('../assets/images/icons/fees.png'),
+  // },
   {
     key: 'events',
     label: 'Events',
@@ -70,7 +71,7 @@ const menuItems: MenuItem[] = [
     key: 'Library',
     label: 'Library',
     route: 'Library',
-    icon: require('../assets/images/icons/library.png'),
+    icon: require('../assets/images/icons/book.png'),
   },
   {
     key: 'messages',
@@ -80,7 +81,7 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-const ParentDrawer = () => {
+const StudentDrawer = () => {
   const navigation = useNavigation<DrawerNavigationProp>();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -95,7 +96,12 @@ const ParentDrawer = () => {
 
   // Last route = Drawer, second last = actual screen
   const currentRoute =
-    state.routes[state.routes.length - 2]?.name || 'LandingParents';
+    state.routes[state.routes.length - 2]?.name || 'LandingStudent';
+
+    const handleLogout = async () => {
+      await StorageManager.clearAll();
+      navigation.replace('Login')
+    };
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -164,7 +170,7 @@ const ParentDrawer = () => {
                       styles.signOutContainer,
                       Platform.OS === 'android' && { marginBottom: 30},
                     ]}
-              onPress={() => navigation.replace('Login')}> 
+              onPress={handleLogout}> 
           <Image
             source={require('../assets/images/icons/logout.png')} // add logout icon
             style={styles.signOutIcon}
@@ -183,7 +189,7 @@ const ParentDrawer = () => {
   );
 };
 
-export default ParentDrawer;
+export default StudentDrawer;
 
 const styles = StyleSheet.create({
   screen: {
@@ -334,3 +340,4 @@ devider: {
     borderTopColor: Colors.border_color,
   },
 });
+

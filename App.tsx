@@ -25,6 +25,8 @@ import ReturnBookScreen from './src/screens/ReturnBookScreen';
 import IssueBookScreen from './src/screens/IssueBookScreen';
 import PaymentHistory from './src/screens/PaymentHistory';
 import FeePayment from './src/screens/FeesPayment';
+import LandingStudent from './src/screens/LandingStudent';
+import StudentDrawer from './src/Drawer/StudentDrawer';
 
 enableScreens();
 
@@ -43,6 +45,8 @@ export type RootStackParamList = {
   Library: undefined;
   PaymentHistory: undefined;
   FeePayment: undefined;
+  LandingStudent: undefined;
+  StudentDrawer: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -66,6 +70,15 @@ const App = () => {
                 contentStyle: { backgroundColor: 'transparent' },
               }}
             />
+            <Stack.Screen
+              name="StudentDrawer"
+              component={StudentDrawer}
+              options={{
+                headerShown: false,
+                animation: 'slide_from_left',
+                contentStyle: { backgroundColor: 'transparent' },
+              }}
+            />
             <Stack.Screen name="Attendance" component={Attendance}  options={{ headerShown: false }} />
             <Stack.Screen name="Fees" component={Fees}  options={{ headerShown: false }} />
             <Stack.Screen name="Notice" component={Notice}  options={{ headerShown: false }} />
@@ -75,7 +88,7 @@ const App = () => {
             <Stack.Screen name="Library" component={Library}  options={{ headerShown: false }} />
             <Stack.Screen name="PaymentHistory" component={PaymentHistory}  options={{ headerShown: false }} />
             <Stack.Screen name="FeePayment" component={FeePayment}  options={{ headerShown: false }} />
-          
+            <Stack.Screen name="LandingStudent" component={LandingStudent}  options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

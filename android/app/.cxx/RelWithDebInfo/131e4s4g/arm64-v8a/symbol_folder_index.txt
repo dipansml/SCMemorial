@@ -1,0 +1,1 @@
+D:\Dipan\ReactNativeProject\SCM\SCMemorial\android\app\build\intermediates\cxx\RelWithDebInfo\131e4s4g\obj\arm64-v8a

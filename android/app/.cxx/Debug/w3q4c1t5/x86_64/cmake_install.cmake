@@ -44,10 +44,15 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/AsyncStorageSpec_autolinked_build/cmake_install.cmake")
   include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rngesturehandler_codegen_autolinked_build/cmake_install.cmake")
+  include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNImagePickerSpec_autolinked_build/cmake_install.cmake")
+  include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNRazorpayCheckoutSpec_autolinked_build/cmake_install.cmake")
+  include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnreanimated_autolinked_build/cmake_install.cmake")
   include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/safeareacontext_autolinked_build/cmake_install.cmake")
   include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnscreens_autolinked_build/cmake_install.cmake")
   include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnsvg_autolinked_build/cmake_install.cmake")
+  include("D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnworklets_autolinked_build/cmake_install.cmake")
 
 endif()
 

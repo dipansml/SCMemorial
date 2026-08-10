@@ -328,10 +328,6 @@
 	[
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_RNImagePickerSpec::@f66ee9a2efecfb28bee4"
-		},
-		{
-			"backtrace" : 4,
 			"id" : "react_codegen_AsyncStorageSpec::@15af80695a6281ecf900"
 		},
 		{
@@ -340,15 +336,7 @@
 		},
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_RNRazorpayCheckoutSpec::@ba471378ee2eecf9e7b3"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a"
+			"id" : "react_codegen_RNImagePickerSpec::@f66ee9a2efecfb28bee4"
 		},
 		{
 			"backtrace" : 4,
@@ -356,11 +344,23 @@
 		},
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_rnworklets::@68f58d84d4754f193387"
+			"id" : "react_codegen_RNRazorpayCheckoutSpec::@ba471378ee2eecf9e7b3"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a"
 		},
 		{
 			"backtrace" : 4,
 			"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnworklets::@68f58d84d4754f193387"
 		}
 	],
 	"id" : "appmodules::@6890427a1f51a3e7e1df",

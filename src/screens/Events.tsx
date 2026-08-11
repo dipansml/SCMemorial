@@ -8,6 +8,7 @@ import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
 import { EventDetail } from '../Model/EventList/EventDetailData';
 import FullScreenLoader from '../view/FullScreenLoader';
+import { getStatus, getStatusEvent } from '../utils/helper';
 
 const Events = ({ navigation }: { navigation: any }) => {
  const [eventData, setEventData] =
@@ -38,11 +39,11 @@ const Events = ({ navigation }: { navigation: any }) => {
       if (
         response &&
         response.status === 200 &&
-        response.data?.event_details
+        response.data?.event_list
       ) {
 
         const formattedData: EventItem[] =
-          response.data.event_details.map(
+          response.data.event_list.map(
             (item: EventDetail) => ({
               id: item.id,
 
@@ -58,14 +59,16 @@ const Events = ({ navigation }: { navigation: any }) => {
               event_description:
                 item.event_description,
 
-              status: 'Ongoing',
+              status: getStatusEvent(item),
+
+              is_registered: item.is_registered,
             })
           );
 
         setEventData(formattedData);
 
       } else {
-
+        console.log('Events Error:', response?.message);
         Alert.alert(
           'Error',
           response?.message ||

@@ -47,9 +47,8 @@ export interface DashboardPayload {
 
 export interface StudentAttendancePayload {
   user_id: string;
-  month_date: string,
+  month_date: string;
 }
-
 
 // API
 export const Api = {
@@ -58,47 +57,66 @@ export const Api = {
     return response.data;
   },
 
-   getStudentList: async (): Promise<StudentListResponse> => {
+  getStudentList: async (): Promise<StudentListResponse> => {
     const response = await RestApi.post('/student-list');
     return response.data;
   },
 
-   getStudentExamList: async (payload: ExamListPayload): Promise<StudentExamResponse> => {
+  getStudentExamList: async (
+    payload: ExamListPayload,
+  ): Promise<StudentExamResponse> => {
     const response = await RestApi.post('/student-exam-date', payload);
     return response.data;
   },
 
-  getStudentFeesStructure: async (payload: FeesStructurePayload): Promise<FeeStructureResponse> => {
+  getStudentFeesStructure: async (
+    payload: FeesStructurePayload,
+  ): Promise<FeeStructureResponse> => {
     const response = await RestApi.post('/student-fee-structure', payload);
     return response.data;
   },
 
-  getStudentPaymentHistory: async (payload: PaymentHistoryPayload): Promise<PaymentHistoryResponse> => {
+  getStudentPaymentHistory: async (
+    payload: PaymentHistoryPayload,
+  ): Promise<PaymentHistoryResponse> => {
     const response = await RestApi.post('/student-payment-history', payload);
     return response.data;
   },
 
+  //  getEventList: async (payload: EventListPayload): Promise<EventResponse> => {
+  //     const response = await RestApi.post('/student-events', payload);
+  //     return response.data;
+  //   },
+
   getEventList: async (payload: EventListPayload): Promise<EventResponse> => {
-    const response = await RestApi.post('/student-events', payload);
+    const response = await RestApi.get('/student-event-list');
     return response.data;
   },
 
-  getStudentLibrary: async (payload: StudentLibraryPayload): Promise<StudentLibraryResponse> => {
+  getStudentLibrary: async (
+    payload: StudentLibraryPayload,
+  ): Promise<StudentLibraryResponse> => {
     const response = await RestApi.post('/student-library', payload);
     return response.data;
   },
 
-   getStudentHomework: async (payload: StudentHomeworkPayload): Promise<StudentHomeworkResponse> => {
+  getStudentHomework: async (
+    payload: StudentHomeworkPayload,
+  ): Promise<StudentHomeworkResponse> => {
     const response = await RestApi.post('/student-homework', payload);
     return response.data;
   },
 
-  getDashboard: async (payload: DashboardPayload): Promise<DashboardResponse> => {
+  getDashboard: async (
+    payload: DashboardPayload,
+  ): Promise<DashboardResponse> => {
     const response = await RestApi.post('/student-dashboard', payload);
     return response.data;
   },
 
-  getStudentAttendance: async (payload: StudentAttendancePayload): Promise<StudentAttendanceResponse> => {
+  getStudentAttendance: async (
+    payload: StudentAttendancePayload,
+  ): Promise<StudentAttendanceResponse> => {
     const response = await RestApi.post('/student-attendance', payload);
     return response.data;
   },

@@ -1,4 +1,4 @@
-export interface EventDetail {
+export default interface EventDetail {
   id: string;
   event_no: string;
   event_name: string;
@@ -6,4 +6,5 @@ export interface EventDetail {
   event_time: string;
   event_fee: string;
   event_description: string;
+  is_registered: number;
 }

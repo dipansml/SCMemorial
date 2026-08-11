@@ -24,6 +24,7 @@ import FeePayment from './src/screens/FeesPayment';
 import LandingStudent from './src/screens/LandingStudent';
 import StudentDrawer from './src/Drawer/StudentDrawer';
 import EventDetail from './src/screens/EventDetail';
+import EventItem from './src/Model/EventList/EventDetailData';
 
 enableScreens();
 
@@ -47,12 +48,7 @@ export type RootStackParamList = {
   LandingStudent: undefined;
   StudentDrawer: undefined;
   EventDetail: {
-    event: {
-      event_name: string;
-      event_date: string;
-      event_time: string;
-      event_description: string;
-    };
+     event: EventItem;
   };
 };
 
@@ -66,8 +62,16 @@ const App = () => {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="LandingParents" component={LandingParents}  options={{ headerShown: false }} />
-            <Stack.Screen name="StudentSelection" component={StudentSelection}  options={{ headerShown: false }} />
+            <Stack.Screen
+              name="LandingParents"
+              component={LandingParents}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="StudentSelection"
+              component={StudentSelection}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               name="ParentDrawer"
               component={ParentDrawer}
@@ -86,17 +90,61 @@ const App = () => {
                 contentStyle: { backgroundColor: 'transparent' },
               }}
             />
-            <Stack.Screen name="Attendance" component={Attendance}  options={{ headerShown: false }} />
-            <Stack.Screen name="Fees" component={Fees}  options={{ headerShown: false }} />
-            <Stack.Screen name="Notice" component={Notice}  options={{ headerShown: false }} />
-            <Stack.Screen name="Events" component={Events}  options={{ headerShown: false }} />
-            <Stack.Screen name="Homework" component={Homework}  options={{ headerShown: false }} />
-            <Stack.Screen name="Messages" component={Messages}  options={{ headerShown: false }} />
-            <Stack.Screen name="Library" component={Library}  options={{ headerShown: false }} />
-            <Stack.Screen name="PaymentHistory" component={PaymentHistory}  options={{ headerShown: false }} />
-            <Stack.Screen name="FeePayment" component={FeePayment}  options={{ headerShown: false }} />
-            <Stack.Screen name="LandingStudent" component={LandingStudent}  options={{ headerShown: false }} />
-            <Stack.Screen name="EventDetail" component={EventDetail}  options={{ headerShown: false }} />
+            <Stack.Screen
+              name="Attendance"
+              component={Attendance}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Fees"
+              component={Fees}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Notice"
+              component={Notice}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Events"
+              component={Events}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Homework"
+              component={Homework}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Messages"
+              component={Messages}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Library"
+              component={Library}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PaymentHistory"
+              component={PaymentHistory}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="FeePayment"
+              component={FeePayment}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="LandingStudent"
+              component={LandingStudent}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="EventDetail"
+              component={EventDetail}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

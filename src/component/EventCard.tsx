@@ -9,13 +9,15 @@ type Props = {
   event_date: string;
   event_fee: string;
   event_description: string;
-  status: 'Ongoing' | 'UpComing' | 'Past';
+  status: string;
+  is_registered: number,
   onPress?: () => void;
 };
 
-const EventCard = ({ event_name, event_date, event_fee, event_description, status, onPress }: Props) => {
+const EventCard = ({ event_name, event_date, event_fee, event_description, status, is_registered, onPress }: Props) => {
+  console.log('EventCard status:', status); // Log the status value for debugging
   const getStatusStyle = () => {
-    switch (getStatus(event_date)) {
+    switch (status) {
       case 'Ongoing':
         return { backgroundColor: Colors.yellow, color: Colors.textColorInpuHeader };
       case 'UpComing':
@@ -61,15 +63,28 @@ const EventCard = ({ event_name, event_date, event_fee, event_description, statu
                       <Text style={styles.meta}>₹{event_fee}</Text>
                 </View>
               </View>
-            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-              <View style={[styles.status, { backgroundColor: statusStyle.backgroundColor }]}>
-                <Text style={{ color: Colors.textColorInpuHeader, fontSize: FontSize.small, fontFamily: FontFamily.medium }}>
-                  {getStatus(event_date)}
-                </Text>
-              </View>
-               {/* <TouchableOpacity >
-                    <Text style={styles.link}>Details ↗</Text>
-                </TouchableOpacity> */}
+               <View style={styles.rightSection}>
+                  {/* Status */}
+                  <View
+                    style={[
+                      styles.status,
+                      { backgroundColor: statusStyle.backgroundColor },
+                    ]}
+                  >
+                    <Text style={styles.statusText}>
+                      {status}
+                    </Text>
+                  </View>
+
+                  {/* Participated - aligned with fee */}
+                  {is_registered === 1 && (
+                    <View style={styles.participatedContainer}>
+                      <View style={styles.participatedDot} />
+                      <Text style={styles.participatedText}>
+                        Participated
+                      </Text>
+                    </View>
+                  )}
                 </View>
             </View>
           </TouchableOpacity>
@@ -112,6 +127,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
+    overflow: 'hidden',
   },
   iconLarge: {
     width: 20,
@@ -136,4 +152,36 @@ link: {
     color: Colors.theme_color,
     marginTop: 16,
   },
+
+rightSection: {
+  alignItems: 'flex-end',
+  justifyContent: 'space-between',
+  alignSelf: 'stretch',
+},
+
+statusText: {
+  color: Colors.textColorInpuHeader,
+  fontSize: FontSize.small,
+  fontFamily: FontFamily.medium,
+},
+
+participatedContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 2,
+},
+
+participatedDot: {
+  width: 7,
+  height: 7,
+  borderRadius: 4,
+  backgroundColor: Colors.success,
+  marginRight: 5,
+},
+
+participatedText: {
+  fontSize: FontSize.small,
+  fontFamily: FontFamily.medium,
+  color: Colors.success,
+},
 });

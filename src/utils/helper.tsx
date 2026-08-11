@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { EventDetail } from '../Model/EventList/EventDetailData';
 
 export const getBottomSpacing = (insets: any) => {
   return Platform.OS === 'android' ? insets.bottom : 0;
@@ -40,6 +41,27 @@ export function getStatus(item: any): string {
     return 'Ongoing';
   } else if (examDate > today) {
     return 'Upcoming';
+  } else {
+    return 'Past';
+  }
+}
+
+export function getStatusEvent(item: EventDetail): string {
+  const today = new Date();
+
+  const todayDate =
+    `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  const eventDate = item.event_date;
+
+  console.log('Event Date:', eventDate);
+  console.log('Today Date:', todayDate);
+
+
+  if (eventDate === todayDate) {
+    return 'Ongoing';
+  } else if (eventDate > todayDate) {
+    return 'UpComing';
   } else {
     return 'Past';
   }

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import StorageManager from './StorageManager';
 
-const BASE_URL = 'http://192.168.1.18/scms.beas.in/api';
+//const BASE_URL = 'http://192.168.1.18/scms.beas.in/api';
+const BASE_URL = 'http://182.73.216.93/scms.beas.in/api';
 
 export const RestApi = axios.create({
   baseURL: BASE_URL,
@@ -34,7 +35,6 @@ RestApi.interceptors.request.use(
       console.log('============================================\n');
 
       return config;
-
     } catch (error) {
       console.log('Request Interceptor Error:', error);
       return config;
@@ -48,7 +48,6 @@ RestApi.interceptors.request.use(
 // ===============================
 RestApi.interceptors.response.use(
   response => {
-
     // ✅ LOG API RESPONSE
     console.log('\n================ API RESPONSE ================');
     console.log('URL:', response.config.url);
@@ -60,7 +59,6 @@ RestApi.interceptors.response.use(
   },
 
   error => {
-
     // ✅ LOG API ERROR
     console.log('\n================ API ERROR ==================');
     console.log('URL:', error?.config?.url);

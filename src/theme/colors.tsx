@@ -49,7 +49,8 @@ const Colors = {
   button_text_inactive: '#1E1C1D80',
   loaderBackground: '#00000040',
   loaderText: '#FFFFFF',
-  loaderColor: '#007AFF'
+  loaderColor: '#007AFF',
+  success: '#16A34A',
 };
 
 export default Colors;

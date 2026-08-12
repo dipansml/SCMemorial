@@ -135,7 +135,8 @@ const EventDetail = ({ navigation, route }: Props) => {
             </Text>
           </View>
         </View>
-        { event.is_registered === 0 && (
+        { event.is_registered === 0 &&
+          (event.online_payment === '1') && (
           <TouchableOpacity
               style={[
               CommonStyles.button,

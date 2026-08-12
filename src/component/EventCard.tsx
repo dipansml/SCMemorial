@@ -11,10 +11,11 @@ type Props = {
   event_description: string;
   status: string;
   is_registered: number,
+  online_payment: string,
   onPress?: () => void;
 };
 
-const EventCard = ({ event_name, event_date, event_fee, event_description, status, is_registered, onPress }: Props) => {
+const EventCard = ({ event_name, event_date, event_fee, event_description, status, is_registered, online_payment, onPress }: Props) => {
   console.log('EventCard status:', status); // Log the status value for debugging
   const getStatusStyle = () => {
     switch (status) {

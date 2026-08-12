@@ -7,4 +7,5 @@ export default interface EventDetail {
   event_fee: string;
   event_description: string;
   is_registered: number;
+  online_payment: string;
 }

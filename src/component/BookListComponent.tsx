@@ -157,6 +157,9 @@ const BookListComponent = ({ bookList }: Props) => {
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
+       contentContainerStyle={{
+        paddingBottom: 60,
+      }}
     />
   );
 };

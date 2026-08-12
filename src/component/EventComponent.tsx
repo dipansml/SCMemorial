@@ -16,6 +16,7 @@ export type EventItem = {
   event_description: string;
   status: string;
   is_registered: number;
+  online_payment: string;
 };
 
 type Props = {
@@ -41,6 +42,7 @@ const EventComponent = ({
       event_description={item.event_description}
       status={item.status}
       is_registered={item.is_registered}
+      online_payment = {item.online_payment}
       onPress={() => onItemPress?.(item)}
     />
   );

@@ -25,6 +25,7 @@ import LandingStudent from './src/screens/LandingStudent';
 import StudentDrawer from './src/Drawer/StudentDrawer';
 import EventDetail from './src/screens/EventDetail';
 import EventItem from './src/Model/EventList/EventDetailData';
+import AllBook from './src/screens/AllBook'
 
 enableScreens();
 
@@ -50,6 +51,7 @@ export type RootStackParamList = {
   EventDetail: {
      event: EventItem;
   };
+  AllBook: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -143,6 +145,11 @@ const App = () => {
             <Stack.Screen
               name="EventDetail"
               component={EventDetail}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AllBook"
+              component={AllBook}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

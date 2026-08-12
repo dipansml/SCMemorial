@@ -1,3 +1,4 @@
+import { BookListResponse } from '../Model/AllBook/BookListData';
 import { DashboardResponse } from '../Model/Dashboard/DashboardResponse';
 import { EventResponse } from '../Model/EventList/EventResponse';
 import { StudentExamResponse } from '../Model/ExamList/StudentExamResponse';
@@ -89,7 +90,7 @@ export const Api = {
   //   },
 
   getEventList: async (payload: EventListPayload): Promise<EventResponse> => {
-    const response = await RestApi.get('/student-event-list');
+    const response = await RestApi.post('/student-event-list', payload);
     return response.data;
   },
 
@@ -98,6 +99,18 @@ export const Api = {
   ): Promise<StudentLibraryResponse> => {
     const response = await RestApi.post('/student-library', payload);
     return response.data;
+  },
+
+   getAllBook: async (
+      page: number = 1,
+      perPage: number = 10,
+      search: string = '',
+    ): Promise<BookListResponse> => {
+      const response = await RestApi.get(
+        `/all-books?page=${page}&per_page=${perPage}&search=${search}`,
+      );
+
+      return response.data;
   },
 
   getStudentHomework: async (

@@ -11,87 +11,56 @@ import FullScreenLoader from '../view/FullScreenLoader';
 import { getStatus, getStatusEvent } from '../utils/helper';
 
 const Events = ({ navigation }: { navigation: any }) => {
- const [eventData, setEventData] =
-    useState<EventItem[]>([]);
+  const [eventData, setEventData] = useState<EventItem[]>([]);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadEvents();
-  }, []); 
+  }, []);
 
- const loadEvents = async () => {
-
+  const loadEvents = async () => {
     try {
       setLoading(true);
-      const response =
-        await Api.getEventList({
-          user_id:
-            await StorageManager.getStudentId(),
-        });
+      const response = await Api.getEventList({
+        user_id: await StorageManager.getStudentId(),
+      });
 
-      console.log(
-        'Events Response:',
-        response
-      );
+      console.log('Events Response:', response);
 
-      if (
-        response &&
-        response.status === 200 &&
-        response.data?.event_list
-      ) {
+      if (response && response.status === 200 && response.data?.event_list) {
+        const formattedData: EventItem[] = response.data.event_list.map(
+          (item: EventDetail) => ({
+            id: item.id,
 
-        const formattedData: EventItem[] =
-          response.data.event_list.map(
-            (item: EventDetail) => ({
-              id: item.id,
+            event_name: item.event_name,
 
-              event_name:
-                item.event_name,
+            event_date: item.event_date,
 
-              event_date:
-                item.event_date,
+            event_fee: item.event_fee,
 
-              event_fee:
-                item.event_fee,
+            event_description: item.event_description,
 
-              event_description:
-                item.event_description,
+            status: getStatusEvent(item),
 
-              status: getStatusEvent(item),
-
-              is_registered: item.is_registered,
-            })
-          );
+            is_registered: item.is_registered,
+            online_payment: item.online_payment,
+          }),
+        );
 
         setEventData(formattedData);
-
       } else {
         console.log('Events Error:', response?.message);
-        Alert.alert(
-          'Error',
-          response?.message ||
-            'Failed to load events'
-        );
+        Alert.alert('Error', response?.message || 'Failed to load events');
       }
-
     } catch (error: any) {
-
-      console.log(
-        'Events Error:',
-        error?.response?.data ||
-          error.message
-      );
+      console.log('Events Error:', error?.response?.data || error.message);
 
       Alert.alert(
         'Error',
-        error?.response?.data?.message ||
-          'Something went wrong'
+        error?.response?.data?.message || 'Something went wrong',
       );
-
     } finally {
-
       setLoading(false);
     }
   };
@@ -108,9 +77,9 @@ const Events = ({ navigation }: { navigation: any }) => {
       />
 
       <View style={styles.content}>
-        <EventComponent 
-          data={eventData} 
-          onItemPress={(item) => {
+        <EventComponent
+          data={eventData}
+          onItemPress={item => {
             console.log('Clicked Event:', item);
 
             navigation.navigate('EventDetail', {
@@ -119,7 +88,6 @@ const Events = ({ navigation }: { navigation: any }) => {
           }}
         />
       </View>
-
     </SafeAreaView>
   );
 };

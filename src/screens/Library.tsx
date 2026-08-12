@@ -61,75 +61,75 @@ const [loading, setLoading] = useState(false);
   ];
 
   useEffect(() => {
-  loadLibraryList();
-}, []);
+    loadLibraryList();
+  }, []);
 
   const loadLibraryList = async () => {
 
-  try {
+    try {
 
-    setLoading(true);
+      setLoading(true);
 
-    const response =
-      await Api.getStudentLibrary({
-        user_id:
-          await StorageManager.getStudentId(),
-      });
+      const response =
+        await Api.getStudentLibrary({
+          user_id:
+            await StorageManager.getStudentId(),
+        });
 
-    console.log(
-      'Library Response:',
-      response
-    );
+      console.log(
+        'Library Response:',
+        response
+      );
 
-    if (
-      response &&
-      response.status === 200 &&
-      response.data?.library_list
-    ) {
+      if (
+        response &&
+        response.status === 200 &&
+        response.data?.library_list
+      ) {
 
-      const formattedData: LibraryItem[] =
-        response.data.library_list.map(
-          (item: LibraryItem) => ({
-            id: item.id,
-            title: item.title,
-            author: item.author,
-            status: item.status,
-            issueDate: item.issueDate,
-            dueDate: item.dueDate,
-            daysLeft: item.daysLeft,
-            type: item.type,
-          })
+        const formattedData: LibraryItem[] =
+          response.data.library_list.map(
+            (item: LibraryItem) => ({
+              id: item.id,
+              title: item.title,
+              author: item.author,
+              status: item.status,
+              issueDate: item.issueDate,
+              dueDate: item.dueDate,
+              daysLeft: item.daysLeft,
+              type: item.type,
+            })
+          );
+
+        setLibraryList(formattedData);
+
+      } else {
+
+        Alert.alert(
+          'Error',
+          response?.message ||
+            'Failed to load library data'
         );
+      }
 
-      setLibraryList(formattedData);
+    } catch (error: any) {
 
-    } else {
+      console.log(
+        'Library Error:',
+        error?.response?.data || error.message
+      );
 
       Alert.alert(
         'Error',
-        response?.message ||
-          'Failed to load library data'
+        error?.response?.data?.message ||
+          'Something went wrong'
       );
+
+    } finally {
+
+      setLoading(false);
     }
-
-  } catch (error: any) {
-
-    console.log(
-      'Library Error:',
-      error?.response?.data || error.message
-    );
-
-    Alert.alert(
-      'Error',
-      error?.response?.data?.message ||
-        'Something went wrong'
-    );
-
-  } finally {
-
-    setLoading(false);
-  }
-};
+  };
   // ✅ Filter Logic
   const filteredBooks =
     activeTab === 'All'
@@ -140,13 +140,15 @@ const [loading, setLoading] = useState(false);
   return (
     <SafeAreaView style={styles.container}>
       <FullScreenLoader visible={loading} />
+
       <AppHeader
         title="Library"
         showBack={route.params?.isback}
         onMenuPress={!route.params?.isback ? openParentDrawer : navigation.goBack}
         navigation={navigation}
       />
-      {/* ✅ Tabs */}
+
+      {/* Tabs */}
       <View style={styles.tabsContainer}>
         {tabs.map((tab, index) => (
           <TouchableOpacity
@@ -158,21 +160,40 @@ const [loading, setLoading] = useState(false);
             onPress={() => setActiveTab(tab.key as TabType)}
           >
             <View style={styles.iconBox}>
-              <Image source={tab.icon} style={[
-                    styles.icon,
-                    { tintColor: tab.color }
-                ]}/>
+              <Image
+                source={tab.icon}
+                style={[
+                  styles.icon,
+                  { tintColor: tab.color },
+                ]}
+              />
             </View>
+
             <Text style={styles.title}>{tab.title}</Text>
             <Text style={styles.count}>{tab.count}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-     <BookListComponent bookList={filteredBooks} />
+      <BookListComponent bookList={filteredBooks} />
+
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        style={styles.floatingButton}
+        activeOpacity={0.8}
+        onPress={() => {
+          navigation.navigate('AllBook');
+        }}
+      >
+        <Image
+          source={require('../assets/images/icons/book.png')}
+          style={styles.iconLarge}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
     </SafeAreaView>
-  );
-};
+      );
+    };
 
 export default Library;
 
@@ -255,4 +276,35 @@ const styles = StyleSheet.create({
   },
 
   meta: { fontSize: 11, color: '#555' },
+
+  floatingButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.primary,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    // iOS shadow
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+
+    // Android shadow
+    elevation: 6,
+  },
+
+  iconLarge: {
+    width: 20,
+    height: 20,
+    tintColor: Colors.white,
+  },
 });

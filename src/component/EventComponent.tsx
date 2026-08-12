@@ -5,29 +5,45 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
-import EventCard from './EventCard';
-import { card } from '../theme/fonts_dimen';
 
-type EventItem = {
+import EventCard from './EventCard';
+
+export type EventItem = {
   id: string;
-  title: string;
-  date: string;
-  time: string;
-  status: 'Ongoing' | 'UpComing' | 'Past';
+  event_name: string;
+  event_date: string;
+  event_fee: string;
+  event_description: string;
+  status: string;
+  is_registered: number;
+  online_payment: string;
 };
 
 type Props = {
   data: EventItem[];
+
+  onItemPress?: (item: EventItem) => void;
 };
 
-const EventComponent = ({ data }: Props) => {
+const EventComponent = ({
+  data,
+  onItemPress,
+}: Props) => {
 
-  const renderItem = ({ item }: { item: EventItem }) => (
+  const renderItem = ({
+    item,
+  }: {
+    item: EventItem;
+  }) => (
     <EventCard
-      title={item.title}
-      date={item.date}
-      time={item.time}
+      event_name={item.event_name}
+      event_date={item.event_date}
+      event_fee={item.event_fee}
+      event_description={item.event_description}
       status={item.status}
+      is_registered={item.is_registered}
+      online_payment = {item.online_payment}
+      onPress={() => onItemPress?.(item)}
     />
   );
 
@@ -38,7 +54,9 @@ const EventComponent = ({ data }: Props) => {
       renderItem={renderItem}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.list}
-      ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+      ItemSeparatorComponent={() => (
+        <View style={{ height: 10 }} />
+      )}
       ListEmptyComponent={() => (
         <View style={styles.empty}>
           <Text>No Events Found</Text>
@@ -55,8 +73,9 @@ export default EventComponent;
 
 const styles = StyleSheet.create({
   list: {
-    padding: 16
+    padding: 16,
   },
+
   empty: {
     alignItems: 'center',
   },

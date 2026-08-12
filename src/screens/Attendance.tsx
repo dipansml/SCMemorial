@@ -1,53 +1,117 @@
-import React from 'react';
-import { View, StyleSheet, Image, Text, ImageBackground, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Image, Text, ImageBackground, ScrollView, Alert } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { container, FontFamily, FontSize, card } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
 import Calendar from '../component/Calendar';
 import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AttendanceData } from '../Model/StudentAttendance/AttendanceData';
+import { StatusType } from '../Model/StudentAttendance/AttendanceItem';
+import { useEffect } from 'react';
+import StorageManager from '../services/StorageManager';
+import { Api } from '../services/Api';
+import FullScreenLoader from '../view/FullScreenLoader';
 
-type StatusType = 'present' | 'absent' | 'holiday' | 'default';
+const Attendance = ({ navigation }: { navigation: any }) => {
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+   const [attendanceData, setAttendanceData] =
+    useState<AttendanceData | null>(null);
 
-interface AttendanceItem {
-  date: string;
-  status: StatusType;
-}
+  const [loading, setLoading] =
+    useState(false);
 
-const Attendance = () => {
-   const attendanceData: AttendanceItem[] = [
-    { date: '2026-04-01', status: 'present' },
-    { date: '2026-04-02', status: 'present' },
-    { date: '2026-04-03', status: 'present' },
-    { date: '2026-04-07', status: 'present' },
-    { date: '2026-04-08', status: 'present' },
-    { date: '2026-04-10', status: 'absent' },
-    { date: '2026-04-13', status: 'present' },
-    { date: '2026-04-15', status: 'present' },
-    { date: '2026-04-16', status: 'present' },
-    { date: '2026-04-17', status: 'holiday' },
-    { date: '2026-04-20', status: 'absent' },
-    { date: '2026-04-21', status: 'present' },
-    { date: '2026-04-22', status: 'holiday' },
-    { date: '2026-04-23', status: 'present' },
-    { date: '2026-04-24', status: 'present' },
-    { date: '2026-04-27', status: 'holiday' },
-    { date: '2026-04-28', status: 'present' },
-    { date: '2026-04-29', status: 'present' },
-    { date: '2026-04-30', status: 'present' },
-    { date: '2026-04-06', status: 'absent' },
-    { date: '2026-04-14', status: 'absent' },
-    { date: '2026-04-09', status: 'holiday' },
-  ];
+  useEffect(() => {
+    loadAttendance(new Date(currentDate).toISOString());
+  }, []);
+
+
+  const loadAttendance = async (date: String) => {
+
+    try {
+
+      setLoading(true);
+
+      console.log(new Date(currentDate).toISOString());
+      const dateOnly = date.split('T')[0];
+      console.log(dateOnly);
+
+      const response =
+        await Api.getStudentAttendance({
+          user_id:
+            await StorageManager.getStudentId(),
+          month_date: dateOnly,
+        });
+
+      console.log(
+        'Attendance Response:',
+        response
+      );
+
+      if (
+        response &&
+        response.status === 200 &&
+        response.data
+      ) {
+
+        setAttendanceData({
+          name: response.data.name,
+          class: response.data.class,
+          roll: response.data.roll,
+          academic_year:
+            response.data.academic_year,
+          present:
+            response.data.present,
+          absent:
+            response.data.absent,
+          holiday:
+            response.data.holiday,
+          attendance_percentage:
+            response.data.attendance_percentage,
+          AttendanceItem:
+            response.data.AttendanceItem,
+            gender: response.data.gender,
+        });
+
+      } else {
+
+        Alert.alert(
+          'Error',
+          response?.message ||
+            'Failed to load attendance'
+        );
+      }
+
+    } catch (error: any) {
+
+      console.log(
+        'Attendance Error:',
+        error?.response?.data ||
+          error.message
+      );
+
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message ||
+          'Something went wrong'
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <SafeAreaView style={styles.container}>
-      
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Attendance"
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
       <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -55,16 +119,20 @@ const Attendance = () => {
             <View style={styles.content}>
               <View style={styles.profileCard}>
                   <Image
-                      source={require('../assets/images/student1.png')}
+                      source= {attendanceData
+                    ?.gender === 'Female'
+                    ? require('../assets/images/student2.png')
+                    : require('../assets/images/student1.png')
+                }
                       style={styles.avatar}
                   />
 
                   <View style={{ flex: 1 }}>
-                  <Text style={styles.name}>Aritra Chakraborty</Text>
-                  <Text style={styles.subText}>Class 12th • Roll No: 24</Text>
+                  <Text style={styles.name}>{attendanceData?.name}</Text>
+                  <Text style={styles.subText}>Class: {attendanceData?.class} • Roll No: {attendanceData?.roll}</Text>
 
                   <View style={styles.badge}>
-                      <Text style={styles.badgeText}>ACADEMIC YEAR 2025-26</Text>
+                      <Text style={styles.badgeText}>ACADEMIC YEAR {attendanceData?.academic_year}</Text>
                   </View>
                   </View>
               </View>
@@ -81,29 +149,38 @@ const Attendance = () => {
                                   style={styles.graph}
                               />
                           <Text style={styles.attendanceTitle}>Monthly Attendance</Text>
-                          <Text style={styles.attendanceValue}>85%</Text>
+                          <Text style={styles.attendanceValue}>{attendanceData?.attendance_percentage}%</Text>
                       </ImageBackground>
                   {/* Stats */}
                   <View style={styles.statsContainer}>
 
                   <View style={[styles.statBox, styles.present]}>
                       <Text style={styles.statLabel}>PRESENT</Text>
-                      <Text style={styles.statValue}>18</Text>
+                      <Text style={styles.statValue}>{attendanceData?.present}</Text>
                   </View>
 
                   <View style={[styles.statBox, styles.absent]}>
                       <Text style={styles.statLabel}>ABSENT</Text>
-                      <Text style={styles.statValue}>04</Text>
+                      <Text style={styles.statValue}>{attendanceData?.absent}</Text>
                   </View>
 
                   <View style={[styles.statBox, styles.holiday]}>
                       <Text style={styles.statLabel}>HOLIDAY</Text>
-                      <Text style={styles.statValue}>04</Text>
+                      <Text style={styles.statValue}>{attendanceData?.holiday}</Text>
                   </View>
                   </View>
               </View>
               <View style={styles.calenderContainer}>
-                  <Calendar attendanceData={attendanceData} />
+                  {/* <Calendar attendanceData={attendanceData} /> */}
+                  <Calendar
+                      attendanceData={attendanceData?.AttendanceItem || []}
+                      onMonthChange={(date) => {
+                      console.log('Selected Month:', date.toISOString());
+
+                    // API call here
+                    loadAttendance(date.toISOString())
+                    }}
+                  />
               </View>
             </View>
       </ScrollView>

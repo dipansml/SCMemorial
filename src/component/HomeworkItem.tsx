@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     padding: card.padding,
     borderRadius: card.border_radius_card,
     backgroundColor: Colors.background_list_item,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   circle: {
     width: 22,

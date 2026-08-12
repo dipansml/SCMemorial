@@ -1,56 +1,34 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PaymentListComponent from '../component/PaymentListComponent';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
+import { PaymentHistoryItem } from '../Model/PaymentHistory/PaymentHistoryItem';
+import StorageManager from '../services/StorageManager';
+import { Api } from '../services/Api';
+import { CommonStyles } from '../style/CommonStyles';
 
-type Payment = {
-  id: string;
-  type: 'Online' | 'Offline';
-  amount: string;
-  status: 'Success' | 'Pending' | 'Failed';
-  date: string;
-  txnId: string;
-};
 
 // ✅ Tabs
 const tabs = ['All', 'Online', 'Offline'] as const;
 type TabType = typeof tabs[number];
 
   
-const PaymentHistory = () => {
+const PaymentHistory = ({ navigation }: { navigation: any }) => {
 const [activeTab, setActiveTab] = useState<TabType>('All');
+const [paymentList, setPaymentList] = useState<
+  PaymentHistoryItem[]
+>([]);
 
-  // ✅ Data (typed properly)
-  const paymentList: Payment[] = [
-    {
-      id: '1',
-      type: 'Online',
-      amount: '₹1,240.00',
-      status: 'Success',
-      date: 'Mar 24, 2026 • 14:20',
-      txnId: '#TXN-882910',
-    },
-    {
-      id: '2',
-      type: 'Offline',
-      amount: '₹450.00',
-      status: 'Pending',
-      date: 'Mar 23, 2026 • 09:15',
-      txnId: '#TXN-882910',
-    },
-    {
-      id: '3',
-      type: 'Online',
-      amount: '₹2,100.00',
-      status: 'Failed',
-      date: 'Mar 21, 2026 • 18:45',
-      txnId: '#TXN-882910',
-    },
-  ];
+const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+  loadPaymentHistory();
+}, []);
+
 
   // ✅ Filter logic
   const filteredList =
@@ -59,14 +37,92 @@ const [activeTab, setActiveTab] = useState<TabType>('All');
       : paymentList.filter(item => item.type === activeTab);
 
 
+const loadPaymentHistory = async () => {
+
+  try {
+
+    setLoading(true);
+
+    const response =
+      await Api.getStudentPaymentHistory({
+        user_id:
+          await StorageManager.getStudentId(),
+      });
+
+    console.log(
+      'Payment History Response:',
+      response
+    );
+
+    if (
+      response &&
+      response.status === 200 &&
+      response.data?.payment_history
+    ) {
+
+      const formattedData: PaymentHistoryItem[] =
+        response.data.payment_history.map(
+          (item: PaymentHistoryItem) => ({
+            id: item.id,
+            type: item.type,
+            amount: item.amount,
+            payment_date: item.payment_date,
+            status: item.status,
+            txnid: item.txnid,
+            download_url: item.download_url,
+          })
+        );
+
+      setPaymentList(formattedData);
+
+    } else {
+
+      Alert.alert(
+        'Error',
+        response?.message ||
+          'Failed to load payment history'
+      );
+    }
+
+  } catch (error: any) {
+
+    console.log(
+      'Payment History Error:',
+      error?.response?.data || error.message
+    );
+
+    Alert.alert(
+      'Error',
+      error?.response?.data?.message ||
+        'Something went wrong'
+    );
+
+  } finally {
+
+    setLoading(false);
+  }
+};
+
+const FullScreenLoader = ({ visible }: { visible: boolean }) => {
+    if (!visible) return null;
+
+    return (
+      <View style={CommonStyles.loaderOverlay}>
+        <ActivityIndicator size="large" color={Colors.loaderColor} />
+        <Text style={CommonStyles.loaderText}>Loading...</Text>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Payment History"
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>

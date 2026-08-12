@@ -1,62 +1,93 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import AppHeader from '../component/AppHeader';
-import EventComponent from '../component/EventComponent';
+import EventComponent, { EventItem } from '../component/EventComponent';
 import { openParentDrawer } from '../navigation/navigationRef';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Api } from '../services/Api';
+import StorageManager from '../services/StorageManager';
+import { EventDetail } from '../Model/EventList/EventDetailData';
+import FullScreenLoader from '../view/FullScreenLoader';
+import { getStatus, getStatusEvent } from '../utils/helper';
 
-const Events = () => {
-   const eventData = [
-    {
-      id: '1',
-      title: 'Event 1',
-      date: '25 Apr 2026',
-      time: '10:00 AM - 1:00 PM',
-      status: 'Ongoing',
-    },
-    {
-      id: '2',
-      title: 'Event 2',
-      date: '25 Apr 2026 - 27 Apr 2026',
-      time: '10:00 AM - 1:00 PM',
-      status: 'Ongoing',
-    },
-    {
-      id: '3',
-      title: 'Event 3',
-      date: '29 Apr 2026 - 30 Apr 2026',
-      time: '10:00 AM - 1:00 PM',
-      status: 'UpComing',
-    },
-    {
-      id: '4',
-      title: 'Event 4',
-      date: '30 Apr 2026',
-      time: '10:00 AM - 1:00 PM',
-      status: 'Ongoing',
-    },
-    {
-      id: '5',
-      title: 'Event 5',
-      date: '25 Apr 2026',
-      time: '10:00 AM - 1:00 PM',
-      status: 'Past',
-    },
-  ];
+const Events = ({ navigation }: { navigation: any }) => {
+  const [eventData, setEventData] = useState<EventItem[]>([]);
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  const loadEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await Api.getEventList({
+        user_id: await StorageManager.getStudentId(),
+      });
+
+      console.log('Events Response:', response);
+
+      if (response && response.status === 200 && response.data?.event_list) {
+        const formattedData: EventItem[] = response.data.event_list.map(
+          (item: EventDetail) => ({
+            id: item.id,
+
+            event_name: item.event_name,
+
+            event_date: item.event_date,
+
+            event_fee: item.event_fee,
+
+            event_description: item.event_description,
+
+            status: getStatusEvent(item),
+
+            is_registered: item.is_registered,
+            online_payment: item.online_payment,
+          }),
+        );
+
+        setEventData(formattedData);
+      } else {
+        console.log('Events Error:', response?.message);
+        Alert.alert('Error', response?.message || 'Failed to load events');
+      }
+    } catch (error: any) {
+      console.log('Events Error:', error?.response?.data || error.message);
+
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message || 'Something went wrong',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Events"
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>
-        <EventComponent data={eventData} />
-      </View>
+        <EventComponent
+          data={eventData}
+          onItemPress={item => {
+            console.log('Clicked Event:', item);
 
+            navigation.navigate('EventDetail', {
+              event: item,
+            });
+          }}
+        />
+      </View>
     </SafeAreaView>
   );
 };

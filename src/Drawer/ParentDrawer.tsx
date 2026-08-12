@@ -18,6 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize, Header, Menu } from '../theme/fonts_dimen';
+import StorageManager from '../services/StorageManager';
 
 type DrawerNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -103,6 +104,11 @@ const ParentDrawer = () => {
   const currentRoute =
     state.routes[state.routes.length - 2]?.name || 'LandingParents';
 
+    const handleLogout = async () => {
+      await StorageManager.clearLoginData();
+      navigation.replace('Login')
+    };
+
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar
@@ -113,71 +119,79 @@ const ParentDrawer = () => {
       <View style={styles.backdrop}>
         {/* Drawer */}
         <View style={[styles.drawer, { width: drawerWidth }]}>
-          {/* Header */}
-          <View style={styles.schoolHeader}>
-            <Image
-              source={require('../assets/images/title_logo.png')}
-              style={styles.schoolLogo}
-            />
-          </View>
 
-          {/* Menu */}
-          <ScrollView
-            style={styles.menuScroll}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.menuContent}
-          >
-            {menuItems.map((item) => {
-              const isActive = currentRoute === item.route;
+            {/* Header */}
+            <View style={styles.schoolHeader}>
+              <Image
+                source={require('../assets/images/title_logo.png')}
+                style={styles.schoolLogo}
+              />
+            </View>
 
-              return (
-                <TouchableOpacity
-                  key={item.key}
-                  activeOpacity={0.75}
-                  style={[
-                    styles.menuItem,
-                    isActive && styles.menuItemActive,
-                  ]}
-                  onPress={() => {
-                    navigation.replace(item.route);
-                  }}
-                >
-                  <View style={styles.menuIconWrap}>
-                    <Image source={item.icon} 
-                          style={[
+            {/* Menu - Only this section scrolls */}
+            <ScrollView
+              style={styles.menuScroll}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.menuContent}
+            >
+              {menuItems.map((item) => {
+                const isActive = currentRoute === item.route;
+
+                return (
+                  <TouchableOpacity
+                    key={item.key}
+                    activeOpacity={0.75}
+                    style={[
+                      styles.menuItem,
+                      isActive && styles.menuItemActive,
+                    ]}
+                    onPress={() => {
+                      navigation.replace(item.route);
+                    }}
+                  >
+                    <View style={styles.menuIconWrap}>
+                      <Image
+                        source={item.icon}
+                        style={[
                           styles.menuIcon,
                           isActive && styles.menuIconActive,
-                  ]}/>
-                  </View>
+                        ]}
+                      />
+                    </View>
 
-                  <Text
-                    style={[
-                      styles.menuLabel,
-                      isActive && styles.menuLabelActive,
-                    ]}
-                  >
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+                    <Text
+                      style={[
+                        styles.menuLabel,
+                        isActive && styles.menuLabelActive,
+                      ]}
+                    >
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
 
-          {/* Sign Out */}
-          <View style={styles.devider}/>
-          <Pressable
-             style={[
-                      styles.signOutContainer,
-                      Platform.OS === 'android' && { marginBottom: 30},
-                    ]}
-              onPress={() => navigation.replace('Login')}> 
-          <Image
-            source={require('../assets/images/icons/logout.png')} // add logout icon
-            style={styles.signOutIcon}
-          />
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </Pressable>
-        </View>
+            {/* Logout - Always at bottom */}
+            <View style={styles.logoutSection}>
+              <View style={styles.devider} />
+
+              <Pressable
+                style={styles.signOutContainer}
+                onPress={handleLogout}
+              >
+                <Image
+                  source={require('../assets/images/icons/logout.png')}
+                  style={styles.signOutIcon}
+                />
+
+                <Text style={styles.signOutText}>
+                  Sign Out
+                </Text>
+              </Pressable>
+            </View>
+
+          </View>
         <Pressable
           style={styles.overlay}
           onPress={() => navigation.goBack()}
@@ -203,33 +217,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.35)',
   },
 
-  drawer: {
-    backgroundColor: Colors.white,
-    justifyContent: 'space-between',
-    marginTop: Header.paddingTop,
-
-    ...Platform.select({
-      android: {
-        elevation: 8,
-        paddingBottom: 16,
-      },
-      ios: {
-        shadowColor: '#000',
-        shadowOpacity: 0.18,
-        shadowRadius: 12,
-        shadowOffset: { width: 2, height: 0 },
-      },
-    }),
-  },
-
-  schoolHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: '15%',
-    backgroundColor: Colors.theme_color,
-    padding: 14,
-    marginBottom: 18,
-  },
 
   schoolLogo: {
     flex:2,
@@ -251,15 +238,6 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.regular,
     fontSize: FontSize.very_small,
     opacity: 0.95,
-  },
-
-  menuContent: {
-    paddingBottom: 20,
-    paddingHorizontal: 10,
-  },
-
-  menuScroll: {
-    flex: 1,
   },
 
   menuItem: {
@@ -311,32 +289,78 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.border_color,
   },
 
-  signOutText: {
-    color: Colors.textColorInpuHeader,
-    fontFamily: FontFamily.regular,
-    fontSize: FontSize.regular,
-  },
-
   overlay: {
     flex: 1,
   },
 
-  signOutContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 20,
-    height: 50,
-    backgroundColor: Colors.background,
-  },
+drawer: {
+  backgroundColor: Colors.white,
+  flexDirection: 'column',
+  marginTop: Header.paddingTop,
+
+  ...Platform.select({
+    android: {
+      elevation: 8,
+    },
+    ios: {
+      shadowColor: '#000',
+      shadowOpacity: 0.18,
+      shadowRadius: 12,
+      shadowOffset: { width: 2, height: 0 },
+    },
+  }),
+},
+
+schoolHeader: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  height: '15%',
+  backgroundColor: Colors.theme_color,
+  padding: 14,
+  marginBottom: 10,
+},
+
+menuScroll: {
+  flex: 1,
+},
+
+menuContent: {
+  paddingBottom: 10,
+  paddingHorizontal: 10,
+},
+
+logoutSection: {
+  width: '100%',
+  backgroundColor: Colors.white,
+},
+
+devider: {
+  borderTopWidth: 1,
+  borderTopColor: Colors.border_color,
+},
+
+signOutContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingHorizontal: 20,
+  height: 55,
+  backgroundColor: Colors.background,
+
+  // Android safe-area space
+  paddingBottom: Platform.OS === 'android' ? 5 : 0,
+},
 
 signOutIcon: {
   width: 18,
   height: 18,
   marginRight: 10,
+  resizeMode: 'contain',
   tintColor: Colors.menu_tint,
 },
-devider: {
-    borderTopWidth: 1,
-    borderTopColor: Colors.border_color,
-  },
+
+signOutText: {
+  color: Colors.textColorInpuHeader,
+  fontFamily: FontFamily.regular,
+  fontSize: FontSize.regular,
+},  
 });

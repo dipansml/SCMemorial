@@ -22,7 +22,6 @@ import StorageManager from '../services/StorageManager';
 
 type DrawerNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-
 type MenuItem = {
   key: string;
   label: string;
@@ -43,12 +42,18 @@ const menuItems: MenuItem[] = [
     route: 'Attendance',
     icon: require('../assets/images/icons/attendance.png'),
   },
-  // {
-  //   key: 'Fees',
-  //   label: 'Fee Payment',
-  //   route: 'Fees',
-  //   icon: require('../assets/images/icons/fees.png'),
-  // },
+  {
+    key: 'Fees',
+    label: 'Fees Overview',
+    route: 'Fees',
+    icon: require('../assets/images/icons/fees_overview.png'),
+  },
+  {
+    key: 'PaymentHistory',
+    label: 'Payment History',
+    route: 'PaymentHistory',
+    icon: require('../assets/images/icons/payment.png'),
+  },
   {
     key: 'events',
     label: 'Events',
@@ -87,9 +92,8 @@ const StudentDrawer = () => {
   const insets = useSafeAreaInsets();
 
   const drawerWidth = Math.min(360, Math.max(280, Math.round(width * 0.72)));
-  const footerBottomInset = Platform.OS === 'android'
-    ? Math.max(insets.bottom, 16)
-    : insets.bottom;
+  const footerBottomInset =
+    Platform.OS === 'android' ? Math.max(insets.bottom, 16) : insets.bottom;
 
   // ✅ Get current active screen behind drawer
   const state = navigation.getState();
@@ -98,10 +102,10 @@ const StudentDrawer = () => {
   const currentRoute =
     state.routes[state.routes.length - 2]?.name || 'LandingStudent';
 
-    const handleLogout = async () => {
-      await StorageManager.clearAll();
-      navigation.replace('Login')
-    };
+  const handleLogout = async () => {
+    await StorageManager.clearLoginData();
+    navigation.replace('Login');
+  };
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -121,33 +125,32 @@ const StudentDrawer = () => {
             />
           </View>
 
-          {/* Menu */}
+          {/* Menu - Only this section scrolls */}
           <ScrollView
             style={styles.menuScroll}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.menuContent}
           >
-            {menuItems.map((item) => {
+            {menuItems.map(item => {
               const isActive = currentRoute === item.route;
 
               return (
                 <TouchableOpacity
                   key={item.key}
                   activeOpacity={0.75}
-                  style={[
-                    styles.menuItem,
-                    isActive && styles.menuItemActive,
-                  ]}
+                  style={[styles.menuItem, isActive && styles.menuItemActive]}
                   onPress={() => {
                     navigation.replace(item.route);
                   }}
                 >
                   <View style={styles.menuIconWrap}>
-                    <Image source={item.icon} 
-                          style={[
-                          styles.menuIcon,
-                          isActive && styles.menuIconActive,
-                  ]}/>
+                    <Image
+                      source={item.icon}
+                      style={[
+                        styles.menuIcon,
+                        isActive && styles.menuIconActive,
+                      ]}
+                    />
                   </View>
 
                   <Text
@@ -163,27 +166,21 @@ const StudentDrawer = () => {
             })}
           </ScrollView>
 
-          {/* Sign Out */}
-          <View style={styles.devider}/>
-          <Pressable
-             style={[
-                      styles.signOutContainer,
-                      Platform.OS === 'android' && { marginBottom: 30},
-                    ]}
-              onPress={handleLogout}> 
-          <Image
-            source={require('../assets/images/icons/logout.png')} // add logout icon
-            style={styles.signOutIcon}
-          />
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </Pressable>
-        </View>
-        <Pressable
-          style={styles.overlay}
-          onPress={() => navigation.goBack()}
-        />
+          {/* Logout - Always at bottom */}
+          <View style={styles.logoutSection}>
+            <View style={styles.devider} />
 
-      
+            <Pressable style={styles.signOutContainer} onPress={handleLogout}>
+              <Image
+                source={require('../assets/images/icons/logout.png')}
+                style={styles.signOutIcon}
+              />
+
+              <Text style={styles.signOutText}>Sign Out</Text>
+            </Pressable>
+          </View>
+        </View>
+        <Pressable style={styles.overlay} onPress={() => navigation.goBack()} />
       </View>
     </SafeAreaView>
   );
@@ -203,36 +200,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.35)',
   },
 
-  drawer: {
-    backgroundColor: Colors.white,
-    justifyContent: 'space-between',
-    marginTop: Header.paddingTop,
-
-    ...Platform.select({
-      android: {
-        elevation: 8,
-        paddingBottom: 16,
-      },
-      ios: {
-        shadowColor: '#000',
-        shadowOpacity: 0.18,
-        shadowRadius: 12,
-        shadowOffset: { width: 2, height: 0 },
-      },
-    }),
-  },
-
-  schoolHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: '15%',
-    backgroundColor: Colors.theme_color,
-    padding: 14,
-    marginBottom: 18,
-  },
-
   schoolLogo: {
-    flex:2,
+    flex: 2,
     resizeMode: 'contain',
   },
 
@@ -251,15 +220,6 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.regular,
     fontSize: FontSize.very_small,
     opacity: 0.95,
-  },
-
-  menuContent: {
-    paddingBottom: 20,
-    paddingHorizontal: 10,
-  },
-
-  menuScroll: {
-    flex: 1,
   },
 
   menuItem: {
@@ -288,7 +248,7 @@ const styles = StyleSheet.create({
     tintColor: Colors.menu_tint,
   },
 
-   menuIconActive: {
+  menuIconActive: {
     width: Menu.menuSize,
     height: Menu.menuSize,
     resizeMode: 'contain',
@@ -311,33 +271,78 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.border_color,
   },
 
-  signOutText: {
-    color: Colors.textColorInpuHeader,
-    fontFamily: FontFamily.regular,
-    fontSize: FontSize.regular,
-  },
-
   overlay: {
     flex: 1,
+  },
+
+  drawer: {
+    backgroundColor: Colors.white,
+    flexDirection: 'column',
+    marginTop: Header.paddingTop,
+
+    ...Platform.select({
+      android: {
+        elevation: 8,
+      },
+      ios: {
+        shadowColor: '#000',
+        shadowOpacity: 0.18,
+        shadowRadius: 12,
+        shadowOffset: { width: 2, height: 0 },
+      },
+    }),
+  },
+
+  schoolHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: '15%',
+    backgroundColor: Colors.theme_color,
+    padding: 14,
+    marginBottom: 10,
+  },
+
+  menuScroll: {
+    flex: 1,
+  },
+
+  menuContent: {
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+  },
+
+  logoutSection: {
+    width: '100%',
+    backgroundColor: Colors.white,
+  },
+
+  devider: {
+    borderTopWidth: 1,
+    borderTopColor: Colors.border_color,
   },
 
   signOutContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 20,
-    height: 50,
+    paddingHorizontal: 20,
+    height: 55,
     backgroundColor: Colors.background,
+
+    // Android safe-area space
+    paddingBottom: Platform.OS === 'android' ? 5 : 0,
   },
 
-signOutIcon: {
-  width: 18,
-  height: 18,
-  marginRight: 10,
-  tintColor: Colors.menu_tint,
-},
-devider: {
-    borderTopWidth: 1,
-    borderTopColor: Colors.border_color,
+  signOutIcon: {
+    width: 18,
+    height: 18,
+    marginRight: 10,
+    resizeMode: 'contain',
+    tintColor: Colors.menu_tint,
+  },
+
+  signOutText: {
+    color: Colors.textColorInpuHeader,
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.regular,
   },
 });
-

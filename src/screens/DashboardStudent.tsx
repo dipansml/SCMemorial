@@ -1,4 +1,9 @@
-import React, { useCallback }from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+
 import {
   View,
   Text,
@@ -7,185 +12,455 @@ import {
   ScrollView,
   TouchableOpacity,
   ImageBackground,
+  Alert,
 } from 'react-native';
+
 import AppHeader from '../component/AppHeader';
 import { openParentDrawer } from '../navigation/navigationRef';
 import Colors from '../theme/colors';
-import { Button, card, container, FontFamily, FontSize, iconBox } from '../theme/fonts_dimen';
-import GroupedBarChart from '../component/GroupedBarChart';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { BackHandler } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 
-const DashboardStudent = () => {
+import {
+  Button,
+  card,
+  container,
+  FontFamily,
+  FontSize,
+  iconBox,
+} from '../theme/fonts_dimen';
+
+import GroupedBarChart from '../component/GroupedBarChart';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { BackHandler } from 'react-native';
+
+import {
+  useFocusEffect,
+} from '@react-navigation/native';
+
+import { RootStackParamList } from '../../App';
+
+import {
+  NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
+
+import { Api } from '../services/Api';
+import StorageManager from '../services/StorageManager';
+
+import { DashboardData } from '../Model/Dashboard/DashboardData';
+import FullScreenLoader from '../view/FullScreenLoader';
+
+type DashboardStudentProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList>;
+};
+
+const DashboardStudent = ({
+  navigation,
+}: DashboardStudentProps) => {
+
+  const [dashboardData, setDashboardData] =
+    useState<DashboardData | null>(null);
+
+  const [loading, setLoading] =
+    useState(false);
+
   useFocusEffect(
     useCallback(() => {
+
       const onBackPress = () => {
         BackHandler.exitApp();
         return true;
       };
 
-      const subscription = BackHandler.addEventListener(
-        'hardwareBackPress',
-        onBackPress
-      );
+      const subscription =
+        BackHandler.addEventListener(
+          'hardwareBackPress',
+          onBackPress
+        );
 
-      return () => subscription.remove();
+      return () =>
+        subscription.remove();
+
     }, [])
   );
-  
 
+  useEffect(() => {
+    loadDashboard();
+  }, []);
 
-   const chartData = [
-    { subject: 'English', halfYearly: 92, annual: 95 },
-    { subject: 'Math', halfYearly: 88, annual: 96 },
-    { subject: 'Biology', halfYearly: 93, annual: 96 },
-    { subject: 'Physics', halfYearly: 75, annual: 95 },
-    { subject: 'Chemistry', halfYearly: 84, annual: 94 },
-  ];
+  const loadDashboard = async () => {
+
+    try {
+
+      setLoading(true);
+
+      const response =
+        await Api.getDashboard({
+          user_id:
+            await StorageManager.getStudentId(),
+        });
+
+      console.log(
+        'Dashboard Response:',
+        response
+      );
+
+      if (
+        response &&
+        response.status === 200 &&
+        response.data
+      ) {
+
+        setDashboardData(response.data);
+
+      } else {
+
+        Alert.alert(
+          'Error',
+          response?.message ||
+            'Failed to load dashboard'
+        );
+      }
+
+    } catch (error: any) {
+
+      console.log(
+        'Dashboard Error:',
+        error?.response?.data ||
+          error.message
+      );
+
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message ||
+          'Something went wrong'
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
+  // ✅ Chart Data
+  const chartData =
+    dashboardData?.performance_overview?.map(
+      item => ({
+        subject: item.subject,
+        halfYearly: Number(
+          item.halfYearly
+        ),
+        annual: Number(item.annual),
+      })
+    ) || [];
+
+  // ✅ First Library Book
+  const firstBook =
+    dashboardData?.books?.[0];
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      
+    <SafeAreaView
+      style={styles.container}
+      edges={['top']}
+    >
+
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Dashboard"
         onMenuPress={openParentDrawer}
-        onBellPress={() => console.log('Bell')}
-        onProfilePress={() => console.log('Profile')}
+        onBellPress={() =>
+          console.log('Bell')
+        }
+        navigation={navigation}
       />
 
       <View style={styles.content}>
         <View style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={{ padding: container.container_padding }}>
-            
-            {/* Profile Card */}
+          <ScrollView
+            contentContainerStyle={{
+              padding:
+                container.container_padding,
+            }}
+          >
+
+            {/* ✅ Profile Card */}
             <View style={styles.card}>
+
               <Image
-                source={require('../assets/images/student1.png')} // replace with your image
+                source={
+                  dashboardData
+                    ?.studentdetails
+                    ?.gender === 'Female'
+                    ? require('../assets/images/student2.png')
+                    : require('../assets/images/student1.png')
+                }
                 style={styles.avatar}
               />
 
-              <Text style={styles.name}>Aritra Chakraborty</Text>
-              <Text style={styles.id}>ID: STU-2024-9981</Text>
+              <Text style={styles.name}>
+                {
+                  dashboardData
+                    ?.studentdetails
+                    ?.name
+                }
+              </Text>
+
+              <Text style={styles.id}>
+                ID:
+                {
+                  dashboardData
+                    ?.studentdetails
+                    ?.code
+                }
+              </Text>
 
               <View style={styles.infoBox}>
-                <Text style={styles.label}>Class</Text>
-                <Text style={styles.value}>12th Standard</Text>
+                <Text style={styles.label}>
+                  Class
+                </Text>
+
+                <Text style={styles.value}>
+                  {
+                    dashboardData
+                      ?.studentdetails
+                      ?.class_name
+                  }
+                </Text>
               </View>
 
               <View style={styles.infoBox}>
-                <Text style={styles.label}>Section</Text>
-                <Text style={styles.value}>Advanced Sciences (B)</Text>
+                <Text style={styles.label}>
+                  Section
+                </Text>
+
+                <Text style={styles.value}>
+                  {
+                    dashboardData
+                      ?.studentdetails
+                      ?.section_name
+                  }
+                </Text>
               </View>
 
               <View style={styles.infoBox}>
-                <Text style={styles.label}>Roll No.</Text>
-                <Text style={styles.value}>24</Text>
+                <Text style={styles.label}>
+                  Roll No.
+                </Text>
+
+                <Text style={styles.value}>
+                  {
+                    dashboardData
+                      ?.studentdetails
+                      ?.roll_number
+                  }
+                </Text>
               </View>
             </View>
 
-            {/* Academic Overview */}
+            {/* ✅ Academic Overview */}
             <View style={styles.cardGray}>
-              <Text style={styles.sectionTitle}>Academic Overview</Text>
+
+              <Text style={styles.sectionTitle}>
+                Academic Overview
+              </Text>
 
               <View style={styles.row}>
                 <View style={styles.iconBox}>
-                 <Image
+                  <Image
                     source={require('../assets/images/icons/teacher.png')}
                     style={styles.icon}
                     resizeMode="contain"
                   />
                 </View>
-                <View>
-                  <Text style={styles.subLabel}>Class Teacher</Text>
-                  <Text style={styles.subValue}>Mrs. Madhumita Ghosh</Text>
-                </View>
-              </View>
 
-              <View style={styles.row}>
-                <View style={styles.iconBox}>
-                   <Image
-                    source={require('../assets/images/icons/academic.png')}
-                    style={styles.icon}
-                    resizeMode="contain"
-                  />
-                </View>
                 <View>
-                  <Text style={styles.subLabel}>School</Text>
-                  <Text style={styles.subValue}>
-                    Satish Chandra Memorial School
+                  <Text
+                    style={styles.subLabel}
+                  >
+                    Class Teacher
+                  </Text>
+
+                  <Text
+                    style={styles.subValue}
+                  >
+                    {
+                      dashboardData
+                        ?.studentdetails
+                        ?.teacher_name
+                    }
                   </Text>
                 </View>
               </View>
 
               <View style={styles.row}>
                 <View style={styles.iconBox}>
-                   <Image
+                  <Image
+                    source={require('../assets/images/icons/academic.png')}
+                    style={styles.icon}
+                    resizeMode="contain"
+                  />
+                </View>
+
+                <View>
+                  <Text
+                    style={styles.subLabel}
+                  >
+                    School
+                  </Text>
+
+                  <Text
+                    style={styles.subValue}
+                  >
+                    Satish Chandra
+                    Memorial School
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.row}>
+                <View style={styles.iconBox}>
+                  <Image
                     source={require('../assets/images/icons/attendance.png')}
                     style={styles.icon}
                     resizeMode="contain"
                   />
                 </View>
+
                 <View>
-                  <Text style={styles.subLabel}>Admission Date</Text>
-                  <Text style={styles.subValue}>April 12, 2019</Text>
+                  <Text
+                    style={styles.subLabel}
+                  >
+                    Admission Date
+                  </Text>
+
+                  <Text
+                    style={styles.subValue}
+                  >
+                    {
+                      dashboardData
+                        ?.studentdetails
+                        ?.admissiondate
+                    }
+                  </Text>
                 </View>
               </View>
             </View>
+
+            {/* ✅ Performance */}
             <View style={styles.card}>
-              <Text style={styles.sectionTitleLarge}>Performance Overview</Text>
-              <Text style={styles.subLabelRegular}>Last updated 2 days ago</Text>
 
-               <GroupedBarChart data={chartData} />
+              <Text
+                style={
+                  styles.sectionTitleLarge
+                }
+              >
+                Performance Overview
+              </Text>
+
+              <Text
+                style={
+                  styles.subLabelRegular
+                }
+              >
+                Last updated recently
+              </Text>
+
+              <GroupedBarChart
+                data={chartData}
+              />
             </View>
-             <View style={styles.cardWrapper}>
-              <ImageBackground
-                source={require('../assets/images/money.png')}
-                style={styles.cardImage}
-                imageStyle={styles.imageRadius}   
-                resizeMode="cover">
-                {/* Content */}
-                <Text style={styles.title}>FEE DUE FOR APRIL</Text>
 
-                <Text style={styles.amount}>₹1,250.00</Text>
+            {/* ✅ Library */}
+            <View style={styles.cardGray}>
 
-                {/* Due badge */}
-                <View style={styles.badge}>
-                  <Image
-                    source={require('../assets/images/icons/clock.png')}
-                    style={[styles.iconSmallWhite, { marginRight: 3 }]}
-                    resizeMode="contain"
-                  />
-                  <Text style={styles.badgeText}>Due in 3 days</Text>
-                </View>
+              <Text style={styles.sectionTitle}>
+                Library Records
+              </Text>
 
-                {/* Button */}
-                <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText}>PAY NOW</Text>
-                </TouchableOpacity>
+              {firstBook && (
 
-            </ImageBackground>
-            </View>
-             <View style={styles.cardGray}>
-                <Text style={styles.sectionTitle}>Library Records</Text>
-                <View style={styles.cardSmallRadius}>
-                  <View style={styles.rowLibrary}>
-                    <View style={styles.iconBoxGrey}>
-                      <Image
-                        source={require('../assets/images/icons/book.png')}
-                        style={styles.iconLarge}
-                        resizeMode="contain"
-                      />
-                    </View>
-                    <View>
-                      <Text style={styles.subValue}>Physics Book</Text>
-                      <Text style={styles.subLabel}>Issued: Oct 20</Text>
-                      <View style={[styles.badgeGrey, { marginTop: 10 }]}>
-                        <Text style={styles.badgeTextBlue}>Due: Nov 15</Text>
+                <View
+                  style={
+                    styles.cardSmallRadius
+                  }
+                >
+                   <TouchableOpacity
+                      style={styles.button}
+                      onPress={() =>
+                      navigation.navigate(
+                      'Library', { isback: true })}>
+                      <View
+                        style={
+                          styles.rowLibrary
+                        }
+                      >
+
+                        <View
+                          style={
+                            styles.iconBoxGrey
+                          }
+                        >
+                          <Image
+                            source={require('../assets/images/icons/book.png')}
+                            style={
+                              styles.iconLarge
+                            }
+                            resizeMode="contain"
+                          />
+                        </View>
+
+                        <View
+                          style={{
+                            flex: 1,
+                          }}
+                        >
+                          <Text
+                            style={
+                              styles.subValue
+                            }
+                          >
+                            {firstBook.title}
+                          </Text>
+
+                          <Text
+                            style={
+                              styles.subLabel
+                            }
+                          >
+                            Author:{' '}
+                            {
+                              firstBook.author
+                            }
+                          </Text>
+
+                          <View
+                            style={[
+                              styles.badgeGrey,
+                              {
+                                marginTop: 10,
+                              },
+                            ]}
+                          >
+                            <Text
+                              style={
+                                styles.badgeTextBlue
+                              }
+                            >
+                              Due:
+                              {' '}
+                              {
+                                firstBook.dueDate
+                              }
+                            </Text>
+                          </View>
+
+                        </View>
                       </View>
-                    </View>
-                  </View>
+                  </TouchableOpacity>
                 </View>
+              )}
             </View>
+
           </ScrollView>
         </View>
       </View>

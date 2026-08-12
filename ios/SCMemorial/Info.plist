@@ -63,5 +63,18 @@
 		<string>regular.ttf</string>
 		<string>Roboto-Bold.ttf</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>razorpay</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>rzp_test_SmSTwiKHdNaqc8</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

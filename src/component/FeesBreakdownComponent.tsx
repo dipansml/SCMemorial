@@ -8,30 +8,25 @@ import {
 } from 'react-native';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
+import { FeeBreakdownItem } from '../Model/FeesStructure/FeeBreakdownItem';
 
 // 🔹 Types
-export type FeeItem = {
-  id: string;
-  title: string;
-  subtitle: string;
-  amount: string;
-  status: 'Paid' | 'Unpaid' | 'Pending';
-};
+
 
 type Props = {
-  data: FeeItem[];
+  data: FeeBreakdownItem[];
 };
 
 // 🔹 Component
 class FeesBreakdownComponent extends Component<Props> {
 
-  getStatusStyle = (status: FeeItem['status']) => {
+  getStatusStyle = (status: FeeBreakdownItem['status']) => {
     switch (status) {
-      case 'Paid':
+      case 'paid':
         return { backgroundColor: Colors.light_green, textColor: Colors.textColorInpuHeader };
-      case 'Unpaid':
+      case 'unpaid':
         return { backgroundColor: Colors.yellow, textColor: Colors.textColorInpuHeader };
-      case 'Pending':
+      case 'pending':
         return { backgroundColor: Colors.light_red, textColor: Colors.textColorInpuHeader };
       default:
         return { backgroundColor: Colors.iconBackGrey, textColor: Colors.textColorInpuHeader };
@@ -40,27 +35,27 @@ class FeesBreakdownComponent extends Component<Props> {
 
   getIcon = (title: string) => {
   switch (title) {
-    case 'Tuition Fee':
+    case 'tuition_fee':
       return require('../assets/images/icons/academic.png');
 
-    case 'Admission Fee':
+    case 'admission_fee':
       return require('../assets/images/icons/admission.png');
 
-    case 'Exam Fee':
+    case 'exam_fee':
       return require('../assets/images/icons/exam.png');
 
-    case 'Library Fee':
+    case 'library_fee':
       return require('../assets/images/icons/book.png');
 
-    case 'Transport Fee':
+    case 'bus_services':
       return require('../assets/images/icons/transport.png');
 
     default:
-      return require('../assets/images/icons/academic.png');
+      return require('../assets/images/icons/exam.png');
   }
 };
 
-  renderItem = ({ item }: { item: FeeItem }) => {
+  renderItem = ({ item }: { item: FeeBreakdownItem }) => {
     const statusStyle = this.getStatusStyle(item.status);
 
     return (
@@ -70,14 +65,14 @@ class FeesBreakdownComponent extends Component<Props> {
         <View style={styles.leftSection}>
           <View style={styles.iconBack}>
             <Image
-                source={this.getIcon(item.title)}
+                source={this.getIcon(item.fee_type)}
                 style={styles.icon}
                 resizeMode="contain"/>
           </View>  
 
           <View>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.subtitle}>{item.subtitle}</Text>
+            <Text style={styles.title}>{formatTitle(item.fee_type)}</Text>
+            {/* <Text style={styles.subtitle}>{item.subtitle}</Text> */}
           </View>
         </View>
 
@@ -87,7 +82,7 @@ class FeesBreakdownComponent extends Component<Props> {
 
           <View style={[styles.statusBadge, { backgroundColor: statusStyle.backgroundColor }]}>
             <Text style={[styles.statusText, { color: statusStyle.textColor }]}>
-              {item.status}
+              {formatTitle(item.status)}
             </Text>
           </View>
         </View>
@@ -102,7 +97,7 @@ class FeesBreakdownComponent extends Component<Props> {
     return (
       <FlatList
         data={this.props.data}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.fee_type}
         renderItem={this.renderItem}
         ItemSeparatorComponent={this.renderSeparator}
         scrollEnabled={false} // parent ScrollView handles scroll
@@ -112,6 +107,17 @@ class FeesBreakdownComponent extends Component<Props> {
 }
 
 export default FeesBreakdownComponent;
+
+export const formatTitle = (value: string): string => {
+  if (!value.includes('_')) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  return value
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 // 🔹 Styles
 const styles = StyleSheet.create({

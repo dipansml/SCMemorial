@@ -2,15 +2,21 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Colors from '../theme/colors';
 import { card, FontFamily, FontSize, iconBox } from '../theme/fonts_dimen';
+import { changeDateFormat, getStatus } from '../utils/helper';
 
 type Props = {
-  title: string;
-  date: string;
-  time: string;
-  status: 'Ongoing' | 'UpComing' | 'Past';
+  event_name: string;
+  event_date: string;
+  event_fee: string;
+  event_description: string;
+  status: string;
+  is_registered: number,
+  online_payment: string,
+  onPress?: () => void;
 };
 
-const EventCard = ({ title, date, time, status }: Props) => {
+const EventCard = ({ event_name, event_date, event_fee, event_description, status, is_registered, online_payment, onPress }: Props) => {
+  console.log('EventCard status:', status); // Log the status value for debugging
   const getStatusStyle = () => {
     switch (status) {
       case 'Ongoing':
@@ -27,7 +33,7 @@ const EventCard = ({ title, date, time, status }: Props) => {
   const statusStyle = getStatusStyle();
 
   return (
-      <View style={styles.card}>
+      <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75}>
             <View style={styles.row}>
               <View style={styles.icon}>
                  <Image
@@ -38,39 +44,52 @@ const EventCard = ({ title, date, time, status }: Props) => {
     
     
               <View style={{ flex: 1 }}>
-                <Text style={styles.subject}>{title}</Text>
+                <Text style={styles.subject}>{event_name}</Text>
                 <View style={styles.rowTextIcon}>
                     <Image
                         source={require('../assets/images/icons/attendance.png')}
-                        style={[styles.iconSmall, { marginRight: 2 }]}
+                        style={[styles.iconSmall]}
                         resizeMode="contain"
                       />
-                      <Text style={styles.meta}>{date}</Text>
+                      <Text style={styles.meta}>{changeDateFormat(event_date)}</Text>
                 </View>
     
                 {/* <Text style={styles.meta}>{item.time}</Text> */}
                 <View style={styles.rowTextIcon}>
                     <Image
-                        source={require('../assets/images/icons/clock.png')}
-                        style={[styles.iconSmall, { marginRight: 2 }]}
+                        source={require('../assets/images/icons/fees.png')}
+                        style={[styles.iconSmall]}
                         resizeMode="contain"
                       />
-                      <Text style={styles.meta}>{time}</Text>
+                      <Text style={styles.meta}>₹{event_fee}</Text>
                 </View>
               </View>
-            <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-              <View style={[styles.status, { backgroundColor: statusStyle.backgroundColor }]}>
-                <Text style={{ color: statusStyle.color, fontSize: FontSize.small, fontFamily: FontFamily.regular }}>
-                  {status}
-                </Text>
-              </View>
-               <TouchableOpacity>
-                    <Text style={styles.link}>Details ↗</Text>
-                </TouchableOpacity>
+               <View style={styles.rightSection}>
+                  {/* Status */}
+                  <View
+                    style={[
+                      styles.status,
+                      { backgroundColor: statusStyle.backgroundColor },
+                    ]}
+                  >
+                    <Text style={styles.statusText}>
+                      {status}
+                    </Text>
+                  </View>
+
+                  {/* Participated - aligned with fee */}
+                  {is_registered === 1 && (
+                    <View style={styles.participatedContainer}>
+                      <View style={styles.participatedDot} />
+                      <Text style={styles.participatedText}>
+                        Participated
+                      </Text>
+                    </View>
+                  )}
                 </View>
             </View>
-          </View>
-  );
+          </TouchableOpacity>
+          );
 };
 
 export default EventCard;
@@ -109,6 +128,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
+    overflow: 'hidden',
   },
   iconLarge: {
     width: 20,
@@ -126,10 +146,43 @@ iconSmall: {
     height: 12,
     tintColor: Colors.text_hint,
     marginTop: 4,
+    marginRight: 3,
 },  
 link: {
     fontSize: FontSize.small,
     color: Colors.theme_color,
     marginTop: 16,
   },
+
+rightSection: {
+  alignItems: 'flex-end',
+  justifyContent: 'space-between',
+  alignSelf: 'stretch',
+},
+
+statusText: {
+  color: Colors.textColorInpuHeader,
+  fontSize: FontSize.small,
+  fontFamily: FontFamily.medium,
+},
+
+participatedContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 2,
+},
+
+participatedDot: {
+  width: 7,
+  height: 7,
+  borderRadius: 4,
+  backgroundColor: Colors.success,
+  marginRight: 5,
+},
+
+participatedText: {
+  fontSize: FontSize.small,
+  fontFamily: FontFamily.medium,
+  color: Colors.success,
+},
 });

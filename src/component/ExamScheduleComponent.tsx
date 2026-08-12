@@ -11,10 +11,9 @@ import { card, FontFamily, FontSize, iconBox } from '../theme/fonts_dimen';
 
 type ExamItem = {
   id: string;
-  subject: string;
-  date: string;
-  time: string;
-  status: string;
+  subject_name: string;
+  exam_date: string;
+  exm_time: string;
 };
 
 type ExamScheduleProps = {
@@ -32,12 +31,13 @@ class ExamScheduleComponent extends Component<ExamScheduleProps> {
       case 'Completed':
         return { backgroundColor: Colors.absent, color: Colors.textColorInpuHeader };
       default:
-        return {};
+        return {backgroundColor: Colors.iconBackGrey, color: Colors.textColorInpuHeader};
     }
   };
 
   renderItem = ({ item }: { item: any }) => {
-    const statusStyle = this.getStatusStyle(item.status);
+    const statusStyle = this.getStatusStyle(getStatus(item));
+  
 
     return (
       <View style={styles.card}>
@@ -51,30 +51,30 @@ class ExamScheduleComponent extends Component<ExamScheduleProps> {
 
 
           <View style={{ flex: 1 }}>
-            <Text style={styles.subject}>{item.subject}</Text>
+            <Text style={styles.subject}>{item.subject_name}</Text>
             <View style={styles.rowTextIcon}>
                 <Image
                     source={require('../assets/images/icons/attendance.png')}
                     style={[styles.iconSmall, { marginRight: 2 }]}
                     resizeMode="contain"
                   />
-                  <Text style={styles.meta}>{item.date}</Text>
+                  <Text style={styles.meta}>{changeDateFormat(item.exam_date).toString()}</Text>
             </View>
 
-            {/* <Text style={styles.meta}>{item.time}</Text> */}
+            {/* <Text style={styles.meta}>{item.exam_time}</Text> */}
            <View style={styles.rowTextIcon}>
           <Image
             source={require('../assets/images/icons/clock.png')}
             style={styles.iconSmall}
             resizeMode="contain"
           />
-          <Text style={styles.meta}>{item.time}</Text>
+          <Text style={styles.meta}>{item.exm_time}</Text>
         </View>
           </View>
 
           <View style={[styles.status, { backgroundColor: statusStyle.backgroundColor }]}>
             <Text style={{ color: statusStyle.color, fontSize: FontSize.small, fontFamily: FontFamily.regular }}>
-              {item.status}
+              {getStatus(item)}
             </Text>
           </View>
         </View>
@@ -110,7 +110,8 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   icon: {
     width: 40,
@@ -131,11 +132,14 @@ const styles = StyleSheet.create({
     color: Colors.text_hint,
     fontFamily: FontFamily.regular,
     marginTop: 4,
+    marginLeft: 2,
   },
   status: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 4,
+    fontFamily: FontFamily.regular,
+    color: Colors.textColorInpuHeader
   },
   iconLarge: {
     width: 20,
@@ -155,3 +159,44 @@ iconSmall: {
     marginTop: 4,
 },  
 });
+
+function changeDateFormat(dateString: string): string {
+  const date = new Date(dateString);
+
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+
+  return `${day} ${month} ${year}`;
+}
+
+function getStatus(item: any): string {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const examDate = new Date(item.exam_date);
+  examDate.setHours(0, 0, 0, 0);
+
+  if (examDate.getTime() === today.getTime()) {
+    return 'Today';
+  } else if (examDate > today) {
+    return 'Upcoming';
+  } else {
+    return 'Completed';
+  }
+}

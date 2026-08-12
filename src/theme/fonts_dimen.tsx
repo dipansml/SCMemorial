@@ -5,6 +5,7 @@ import {
 
 
 export const FontSize = {
+  vv_small: 8,
   very_small: 10,
   small: 12,
   regular: 14,

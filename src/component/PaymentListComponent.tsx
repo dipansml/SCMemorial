@@ -6,22 +6,17 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Linking,
+  Alert,
 } from 'react-native';
 import Colors from '../theme/colors';
 import { Button, card, FontFamily, FontSize } from '../theme/fonts_dimen';
 import { CommonStyles } from '../style/CommonStyles';
+import { PaymentHistoryItem } from '../Model/PaymentHistory/PaymentHistoryItem';
 
-type Payment = {
-  id: string;
-  type: string;
-  amount: string;
-  status: 'Success' | 'Pending' | 'Failed';
-  date: string;
-  txnId: string;
-};
 
 type Props = {
-  paymentList: Payment[];
+  paymentList: PaymentHistoryItem[];
 };
 
 const PaymentListComponent = ({ paymentList }: Props) => {
@@ -41,6 +36,21 @@ const PaymentListComponent = ({ paymentList }: Props) => {
 
   const renderItem = ({ item }: any) => {
     const statusStyle = getStatusStyle(item.status);
+
+    const downloadReceipt = async (receiptUrl: string) => {
+      try {
+        const supported = await Linking.canOpenURL(receiptUrl);
+
+        if (supported) {
+          await Linking.openURL(receiptUrl);
+        } else {
+          Alert.alert('Error', 'Unable to open receipt');
+        }
+      } catch (error) {
+        console.log('Download error:', error);
+        Alert.alert('Error', 'Something went wrong');
+      }
+    };
 
     return (
       <View style={styles.card}>
@@ -65,18 +75,18 @@ const PaymentListComponent = ({ paymentList }: Props) => {
         <View style={styles.rowBetween}>
           <View>
             <Text style={styles.label}>Date & Time</Text>
-            <Text style={styles.value}>{item.date}</Text>
+            <Text style={styles.value}>{formatDateTime(item.payment_date)}</Text>
           </View>
 
           <View>
             <Text style={styles.label}>Transaction ID</Text>
-            <Text style={styles.value}>{item.txnId}</Text>
+            <Text style={styles.value}>#{item.txnid}</Text>
           </View>
         </View>
 
         {/* Action Button */}
         {item.status === 'Success' && (
-          <TouchableOpacity style={[CommonStyles.buttonGray, { marginTop: 12 }, { marginBottom: 0 }]}>
+          <TouchableOpacity style={[CommonStyles.buttonGray, { marginTop: 12 }, { marginBottom: 0 }]} onPress={() => downloadReceipt(item.download_url)}>
                 <Image
                     source={require('../assets/images/icons/download.png')}
                     style={[CommonStyles.buttonIcon, { tintColor: Colors.textColorInpuHeader }]}
@@ -122,6 +132,24 @@ const PaymentListComponent = ({ paymentList }: Props) => {
 };
 
 export default PaymentListComponent;
+
+export const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString);
+
+  const formattedDate = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  });
+
+  const formattedTime = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  return `${formattedDate} • ${formattedTime.toLowerCase()}`;
+};
 
 const styles = StyleSheet.create({
   card: {

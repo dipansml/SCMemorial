@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Image,
-  StatusBar,
-  Platform,
 } from 'react-native';
-import Colors from '../theme/colors';
-import { FontFamily, FontSize, Header } from '../theme/fonts_dimen';
 
-//Test
+import Colors from '../theme/colors';
+import { FontFamily, Header } from '../theme/fonts_dimen';
+import StorageManager from '../services/StorageManager';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 type Props = {
   title: string;
@@ -19,6 +19,7 @@ type Props = {
   onMenuPress?: () => void;
   onBellPress?: () => void;
   onProfilePress?: () => void;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
 const AppHeader = ({
@@ -27,49 +28,76 @@ const AppHeader = ({
   onMenuPress,
   onBellPress,
   onProfilePress,
+  navigation
 }: Props) => {
+
+  const [isStudentLoggedIn, setIsStudentLoggedIn] =
+  useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setIsStudentLoggedIn(await StorageManager.isLoggedInStudent());
+      } catch (error) {
+        console.log('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <View style={styles.container}>
-      
-      {/* Left group: menu + title */}
+
+      {/* Left: Menu + Title */}
       <View style={styles.left}>
         <TouchableOpacity onPress={onMenuPress}>
           <Image
             source={
-            showBack
-              ? require('../assets/images/icons/back.png')   
-              : require('../assets/images/SideMenu.png')
+              showBack
+                ? require('../assets/images/icons/back.png')
+                : require('../assets/images/SideMenu.png')
             }
-            style={[styles.menuImage, showBack && { width: 18, height: 18 }]}
+            style={[
+              styles.menuImage,
+              showBack && { width: 18, height: 18 },
+            ]}
           />
         </TouchableOpacity>
 
         <Text style={styles.title}>{title}</Text>
       </View>
 
-      {/* Right Icons */}
+      {/* Right: Icons */}
       <View style={styles.right}>
+
+        {/* Notification */}
         <TouchableOpacity onPress={onBellPress}>
           <Image
-          source={require('../assets/images/Nitification.png')}
-          style={styles.menuImage}
-        />
+            source={require('../assets/images/Nitification.png')}
+            style={styles.menuImage}
+          />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onProfilePress}>
-          <View style={styles.profileColumn}>
-            <Image
-              source={require('../assets/images/student1.png')}
-              style={styles.avatar}
-            />
-            <Image
-              source={require('../assets/images/Switch.png')}
-              style={styles.switchImage}
-            />
-          </View>
-        </TouchableOpacity>
+        {/* Profile (Hidden for Student) */}
+        {!isStudentLoggedIn&& (
+          // <TouchableOpacity onPress={onProfilePress}>
+          <TouchableOpacity 
+            onPress={() => navigation.replace('StudentSelection')}>
+            <View style={styles.profileColumn}>
+              <Image
+                source={require('../assets/images/student1.png')}
+                style={styles.avatar}
+              />
+              <Image
+                source={require('../assets/images/Switch.png')}
+                style={styles.switchImage}
+              />
+            </View>
+          </TouchableOpacity>
+        )}
+
       </View>
-
     </View>
   );
 };
@@ -83,10 +111,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
-  },
-  menu: {
-    fontSize: 24,
-    color: Colors.background,
+    height: Header.height,
+    
   },
   menuImage: {
     width: Header.icon,
@@ -104,18 +130,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  profileColumn: {
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
   right: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,
   },
-  icon: {
-    fontSize: 20,
-    color: 'white',
+  profileColumn: {
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatar: {
     width: 32,

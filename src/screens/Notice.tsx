@@ -11,7 +11,7 @@ interface State {
 }
 
 
-const Notice = () => {
+const Notice = ({ navigation }: { navigation: any }) => {
   const [state] = React.useState<State>({
     notices: [
       {
@@ -48,6 +48,7 @@ const Notice = () => {
         onMenuPress={openParentDrawer}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>

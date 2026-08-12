@@ -5,19 +5,187 @@ import { View,
   TouchableOpacity,
   TextInput,
   Image,
-  ScrollView,} from 'react-native';
+  ScrollView,
+  Platform,
+  PermissionsAndroid,
+  Alert,} from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Colors from '../theme/colors';
 import { card, FontFamily, FontSize } from '../theme/fonts_dimen';
 import { CommonStyles } from '../style/CommonStyles';
+import {
+  launchCamera,
+  launchImageLibrary,
+  CameraOptions,
+  ImageLibraryOptions,
+} from 'react-native-image-picker';
+import { RouteProp } from '@react-navigation/native';
+import RazorpayCheckout from 'react-native-razorpay';
+import { razorPay } from '../utils/CommonUtils';
 
+type FeePaymentRouteProp = RouteProp<
+  {
+    FeePayment: {
+      outstanding_amount: string;
+    };
+  },
+  'FeePayment'
+>;
 
-const FeePayment = () => {
-const navigation = useNavigation();
+type Props = {
+  navigation: any;
+  route: FeePaymentRouteProp;
+};
+
+const FeePayment = ({ navigation, route }: Props) => {
 const [selectedAmount, setSelectedAmount] = useState('full');
 const [paymentMode, setPaymentMode] = useState('online');
+const [receiptImage, setReceiptImage] = useState<string | null>(null);
+const { outstanding_amount } = route.params;
+
+ const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'App needs camera permission',
+          buttonPositive: 'OK',
+        },
+      );
+
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    }
+
+    return true;
+  };
+
+  const openCamera = async () => {
+    const hasPermission = await requestCameraPermission();
+
+    if (!hasPermission) {
+      Alert.alert('Permission denied');
+      return;
+    }
+
+    const options: CameraOptions = {
+      mediaType: 'photo',
+      cameraType: 'back',
+      quality: 0.8,
+      saveToPhotos: true,
+    };
+
+    launchCamera(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled camera');
+      } else if (response.errorCode) {
+        console.log('Camera Error: ', response.errorMessage);
+      } else {
+        console.log('Camera Image:', response.assets);
+        if (response.assets && response.assets.length > 0) {
+          setReceiptImage(response.assets[0].uri || null);
+        }
+      }
+    });
+  };
+
+  const openGallery = () => {
+    const options: ImageLibraryOptions = {
+      mediaType: 'photo',
+      quality: 0.8,
+      selectionLimit: 1,
+    };
+
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled gallery');
+      } else if (response.errorCode) {
+        console.log('Gallery Error: ', response.errorMessage);
+      } else {
+        console.log('Gallery Image:', response.assets);
+        if (response.assets && response.assets.length > 0) {
+          setReceiptImage(response.assets[0].uri || null);
+        }
+      }
+    });
+  };
+
+  const showImagePicker = () => {
+    Alert.alert(
+      'Upload Receipt',
+      'Choose an option',
+      [
+        {
+          text: 'Camera',
+          onPress: openCamera,
+        },
+        {
+          text: 'Gallery',
+          onPress: openGallery,
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true },
+    );
+  };
+
+   const openPaymentGateway = () => {
+
+    const options = {
+      description: 'School Fees Payment',
+      image: 'http://192.168.1.18/scms.beas.in/uploads/scms_logo.png',
+      currency: 'INR',
+      key: razorPay.razorPayKey, // Your Razorpay Key
+      amount: (Number(outstanding_amount) * 100).toString(), // Convert to paise
+      name: 'SC Memorial School',
+
+      prefill: {
+        email: 'student@gmail.com',
+        contact: '9876543210',
+        name: 'Student Name',
+      },
+
+      theme: {
+        color: '#0A8FDC',
+      },
+    };
+
+    RazorpayCheckout.open(options)
+
+      .then((data) => {
+
+        console.log('Payment Success:', data);
+
+        Alert.alert(
+          'Success',
+          'Payment completed successfully',
+        );
+
+        // Redirect to success screen
+        navigation.replace('PaymentSuccess', {
+          paymentId: data.razorpay_payment_id,
+        });
+      })
+
+      .catch((error) => {
+
+        console.log('Payment Error:', error);
+
+        Alert.alert(
+          'Payment Failed',
+          error.description,
+        );
+
+        // Optional redirect on failure
+        // navigation.navigate('PaymentFailed');
+      });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       
@@ -27,6 +195,7 @@ const [paymentMode, setPaymentMode] = useState('online');
         onMenuPress={() => navigation.goBack()}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
+        navigation={navigation}
       />
 
       <View style={styles.content}>
@@ -40,7 +209,7 @@ const [paymentMode, setPaymentMode] = useState('online');
                 >
                 <View>
                     <Text style={styles.title}>Pay Full Amount</Text>
-                    <Text style={styles.amount}>₹5,500.00</Text>
+                    <Text style={styles.amount}>₹{outstanding_amount}</Text>
                 </View>
                 <View style={[styles.radio, selectedAmount === 'full' && styles.radioActive]} />
             </TouchableOpacity>
@@ -127,7 +296,7 @@ const [paymentMode, setPaymentMode] = useState('online');
                 <View style={styles.rowCard}>
                     <View style={styles.iconBack}>
                         <Image
-                            source={require('../assets/images/icons/attendance.png')}
+                            source={require('../assets/images/icons/qr_icon.png')}
                             style={styles.icon}
                             resizeMode="contain"/>
                     </View>
@@ -144,7 +313,7 @@ const [paymentMode, setPaymentMode] = useState('online');
                <View style={styles.rowCard}>
                     <View style={styles.iconBack}>
                         <Image
-                            source={require('../assets/images/icons/attendance.png')}
+                            source={require('../assets/images/icons/online_banking.png')}
                             style={styles.icon}
                             resizeMode="contain"/>
                     </View>
@@ -186,19 +355,21 @@ const [paymentMode, setPaymentMode] = useState('online');
                 </View>
                 </View>
 
-                <TouchableOpacity style={styles.uploadBox}>
+                <TouchableOpacity 
+                  style={styles.uploadBox}
+                  onPress={showImagePicker}>
                      <Image
-                        source={require('../assets/images/icons/upload.png')}
-                        style={styles.iconLarge}
-                        resizeMode="contain"/>
-                    <Text style={styles.labelDarkLarge}>Upload Receipt Photo</Text>
+                        source={receiptImage ? { uri: receiptImage } : require('../assets/images/icons/upload.png')}
+                        style={receiptImage ? styles.receiptImage : styles.iconLarge}
+                        resizeMode="cover"/>
+                    {!receiptImage && <Text style={styles.labelDarkLarge}>Upload Receipt Photo</Text>}
                 </TouchableOpacity>
             </View>
             </>
         )}
 
         {/* Button */}
-        <TouchableOpacity style={[CommonStyles.button, {marginTop: 0}]}>
+        <TouchableOpacity style={[CommonStyles.button, {marginTop: 0}]} onPress={openPaymentGateway}>
             <Text style={CommonStyles.buttonText}>PAY NOW</Text>
         </TouchableOpacity>
 
@@ -388,5 +559,10 @@ columnCard: {
     marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  receiptImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: card.border_radius_card_medium,
   },
 });

@@ -43,12 +43,18 @@ const menuItems: MenuItem[] = [
     route: 'Attendance',
     icon: require('../assets/images/icons/attendance.png'),
   },
-  // {
-  //   key: 'Fees',
-  //   label: 'Fee Payment',
-  //   route: 'Fees',
-  //   icon: require('../assets/images/icons/fees.png'),
-  // },
+  {
+    key: 'Fees',
+    label: 'Fees Overview',
+    route: 'Fees',
+    icon: require('../assets/images/icons/fees_overview.png'),
+  },
+  {
+    key: 'PaymentHistory',
+    label: 'Payment History',
+    route: 'PaymentHistory',
+    icon: require('../assets/images/icons/payment.png'),
+  },
   {
     key: 'events',
     label: 'Events',

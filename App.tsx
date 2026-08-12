@@ -21,6 +21,8 @@ import ParentDrawer from './src/Drawer/ParentDrawer';
 import Library from './src/screens/Library';
 import PaymentHistory from './src/screens/PaymentHistory';
 import FeePayment from './src/screens/FeesPayment';
+import MothlyFeesPayment from './src/screens/MothlyFeesPayment';
+import ReAdmission from './src/screens/ReAdmission';
 import LandingStudent from './src/screens/LandingStudent';
 import StudentDrawer from './src/Drawer/StudentDrawer';
 import EventDetail from './src/screens/EventDetail';
@@ -44,6 +46,8 @@ export type RootStackParamList = {
   FeePayment: {
     outstanding_amount: string;
   };
+  MothlyFeePayment: undefined;
+  ReAdmission: undefined;
   LandingStudent: undefined;
   StudentDrawer: undefined;
   EventDetail: {
@@ -95,6 +99,8 @@ const App = () => {
             <Stack.Screen name="Library" component={Library}  options={{ headerShown: false }} />
             <Stack.Screen name="PaymentHistory" component={PaymentHistory}  options={{ headerShown: false }} />
             <Stack.Screen name="FeePayment" component={FeePayment}  options={{ headerShown: false }} />
+            <Stack.Screen name="MothlyFeePayment" component={MothlyFeesPayment}  options={{ headerShown: false }} />
+            <Stack.Screen name="ReAdmission" component={ReAdmission}  options={{ headerShown: false }} />
             <Stack.Screen name="LandingStudent" component={LandingStudent}  options={{ headerShown: false }} />
             <Stack.Screen name="EventDetail" component={EventDetail}  options={{ headerShown: false }} />
           </Stack.Navigator>

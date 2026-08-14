@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -12,15 +12,18 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import { card, container, FontFamily, FontSize } from '../theme/fonts_dimen';
 import Colors from '../theme/colors';
+import FullScreenLoader from '../view/FullScreenLoader';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ExamDetail'>;
 
 const ExamDetail = ({ navigation, route }: Props ) => {
   const { examDetail } = route.params;
+  const [loading, setLoading] = useState(false);
+
 
   return (
     <SafeAreaView style={styles.container}>
-      
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Exam Detail"
         onMenuPress={openParentDrawer}

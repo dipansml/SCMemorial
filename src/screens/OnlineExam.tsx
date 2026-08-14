@@ -51,14 +51,6 @@ const OnlineExam = ({navigation}: {navigation: any}) => {
 
     console.log('Question Set ID:', value);
     getDetail(value)
-
-     navigation.navigate('ExamDetail', {
-              examDetail: detail,
-            });
-
-    // navigation.navigate('ExamQuestion', {
-    //   questionSetId: value,
-    // });
   };
 
 
@@ -85,6 +77,9 @@ const OnlineExam = ({navigation}: {navigation: any}) => {
         response.data
       ) {
         setDetail(response.data);
+        navigation.navigate('ExamDetail', {
+            examDetail: response.data,
+          });
       } else {
         Alert.alert(
           'Error',

@@ -21,6 +21,8 @@ import ParentDrawer from './src/Drawer/ParentDrawer';
 import Library from './src/screens/Library';
 import PaymentHistory from './src/screens/PaymentHistory';
 import FeePayment from './src/screens/FeesPayment';
+import MothlyFeesPayment from './src/screens/MothlyFeesPayment';
+import ReAdmission from './src/screens/ReAdmission';
 import LandingStudent from './src/screens/LandingStudent';
 import StudentDrawer from './src/Drawer/StudentDrawer';
 import EventDetail from './src/screens/EventDetail';
@@ -46,6 +48,8 @@ export type RootStackParamList = {
   FeePayment: {
     outstanding_amount: string;
   };
+  MothlyFeePayment: undefined;
+  ReAdmission: undefined;
   LandingStudent: undefined;
   StudentDrawer: undefined;
   EventDetail: {
@@ -92,6 +96,7 @@ const App = () => {
                 contentStyle: { backgroundColor: 'transparent' },
               }}
             />
+<<<<<<< HEAD
             <Stack.Screen
               name="Attendance"
               component={Attendance}
@@ -152,6 +157,21 @@ const App = () => {
               component={AllBook}
               options={{ headerShown: false }}
             />
+=======
+            <Stack.Screen name="Attendance" component={Attendance}  options={{ headerShown: false }} />
+            <Stack.Screen name="Fees" component={Fees}  options={{ headerShown: false }} />
+            <Stack.Screen name="Notice" component={Notice}  options={{ headerShown: false }} />
+            <Stack.Screen name="Events" component={Events}  options={{ headerShown: false }} />
+            <Stack.Screen name="Homework" component={Homework}  options={{ headerShown: false }} />
+            <Stack.Screen name="Messages" component={Messages}  options={{ headerShown: false }} />
+            <Stack.Screen name="Library" component={Library}  options={{ headerShown: false }} />
+            <Stack.Screen name="PaymentHistory" component={PaymentHistory}  options={{ headerShown: false }} />
+            <Stack.Screen name="FeePayment" component={FeePayment}  options={{ headerShown: false }} />
+            <Stack.Screen name="MothlyFeePayment" component={MothlyFeesPayment}  options={{ headerShown: false }} />
+            <Stack.Screen name="ReAdmission" component={ReAdmission}  options={{ headerShown: false }} />
+            <Stack.Screen name="LandingStudent" component={LandingStudent}  options={{ headerShown: false }} />
+            <Stack.Screen name="EventDetail" component={EventDetail}  options={{ headerShown: false }} />
+>>>>>>> 8022b09475a6d087a5a0f0d3faf37edd96f4d2d9
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

@@ -2029,8 +2029,51 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNSVG (7.2.1):
-    - React
+  - RNSVG (15.15.5):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - RNSVG/common (= 15.15.5)
+    - Yoga
+  - RNSVG/common (15.15.5):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RNWorklets (0.8.3):
     - hermes-engine
     - RCTRequired
@@ -2364,7 +2407,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AsyncStorage: 3159283852d8bfabb4653cf17f1a1fef2a8a0eb6
   FBLazyVector: c00c20551d40126351a6783c47ce75f5b374851b
-  hermes-engine: 1353773d483490d5eff63860bed320d83f926bb0
+  hermes-engine: cb9783d2e11508044849d9ab13c18aff21c59adb
   razorpay-core-pod: 6da5fb4ed280279d665507fdb50e213d793a5fe2
   razorpay-pod: 4385cf844aa29389313b741e20c72fe668970d49
   RCTDeprecation: 3bb167081b134461cfeb875ff7ae1945f8635257
@@ -2375,7 +2418,7 @@ SPEC CHECKSUMS:
   React: 1b1536b9099195944034e65b1830f463caaa8390
   React-callinvoker: 6dff6d17d1d6cc8fdf85468a649bafed473c65f5
   React-Core: 39ee05b5798296f433dd3c3624c57a187c1510e3
-  React-Core-prebuilt: 4bf01811283e15ac43d5d3a84fefaa6c6567a2b5
+  React-Core-prebuilt: c4b06ef05689ca0ebbb9ae85a4cacd5b1330ac6f
   React-CoreModules: e78bfd2617075bc0e50c689df4a29232bd72ad82
   React-cxxreact: 3fe21801d46097cf74c3dff6953677bebc4a3c2a
   React-debug: e1f00fcd2cef58a2897471a6d76a4ef5f5f90c74
@@ -2439,14 +2482,14 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 706b65371b90b5cc797b6639e8979f2e5cecd6da
   ReactCodegen: ab01ebfffac5cda9140204eb872ed97c15df225f
   ReactCommon: 47ef95b0920948a0b54d7439f7452501eeeac071
-  ReactNativeDependencies: d018db911363ab7f0cc6f8464f209e464835be77
+  ReactNativeDependencies: 2bcdf2bf8fdd6a8a63db9c1814c27ef9b0ea6f73
   RNGestureHandler: acf7db8499c11193d9b4b6b1cc1439ff4f01a693
   RNReanimated: f135e23c1949b766bec8fa6f0fe43103839dd749
   RNScreens: 63cc2156368ac1a8239e9131103c2fef901fc381
-  RNSVG: 6c8e8c6f9e5a0caf910dd25aa6e4216045426e1d
+  RNSVG: a37350c7bc37452fd2b209efa0806f1de0f847ae
   RNWorklets: 32b9ca9e0588b838ce3202a9ea3971f553c9011c
-  Yoga: cc155241ea30670878e270d52d74cf29487c4bbb
+  Yoga: e83c3121d079541e69f3c5c623faaaf933fb5812
 
 PODFILE CHECKSUM: c3e02833a72999301a5435c4aebc01f5f7b9d910
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2

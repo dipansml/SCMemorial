@@ -1,0 +1,18 @@
+current directory: /Users/beasimac/Documents/SchoolManagementSystem/SCMemorial/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+/Users/beasimac/.rbenv/versions/3.3.0/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/beasimac/Documents/SchoolManagementSystem/SCMemorial/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20260811-88621-p11ju7 sitelibdir\=./.gem.20260811-88621-p11ju7 clean
+
+current directory: /Users/beasimac/Documents/SchoolManagementSystem/SCMemorial/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20260811-88621-p11ju7 sitelibdir\=./.gem.20260811-88621-p11ju7
+compiling nkf.c
+linking shared-object nkf.bundle
+
+current directory: /Users/beasimac/Documents/SchoolManagementSystem/SCMemorial/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20260811-88621-p11ju7 sitelibdir\=./.gem.20260811-88621-p11ju7 install
+/usr/bin/install -c -m 0755 nkf.bundle ./.gem.20260811-88621-p11ju7
+
+current directory: /Users/beasimac/Documents/SchoolManagementSystem/SCMemorial/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20260811-88621-p11ju7 sitelibdir\=./.gem.20260811-88621-p11ju7 clean

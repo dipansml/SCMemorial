@@ -79,10 +79,10 @@ const menuItems: MenuItem[] = [
     icon: require('../assets/images/icons/book.png'),
   },
   {
-    key: 'messages',
-    label: 'Direct Chat with Teacher',
-    route: 'Messages',
-    icon: require('../assets/images/icons/messages.png'),
+    key: 'OnlineExam',
+    label: 'Online Exam',
+    route: 'OnlineExam',
+    icon: require('../assets/images/icons/academic.png'),
   },
 ];
 

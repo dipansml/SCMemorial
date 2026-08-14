@@ -9,6 +9,7 @@ import { PaymentHistoryResponse } from '../Model/PaymentHistory/PaymentHistoryRe
 import { StudentAttendanceResponse } from '../Model/StudentAttendance/StudentAttendanceResponse';
 import { StudentLibraryResponse } from '../Model/StudentLibrary/StudentLibraryResponse';
 import { StudentListResponse } from '../Model/StudentList/StudentListResponse';
+import { StudentAttemptExamResponse } from '../Model/Exam/StudentAttemptExam'
 import { RestApi } from './RestApi';
 
 // Request
@@ -49,6 +50,11 @@ export interface DashboardPayload {
 export interface StudentAttendancePayload {
   user_id: string;
   month_date: string;
+}
+
+export interface StudentAttemptExam{
+  user_id: string;
+  set_unique_id: string;
 }
 
 // API
@@ -131,6 +137,13 @@ export const Api = {
     payload: StudentAttendancePayload,
   ): Promise<StudentAttendanceResponse> => {
     const response = await RestApi.post('/student-attendance', payload);
+    return response.data;
+  },
+
+  getStudentAttemptExam: async (
+    payload: StudentAttemptExam,
+  ): Promise<StudentAttemptExamResponse> => {
+    const response = await RestApi.post('/student-attempt-exam', payload);
     return response.data;
   },
 };

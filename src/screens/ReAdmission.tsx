@@ -12,6 +12,8 @@ import AppHeader from '../component/AppHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
+import { paymentService } from '../services/payment/PaymentService';
+import type { PaymentResult } from '../services/payment/payment.types';
 
 type Props = {
   navigation: any;
@@ -106,9 +108,40 @@ const ReAdmission = ({ navigation }: Props) => {
     string | null
   >(null);
   const [remark, setRemark] = useState('');
+  const [processing, setProcessing] = useState(false);
 
   const toggleAccordion = (id: string) => {
     setExpandedCategory(prev => (prev === id ? null : id));
+  };
+
+  const handleProceedToPay = async () => {
+    // Duplicate-payment protection: ignore taps while a payment is running.
+    if (processing) {
+      return;
+    }
+
+    setProcessing(true);
+
+    try {
+      // The UI only talks to PaymentService. Whether the underlying provider
+      // is MOCK CCAvenue or the real CCAvenue adapter is decided by
+      // PAYMENT_CONFIG.mode — this screen never changes.
+      const result: PaymentResult = await paymentService.startPayment({
+        amount: '42000.00',
+        currency: 'INR',
+        billingName: 'Student Name',
+        billingEmail: 'student@gmail.com',
+        billingPhone: '9876543210',
+        description: 'Re-Admission Fee Payment',
+        meta: remark ? { remark } : undefined,
+      });
+
+      // Success, failure and cancellation all land on the result screen.
+      navigation.replace('PaymentResult', { result });
+    } catch {
+      // Duplicate-payment / unexpected errors: stay on this screen.
+      setProcessing(false);
+    }
   };
 
   return (
@@ -195,11 +228,14 @@ const ReAdmission = ({ navigation }: Props) => {
             textAlignVertical="top"
           />
           <TouchableOpacity
-            style={styles.proceedButton}
+            style={[styles.proceedButton, processing && styles.proceedButtonDisabled]}
             activeOpacity={0.85}
-            onPress={() => console.log('Proceed pressed:', remark)}
+            onPress={handleProceedToPay}
+            disabled={processing}
           >
-            <Text style={styles.proceedButtonText}>PROCEED TO PAY</Text>
+            <Text style={styles.proceedButtonText}>
+              {processing ? 'PLEASE WAIT…' : 'PROCEED TO PAY'}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -548,6 +584,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 16,
+  },
+  proceedButtonDisabled: {
+    opacity: 0.6,
   },
   proceedButtonText: {
     color: Colors.white,

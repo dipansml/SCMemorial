@@ -29,8 +29,15 @@ import EventDetail from './src/screens/EventDetail';
 import EventItem from './src/Model/EventList/EventDetailData';
 import AllBook from './src/screens/AllBook';
 import OnlineExam from './src/screens/OnlineExam';
-import ExamDetail from './src/screens/ExamDetail'
-import StudentAttemptExamData from './src/Model/Exam/StudentAttemptExam'
+import ExamDetail from './src/screens/ExamDetail';
+import StartExam from './src/screens/StartExam';
+import StudentAttemptExamData from './src/Model/Exam/StudentAttemptExam';
+import MockCCAvenuePaymentScreen, {
+  MockCCAvenuePaymentRouteParams,
+} from './src/screens/Payment/MockCCAvenuePaymentScreen';
+import PaymentResultScreen, {
+  PaymentResultRouteParams,
+} from './src/screens/PaymentResult/PaymentResultScreen';
 
 enableScreens();
 
@@ -63,6 +70,11 @@ export type RootStackParamList = {
   ExamDetail: {
     examDetail: StudentAttemptExamData;
   };
+  StartExam: {
+    examDetail: StudentAttemptExamData;
+  }
+  MockCCAvenuePayment: MockCCAvenuePaymentRouteParams;
+  PaymentResult: PaymentResultRouteParams;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -178,9 +190,24 @@ const App = () => {
               component={OnlineExam}
               options={{ headerShown: false }}
             />
-             <Stack.Screen
+            <Stack.Screen
               name="ExamDetail"
               component={ExamDetail}
+              options={{ headerShown: false }}
+            />    
+             <Stack.Screen
+              name="StartExam"
+              component={StartExam}
+              options={{ headerShown: false }}
+            />      
+            <Stack.Screen
+              name="MockCCAvenuePayment"
+              component={MockCCAvenuePaymentScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PaymentResult"
+              component={PaymentResultScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

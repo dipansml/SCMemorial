@@ -16,6 +16,8 @@ import { RootStackParamList } from '../../App';
 type Props = {
   title: string;
   showBack?: boolean;
+  isMenuVisible?: boolean;
+  isNotificationVisible?: boolean;
   onMenuPress?: () => void;
   onBellPress?: () => void;
   onProfilePress?: () => void;
@@ -25,6 +27,8 @@ type Props = {
 const AppHeader = ({
   title,
   showBack,
+  isMenuVisible = true,
+  isNotificationVisible = true,
   onMenuPress,
   onBellPress,
   onProfilePress,
@@ -51,20 +55,21 @@ const AppHeader = ({
 
       {/* Left: Menu + Title */}
       <View style={styles.left}>
-        <TouchableOpacity onPress={onMenuPress}>
-          <Image
-            source={
-              showBack
-                ? require('../assets/images/icons/back.png')
-                : require('../assets/images/SideMenu.png')
-            }
-            style={[
-              styles.menuImage,
-              showBack && { width: 18, height: 18 },
-            ]}
-          />
-        </TouchableOpacity>
-
+        {isMenuVisible && (
+          <TouchableOpacity onPress={onMenuPress}>
+            <Image
+              source={
+                showBack
+                  ? require('../assets/images/icons/back.png')
+                  : require('../assets/images/SideMenu.png')
+              }
+              style={[
+                styles.menuImage,
+                showBack && { width: 18, height: 18 },
+              ]}
+            />
+          </TouchableOpacity>
+        )}
         <Text style={styles.title}>{title}</Text>
       </View>
 
@@ -72,13 +77,14 @@ const AppHeader = ({
       <View style={styles.right}>
 
         {/* Notification */}
-        <TouchableOpacity onPress={onBellPress}>
-          <Image
-            source={require('../assets/images/Nitification.png')}
-            style={styles.menuImage}
-          />
-        </TouchableOpacity>
-
+        {isNotificationVisible && (
+          <TouchableOpacity onPress={onBellPress}>
+            <Image
+              source={require('../assets/images/Nitification.png')}
+              style={styles.menuImage}
+            />
+          </TouchableOpacity>
+        )}
         {/* Profile (Hidden for Student) */}
         {!isStudentLoggedIn&& (
           // <TouchableOpacity onPress={onProfilePress}>

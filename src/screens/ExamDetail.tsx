@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { openParentDrawer } from '../navigation/navigationRef';
@@ -19,14 +20,17 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ExamDetail'>;
 const ExamDetail = ({ navigation, route }: Props ) => {
   const { examDetail } = route.params;
   const [loading, setLoading] = useState(false);
+  const [showInstruction, setShowInstruction] =
+  useState(false);
 
 
   return (
     <SafeAreaView style={styles.container}>
       <FullScreenLoader visible={loading} />
       <AppHeader
-        title="Exam Detail"
-        onMenuPress={openParentDrawer}
+        title="Exam Details"
+        showBack= {true}
+        onMenuPress={navigation.goBack}
         onBellPress={() => console.log('Bell')}
         onProfilePress={() => console.log('Profile')}
         navigation={navigation}
@@ -157,7 +161,7 @@ const ExamDetail = ({ navigation, route }: Props ) => {
         </View>
 
         {/* Start Exam Button */}
-        <TouchableOpacity
+       <TouchableOpacity
           activeOpacity={0.8}
           style={styles.startButton}
           onPress={() => {
@@ -166,22 +170,83 @@ const ExamDetail = ({ navigation, route }: Props ) => {
               examDetail?.set_unique_id,
             );
 
-            // navigation.navigate('ExamQuestion', {
-            //   examDetail: examDetail,
-            // });
+            setShowInstruction(true);
           }}>
-
           <Text style={styles.startButtonText}>
             Start Examination
           </Text>
-
         </TouchableOpacity>
-
       </View>
+      <Modal
+          visible={showInstruction}
+          transparent
+          animationType="fade"
+          onRequestClose={() =>
+            setShowInstruction(false)
+          }>
 
-    </SafeAreaView>
-  );
-};
+          <View style={styles.modalOverlay}>
+
+            <View style={styles.instructionModal}>
+
+              {/* Header */}
+              <Text style={styles.modalTitle}>
+                Examination Instructions
+              </Text>
+
+              {/* Instructions */}
+              <View style={styles.instructionContainer}>
+
+                <Text style={styles.instructionText}>
+                  • Read all questions carefully before
+                  answering.
+                </Text>
+
+                <Text style={styles.instructionText}>
+                  • Make sure you have enough time to
+                  complete the examination.
+                </Text>
+
+                <Text style={styles.instructionText}>
+                  • Once you start the examination, the
+                  timer will begin.
+                </Text>
+
+                <Text style={styles.instructionText}>
+                  • Do not close or leave the examination
+                  screen while attempting the exam.
+                </Text>
+
+                <Text style={styles.instructionText}>
+                  • Make sure you submit your answers
+                  before the examination time ends.
+                </Text>
+
+              </View>
+
+              {/* OK Button */}
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.okButton}
+                onPress={() => {
+                  setShowInstruction(false);
+
+                  navigation.navigate('StartExam', {
+                    examDetail: examDetail,
+                  });
+                }}>
+
+                <Text style={styles.okButtonText}>
+                  OK
+                </Text>
+
+              </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </SafeAreaView>
+      );
+    };
 
 export default ExamDetail;
 
@@ -344,6 +409,85 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontFamily: FontFamily.semiBold,
     fontSize: FontSize.regular,
+    color: Colors.button_text,
+  },
+
+  modalOverlay: {
+  flex: 1,
+
+  backgroundColor: Colors.loaderBackground,
+
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  paddingHorizontal: 20,
+},
+
+  instructionModal: {
+    width: '100%',
+
+    backgroundColor: Colors.white,
+
+    borderRadius: card.border_radius_card,
+
+    padding: card.padding,
+
+    elevation: 8,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+  },
+
+  modalTitle: {
+    fontFamily: FontFamily.semiBold,
+
+    fontSize: FontSize.large,
+
+    color: Colors.text,
+
+    textAlign: 'center',
+
+    marginBottom: 16,
+  },
+
+  instructionContainer: {
+    marginBottom: 20,
+  },
+
+  instructionText: {
+    fontFamily: FontFamily.regular,
+
+    fontSize: FontSize.small,
+
+    color: Colors.text,
+
+    lineHeight: 20,
+
+    marginBottom: 8,
+  },
+
+  okButton: {
+    height: 42,
+
+    backgroundColor: Colors.primary,
+
+    borderRadius:
+      card.border_radius_card_medium,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  okButtonText: {
+    fontFamily: FontFamily.semiBold,
+
+    fontSize: FontSize.regular,
+
     color: Colors.button_text,
   },
 });

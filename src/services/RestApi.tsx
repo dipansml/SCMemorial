@@ -2,10 +2,11 @@ import axios from 'axios';
 import StorageManager from './StorageManager';
 
 //const BASE_URL = 'http://192.168.1.18/scms.beas.in/api';
-const BASE_URL = 'http://182.73.216.93/scms.beas.in/api';
+export const BASE_URL = 'http://182.73.216.93/scms.beas.in';
+export const BASE_URL_IMAGE = BASE_URL + '/public/uploads/exam/';
 
 export const RestApi = axios.create({
-  baseURL: BASE_URL,
+  baseURL: BASE_URL + '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

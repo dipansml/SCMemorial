@@ -19,7 +19,7 @@ export const demoLiveExamResponse: LiveExamResponse = {
           question:
             'When we click on the Draw Border option in the font group under the home tab, cursor shape changes into __________.',
           question_file: '',
-          marks: '1',
+          marks: '2',
           option_number: '4',
           deleted: 'f',
           created_by: '3640',

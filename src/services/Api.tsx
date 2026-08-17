@@ -10,6 +10,8 @@ import { StudentAttendanceResponse } from '../Model/StudentAttendance/StudentAtt
 import { StudentLibraryResponse } from '../Model/StudentLibrary/StudentLibraryResponse';
 import { StudentListResponse } from '../Model/StudentList/StudentListResponse';
 import { StudentAttemptExamResponse } from '../Model/Exam/StudentAttemptExam'
+import { LiveExamResponse } from '../Model/ExamDataset/LiveExamData'
+import { StudentExamAnswer } from '../Model/ExamDataset/LiveExamData'
 import { RestApi } from './RestApi';
 
 // Request
@@ -55,6 +57,16 @@ export interface StudentAttendancePayload {
 export interface StudentAttemptExam{
   user_id: string;
   set_unique_id: string;
+}
+
+export interface ExamQuestionPayload{
+  user_id: string;
+  set_unique_id: string;
+  set_id: string;
+}
+
+export interface SubmitExamPayload{
+  data: StudentExamAnswer
 }
 
 // API
@@ -146,4 +158,19 @@ export const Api = {
     const response = await RestApi.post('/student-attempt-exam', payload);
     return response.data;
   },
+
+  getExamQuestion: async (
+    payload: ExamQuestionPayload,
+  ): Promise<LiveExamResponse> => {
+    const response = await RestApi.post('/student-live-exam', payload);
+    return response.data;
+  },
+
+  submitExam: async (
+    payload: ExamQuestionPayload,
+  ): Promise<LiveExamResponse> => {
+    const response = await RestApi.post('/student-finish-exam', payload);
+    return response.data;
+  },
+  
 };

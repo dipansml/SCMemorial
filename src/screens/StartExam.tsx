@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react';
-
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,134 +6,141 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Modal,
+  Alert,
 } from 'react-native';
 
 import AppHeader from '../component/AppHeader';
 import {openParentDrawer} from '../navigation/navigationRef';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '../../App';
 
-import {SafeAreaView} from 'react-native-safe-area-context';
-import { card, container, FontFamily, FontSize } from '../theme/fonts_dimen';
+import {
+  LiveExamData,
+  ExamOption,
+  StudentExamAnswer,
+} from '../Model/ExamDataset/LiveExamData';
+
+import {demoLiveExamResponse} from '../Model/ExamDataset/DemoLiveExamData';
+
 import Colors from '../theme/colors';
 
 import {
-  demoExamQuestions,
-  ExamQuestion,
-} from '../Model/ExamDataset/DemoExamData';
+  Button,
+  card,
+  container,
+  FontFamily,
+  FontSize,
+  iconBox,
+} from '../theme/fonts_dimen';
 
-type Props = NativeStackScreenProps<
-  RootStackParamList,
-  'StartExam'
->;
-
-interface AnswerState {
-  questionId: string;
-  selectedAnswerId: string | null;
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'StartExam'>;
 
 const StartExam = ({navigation, route}: Props) => {
   const {examDetail} = route.params;
 
   /*
-   * --------------------------------------------------
-   * EXAM DATA
-   * --------------------------------------------------
+   * ---------------------------------------------------------
+   * DEMO DATA
+   * ---------------------------------------------------------
    *
-   * Currently using demo data.
+   * For now we use demoLiveExamResponse.
    *
-   * Later replace this with API response.
+   * Later replace this with API response:
+   *
+   * const examData = apiResponse.data;
+   *
    */
-  const questions: ExamQuestion[] =
-    demoExamQuestions;
-
-  /*
-   * --------------------------------------------------
-   * TIMER
-   * --------------------------------------------------
-   *
-   * Demo: 20 minutes 35 seconds
-   *
-   * In future:
-   * examDetail.set_details.exm_time
-   * can be converted into seconds.
-   */
-  const [timeLeft, setTimeLeft] =
-    useState(20 * 60 + 35);
+  const [examData, setExamData] = useState<LiveExamData | null>(
+    demoLiveExamResponse.data,
+  );
 
   const [currentQuestionIndex, setCurrentQuestionIndex] =
-    useState(0);
-
-  const [showSubmitModal, setShowSubmitModal] =
-    useState(false);
-
-  const [isAutoSubmit, setIsAutoSubmit] =
-    useState(false);
+    useState<number>(0);
 
   /*
-   * --------------------------------------------------
-   * ANSWER DATASET
-   * --------------------------------------------------
+   * Selected answer dataset.
    *
-   * Stores selected answer for every question.
+   * Example:
+   * {
+   *   "6": "18",
+   *   "7": "22"
+   * }
+   *
+   * key   = question_id
+   * value = option_id
    */
-  const [examAnswers, setExamAnswers] =
-    useState<AnswerState[]>(
-      questions.map(question => ({
-        questionId: question.id,
-        selectedAnswerId: null,
-      })),
-    );
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<string, string>
+  >({});
 
-  const currentQuestion =
-    questions[currentQuestionIndex];
-
-  const selectedAnswer =
-    examAnswers.find(
-      item =>
-        item.questionId ===
-        currentQuestion.id,
-    )?.selectedAnswerId;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /*
-   * --------------------------------------------------
-   * FORMAT TIMER
-   * --------------------------------------------------
+   * ---------------------------------------------------------
+   * TIMER
+   * ---------------------------------------------------------
+   *
+   * exm_time is in MINUTES.
+   *
+   * Example:
+   * exm_time = "10"
+   *
+   * Timer = 10 * 60 = 600 seconds
+   *
+   * start_time and end_time are NOT used.
    */
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(
-      seconds / 60,
-    );
+  const examDurationSeconds = useMemo(() => {
+    if (!examData?.exm_time) {
+      return 0;
+    }
 
-    const remainingSeconds =
-      seconds % 60;
+    const minutes = Number(examData.exm_time);
 
-    return `${String(minutes).padStart(
-      2,
-      '0',
-    )}:${String(remainingSeconds).padStart(
-      2,
-      '0',
-    )}`;
-  };
+    if (isNaN(minutes) || minutes <= 0) {
+      return 0;
+    }
+
+    return minutes * 60;
+  }, [examData?.exm_time]);
+
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(
+    examDurationSeconds,
+  );
 
   /*
-   * --------------------------------------------------
-   * COUNTDOWN
-   * --------------------------------------------------
+   * Start / reset timer when exam data changes.
    */
   useEffect(() => {
-    if (timeLeft <= 0) {
-      handleAutoSubmit();
+    if (examDurationSeconds > 0) {
+      setRemainingSeconds(examDurationSeconds);
+    }
+  }, [examDurationSeconds]);
+
+  /*
+   * Countdown timer
+   */
+  useEffect(() => {
+    if (!examData || examDurationSeconds <= 0) {
+      return;
+    }
+
+    if (remainingSeconds <= 0) {
       return;
     }
 
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
+      setRemainingSeconds(prev => {
         if (prev <= 1) {
           clearInterval(timer);
+
+          /*
+           * Timer finished.
+           * Automatically submit the exam.
+           */
+          handleAutoSubmit();
+
           return 0;
         }
 
@@ -142,214 +148,470 @@ const StartExam = ({navigation, route}: Props) => {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [examData, examDurationSeconds]);
 
   /*
-   * --------------------------------------------------
-   * SELECT ANSWER
-   * --------------------------------------------------
+   * ---------------------------------------------------------
+   * FORMAT TIMER
+   * ---------------------------------------------------------
+   *
+   * 600 => 10:00
+   * 65  => 01:05
    */
-  const selectAnswer = (
-    answerId: string,
-  ) => {
-    setExamAnswers(prev =>
-      prev.map(item =>
-        item.questionId ===
-        currentQuestion.id
-          ? {
-              ...item,
-              selectedAnswerId:
-                answerId,
-            }
-          : item,
-      ),
-    );
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    return `${String(minutes).padStart(2, '0')}:${String(
+      secs,
+    ).padStart(2, '0')}`;
   };
 
   /*
-   * --------------------------------------------------
-   * PREVIOUS QUESTION
-   * --------------------------------------------------
+   * Current question
    */
-  const handlePrevious = () => {
-    if (currentQuestionIndex === 0) {
+  const currentQuestion =
+    examData?.examset?.[currentQuestionIndex];
+
+  /*
+   * ---------------------------------------------------------
+   * SELECT ANSWER
+   * ---------------------------------------------------------
+   */
+  const handleAnswerSelect = (option: ExamOption) => {
+    if (!currentQuestion) {
       return;
     }
 
-    setCurrentQuestionIndex(
-      prev => prev - 1,
-    );
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [currentQuestion.question.question_id]: option.option_id,
+    }));
   };
 
   /*
-   * --------------------------------------------------
-   * NEXT QUESTION
-   * --------------------------------------------------
+   * ---------------------------------------------------------
+   * PREVIOUS
+   * ---------------------------------------------------------
    */
-  const handleNext = () => {
-    if (
-      currentQuestionIndex <
-      questions.length - 1
-    ) {
-      setCurrentQuestionIndex(
-        prev => prev + 1,
-      );
-    } else {
-      /*
-       * Last question
-       * Show submit popup
-       */
-      setIsAutoSubmit(false);
-      setShowSubmitModal(true);
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
     }
   };
 
   /*
-   * --------------------------------------------------
-   * SUBMIT BUTTON
-   * --------------------------------------------------
+   * ---------------------------------------------------------
+   * NEXT
+   * ---------------------------------------------------------
    */
-  const handleSubmitClick = () => {
-    setIsAutoSubmit(false);
-    setShowSubmitModal(true);
+  const handleNext = () => {
+    if (!examData) {
+      return;
+    }
+
+    if (currentQuestionIndex < examData.examset.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      /*
+       * Last question.
+       * Show submit confirmation.
+       */
+      showSubmitPopup();
+    }
   };
 
   /*
-   * --------------------------------------------------
-   * TIMER AUTO SUBMIT
-   * --------------------------------------------------
+   * ---------------------------------------------------------
+   * CREATE SUBMISSION DATA
+   * ---------------------------------------------------------
+   *
+   * API format:
+   *
+   * {
+   *   user_id: "10212",
+   *   set_unique_id: "5E3464B4B893A",
+   *   set_id: "4",
+   *   result_id: "41",
+   *   questionids: [6, 7],
+   *   optionids: [18, 22]
+   * }
+   */
+  const createSubmissionData = (): StudentExamAnswer | null => {
+    if (!examData) {
+      return null;
+    }
+
+    const questionids: number[] = [];
+    const optionids: number[] = [];
+
+    examData.examset.forEach(item => {
+      const questionId = item.question.question_id;
+
+      const selectedOptionId =
+        selectedAnswers[questionId];
+
+      /*
+       * Only add questions that have an answer.
+       */
+      if (selectedOptionId) {
+        questionids.push(Number(questionId));
+        optionids.push(Number(selectedOptionId));
+      }
+    });
+
+    return {
+      user_id: examData.user_id,
+      set_unique_id: examData.set_unique_id,
+      set_id: examData.set_id,
+      result_id: examData.result_id,
+      questionids,
+      optionids,
+    };
+  };
+
+  /*
+   * ---------------------------------------------------------
+   * ACTUAL SUBMIT
+   * ---------------------------------------------------------
+   */
+  const submitExam = () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const answerData = createSubmissionData();
+
+    console.log(
+      '========== EXAM SUBMISSION ==========',
+    );
+
+    console.log(
+      'Student Exam Answer:',
+      JSON.stringify(answerData, null, 2),
+    );
+
+    /*
+     * Later API call goes here:
+     *
+     * await Api.submitExam(answerData);
+     */
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+
+      Alert.alert(
+        'Exam Submitted',
+        'Your exam has been submitted successfully.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.goBack();
+            },
+          },
+        ],
+      );
+    }, 500);
+  };
+
+  /*
+   * ---------------------------------------------------------
+   * SUBMIT POPUP
+   * ---------------------------------------------------------
+   */
+  const showSubmitPopup = () => {
+    const answeredCount =
+      Object.keys(selectedAnswers).length;
+
+    const totalQuestions =
+      examData?.examset?.length || 0;
+
+    Alert.alert(
+      'Submit Exam',
+      `You have answered ${answeredCount} of ${totalQuestions} questions.\n\nAre you sure you want to submit the exam?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: submitExam,
+        },
+      ],
+    );
+  };
+
+  /*
+   * ---------------------------------------------------------
+   * AUTOMATIC SUBMIT
+   * ---------------------------------------------------------
    */
   const handleAutoSubmit = () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    const answerData = createSubmissionData();
+
     console.log(
-      'Time finished - Auto Submit',
+      '========== AUTO SUBMIT ==========',
     );
 
     console.log(
-      'Final Answers:',
-      JSON.stringify(
-        examAnswers,
-        null,
-        2,
-      ),
-    );
-
-    /*
-     * API call will be added here.
-     */
-    navigation.goBack();
-  };
-
-  /*
-   * --------------------------------------------------
-   * FINAL SUBMIT
-   * --------------------------------------------------
-   */
-  const handleFinalSubmit = () => {
-    setShowSubmitModal(false);
-
-    console.log(
-      'Exam Submitted',
-    );
-
-    console.log(
-      'Exam ID:',
-      examDetail?.set_unique_id,
-    );
-
-    console.log(
-      'Answers:',
-      JSON.stringify(
-        examAnswers,
-        null,
-        2,
-      ),
+      'Student Exam Answer:',
+      JSON.stringify(answerData, null, 2),
     );
 
     /*
-     * Future API:
+     * Later:
      *
-     * await Api.submitExam({
-     *   set_unique_id:
-     *     examDetail.set_unique_id,
-     *   answers: examAnswers,
-     * });
+     * await Api.submitExam(answerData);
      */
 
-    navigation.goBack();
+    setIsSubmitting(true);
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+
+      Alert.alert(
+        'Time Up',
+        'Your exam time has ended. Your exam has been submitted automatically.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.goBack();
+            },
+          },
+        ],
+      );
+    }, 300);
   };
 
   /*
-   * --------------------------------------------------
-   * QUESTION RENDER
-   * --------------------------------------------------
+   * ---------------------------------------------------------
+   * CHECK SELECTED OPTION
+   * ---------------------------------------------------------
    */
-  const renderQuestion = () => {
+  const selectedOptionId =
+    currentQuestion
+      ? selectedAnswers[
+          currentQuestion.question.question_id
+        ]
+      : undefined;
+
+  /*
+   * ---------------------------------------------------------
+   * LOADING
+   * ---------------------------------------------------------
+   */
+  if (!examData || !currentQuestion) {
     return (
-      <>
+      <SafeAreaView style={styles.container}>
+        <AppHeader
+          title={
+            examDetail?.set_details?.title ||
+            'Online Exam'
+          }
+          onMenuPress={openParentDrawer}
+          isMenuVisible={false}
+          isNotificationVisible={false}
+          onBellPress={() => {}}
+          onProfilePress={() => {}}
+          navigation={navigation}
+        />
+
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>
+            Loading exam...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const question = currentQuestion.question;
+  const options = currentQuestion.option || [];
+
+  /*
+   * ---------------------------------------------------------
+   * IMAGE SOURCE
+   * ---------------------------------------------------------
+   *
+   * If question_file / option_file contains a URL,
+   * Image can directly use {uri: file}.
+   *
+   * If your API returns only a file name, prepend
+   * your image base URL here.
+   */
+  const getImageSource = (file: string) => {
+    if (!file) {
+      return null;
+    }
+
+    if (
+      file.startsWith('http://') ||
+      file.startsWith('https://')
+    ) {
+      return {uri: file};
+    }
+
+    /*
+     * Change this according to your server.
+     *
+     * Example:
+     * return {
+     *   uri: `http://182.73.216.93/scms.beas.in/uploads/${file}`,
+     * };
+     */
+
+    return {uri: file};
+  };
+
+  const questionImageSource =
+    getImageSource(question.question_file);
+
+  const isLastQuestion =
+    currentQuestionIndex ===
+    examData.examset.length - 1;
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <AppHeader
+        title={
+          examDetail?.set_details?.title ||
+          'Online Exam'
+        }
+        onMenuPress={openParentDrawer}
+        isMenuVisible={false}
+        isNotificationVisible={false}
+        onBellPress={() => {}}
+        onProfilePress={() => {}}
+        navigation={navigation}
+      />
+
+      <View style={styles.content}>
+        {/* ================================================= */}
+        {/* TIMER + QUESTION NUMBER + MARKS */}
+        {/* ================================================= */}
+
+        <View style={styles.examTopCard}>
+          <View style={styles.timerContainer}>
+            <Text style={styles.timerLabel}>
+              Time Left
+            </Text>
+
+            <Text
+              style={[
+                styles.timerText,
+                remainingSeconds <= 60 &&
+                  styles.timerDanger,
+              ]}>
+              {formatTime(remainingSeconds)}
+            </Text>
+          </View>
+
+          <View style={styles.questionCounter}>
+            <Text style={styles.questionCounterText}>
+              {currentQuestionIndex + 1}
+            </Text>
+
+            <Text style={styles.questionCounterTotal}>
+              / {examData.examset.length}
+            </Text>
+          </View>
+
+          <View style={styles.marksContainer}>
+            <Text style={styles.marksValue}>
+              {question.marks || '0'}
+            </Text>
+
+            <Text style={styles.marksLabel}>
+              Point
+            </Text>
+          </View>
+        </View>
+
+        {/* ================================================= */}
         {/* QUESTION */}
-        <Text style={styles.questionLabel}>
-          Question :
-        </Text>
+        {/* ================================================= */}
 
-        <Text style={styles.questionText}>
-          {currentQuestion.questionText}
-        </Text>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={
+            styles.scrollContent
+          }
+          showsVerticalScrollIndicator={false}>
+          <View style={styles.questionCard}>
+            <Text style={styles.questionLabel}>
+              Question {currentQuestionIndex + 1}
+            </Text>
 
-        {/* QUESTION IMAGE */}
-        {currentQuestion.questionImage && (
-          <Image
-            source={
-              currentQuestion.questionImage
-            }
-            style={styles.questionImage}
-            resizeMode="contain"
-          />
-        )}
+            {/* QUESTION TEXT */}
 
-        {/* ANSWER LABEL */}
-        <Text
-          style={
-            styles.answerLabel
-          }>
-          Answer set :
-        </Text>
+            {!!question.question?.trim() && (
+              <Text style={styles.questionText}>
+                {question.question}
+              </Text>
+            )}
 
-        {/* ANSWERS */}
-        <View style={styles.answerContainer}>
-          {currentQuestion.answers.map(
-            answer => {
+            {/* QUESTION IMAGE */}
+
+            {questionImageSource && (
+              <Image
+                source={questionImageSource}
+                style={styles.questionImage}
+                resizeMode="contain"
+              />
+            )}
+          </View>
+
+          {/* ================================================= */}
+          {/* OPTIONS */}
+          {/* ================================================= */}
+
+          <View style={styles.optionsCard}>
+            <Text style={styles.answerLabel}>
+              Choose your answer
+            </Text>
+
+            {options.map((option, index) => {
               const isSelected =
-                selectedAnswer ===
-                answer.id;
+                selectedOptionId ===
+                option.option_id;
+
+              const optionImageSource =
+                getImageSource(
+                  option.option_file,
+                );
 
               return (
                 <TouchableOpacity
-                  key={answer.id}
+                  key={option.option_id}
                   activeOpacity={0.8}
-                  style={[
-                    styles.answerItem,
-
-                    isSelected &&
-                      styles.answerItemSelected,
-
-                    answer.answerImage &&
-                      styles.imageAnswerItem,
-                  ]}
                   onPress={() =>
-                    selectAnswer(
-                      answer.id,
-                    )
-                  }>
+                    handleAnswerSelect(option)
+                  }
+                  style={[
+                    styles.optionCard,
+                    isSelected &&
+                      styles.optionCardSelected,
+                  ]}>
+                  {/* RADIO BUTTON */}
 
-                  {/* RADIO */}
                   <View
                     style={[
                       styles.radioOuter,
                       isSelected &&
                         styles.radioOuterSelected,
                     ]}>
-
                     {isSelected && (
                       <View
                         style={
@@ -357,380 +619,90 @@ const StartExam = ({navigation, route}: Props) => {
                         }
                       />
                     )}
-
                   </View>
 
-                  {/* ANSWER TEXT */}
-                  {answer.answerText && (
-                    <Text
-                      style={
-                        styles.answerText
-                      }>
-                      {answer.answerText}
-                    </Text>
-                  )}
+                  {/* OPTION CONTENT */}
 
-                  {/* ANSWER IMAGE */}
-                  {answer.answerImage && (
-                    <Image
-                      source={
-                        answer.answerImage
-                      }
-                      style={
-                        styles.answerImage
-                      }
-                      resizeMode="contain"
-                    />
-                  )}
+                  <View
+                    style={
+                      styles.optionContent
+                    }>
+                    {/* OPTION TEXT */}
 
+                    {!!option.option?.trim() && (
+                      <Text
+                        style={
+                          styles.optionText
+                        }>
+                        {option.option}
+                      </Text>
+                    )}
+
+                    {/* OPTION IMAGE */}
+
+                    {optionImageSource && (
+                      <Image
+                        source={
+                          optionImageSource
+                        }
+                        style={
+                          styles.optionImage
+                        }
+                        resizeMode="contain"
+                      />
+                    )}
+                  </View>
                 </TouchableOpacity>
               );
-            },
-          )}
-        </View>
-      </>
-    );
-  };
-
-  return (
-    <SafeAreaView
-      style={styles.container}>
-
-      <AppHeader
-        title={
-          examDetail.set_details.title
-        }
-        onMenuPress={
-          openParentDrawer
-        }
-        isMenuVisible={false}
-        isNotificationVisible={
-          false
-        }
-        onBellPress={() =>
-          console.log('Bell')
-        }
-        onProfilePress={() =>
-          console.log('Profile')
-        }
-        navigation={navigation}
-      />
-
-      <View style={styles.content}>
-
-        <ScrollView
-          showsVerticalScrollIndicator={
-            false
-          }
-          contentContainerStyle={
-            styles.scrollContent
-          }>
-
-          <View style={styles.examCard}>
-
-            {/* =========================
-                TIMER
-            ========================== */}
-            <View
-              style={
-                styles.timerContainer
-              }>
-
-              <View
-                style={
-                  styles.timerLeft
-                }>
-
-                <Image
-                  source={require(
-                    '../assets/images/icons/clock.png',
-                  )}
-                  style={
-                    styles.smallIcon
-                  }
-                  resizeMode="contain"
-                />
-
-                <Text
-                  style={
-                    styles.timerLabel
-                  }>
-                  Time Left :
-                </Text>
-
-                <Text
-                  style={
-                    styles.timerText
-                  }>
-                  {formatTime(
-                    timeLeft,
-                  )}
-                </Text>
-
-              </View>
-
-            </View>
-
-            {/* =========================
-                QUESTION NUMBER
-            ========================== */}
-            <View
-              style={
-                styles.questionNumberContainer
-              }>
-
-              <View
-                style={
-                  styles.questionNumberLeft
-                }>
-
-                <Image
-                  source={require(
-                    '../assets/images/icons/question.png',
-                  )}
-                  style={
-                    styles.smallIcon
-                  }
-                  resizeMode="contain"
-                />
-
-                <Text
-                  style={
-                    styles.questionNumberLabel
-                  }>
-                  Question Number :
-                </Text>
-
-                <Text
-                  style={
-                    styles.currentQuestionNumber
-                  }>
-                  {String(
-                    currentQuestionIndex +
-                      1,
-                  ).padStart(2, '0')}
-                </Text>
-
-                <Text
-                  style={
-                    styles.totalQuestionText
-                  }>
-                  / {questions.length}
-                </Text>
-
-              </View>
-
-              {/* POINT */}
-              <Text
-                style={
-                  styles.pointText
-                }>
-                Point :{' '}
-                {currentQuestion.marks}
-              </Text>
-
-            </View>
-
-            {/* =========================
-                QUESTION AREA
-            ========================== */}
-            <View
-              style={
-                styles.questionCard
-              }>
-
-              {renderQuestion()}
-
-            </View>
-
-            {/* =========================
-                SUBMIT
-            ========================== */}
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={
-                styles.submitButton
-              }
-              onPress={
-                handleSubmitClick
-              }>
-
-              <Text
-                style={
-                  styles.submitButtonText
-                }>
-                Submit
-              </Text>
-
-            </TouchableOpacity>
-
-            {/* =========================
-                PREVIOUS / NEXT
-            ========================== */}
-            <View
-              style={
-                styles.navigationContainer
-              }>
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                disabled={
-                  currentQuestionIndex ===
-                  0
-                }
-                style={[
-                  styles.navigationButton,
-
-                  currentQuestionIndex ===
-                    0 &&
-                    styles.navigationButtonDisabled,
-                ]}
-                onPress={
-                  handlePrevious
-                }>
-
-                <Text
-                  style={
-                    styles.navigationArrow
-                  }>
-                  ‹
-                </Text>
-
-                <Text
-                  style={
-                    styles.navigationText
-                  }>
-                  Previous Question
-                </Text>
-
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={
-                  styles.navigationButton
-                }
-                onPress={handleNext}>
-
-                <Text
-                  style={
-                    styles.navigationText
-                  }>
-                  {currentQuestionIndex ===
-                  questions.length - 1
-                    ? 'Submit'
-                    : 'Next Question'}
-                </Text>
-
-                <Text
-                  style={
-                    styles.navigationArrow
-                  }>
-                  ›
-                </Text>
-
-              </TouchableOpacity>
-
-            </View>
-
+            })}
           </View>
 
+          {/* Extra space for bottom buttons */}
+          <View style={styles.bottomSpace} />
         </ScrollView>
 
-      </View>
+        {/* ================================================= */}
+        {/* PREVIOUS / NEXT */}
+        {/* ================================================= */}
 
-      {/* ============================
-          SUBMIT CONFIRMATION MODAL
-      ============================= */}
-      <Modal
-        visible={showSubmitModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() =>
-          setShowSubmitModal(false)
-        }>
-
-        <View
-          style={
-            styles.modalOverlay
-          }>
-
-          <View
-            style={
-              styles.submitModal
-            }>
-
+        <View style={styles.navigationContainer}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            disabled={currentQuestionIndex === 0}
+            onPress={handlePrevious}
+            style={[
+              styles.navigationButton,
+              styles.previousButton,
+              currentQuestionIndex === 0 &&
+                styles.navigationButtonDisabled,
+            ]}>
             <Text
-              style={
-                styles.modalTitle
-              }>
-              {isAutoSubmit
-                ? 'Time Finished'
-                : 'Submit Examination'}
+              style={[
+                styles.navigationButtonText,
+                currentQuestionIndex === 0 &&
+                  styles.navigationButtonTextDisabled,
+              ]}>
+              Previous
             </Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity
+            activeOpacity={0.8}
+            disabled={isSubmitting}
+            onPress={handleNext}
+            style={[
+              styles.navigationButton,
+              styles.nextButton,
+            ]}>
             <Text
-              style={
-                styles.modalMessage
-              }>
-              {isAutoSubmit
-                ? 'Your examination time has ended. Your answers will be submitted automatically.'
-                : 'Are you sure you want to submit your examination? You will not be able to change your answers after submission.'}
+              style={styles.nextButtonText}>
+              {isLastQuestion
+                ? 'Submit'
+                : 'Next'}
             </Text>
-
-            {!isAutoSubmit && (
-              <View
-                style={
-                  styles.modalButtonContainer
-                }>
-
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={
-                    styles.cancelButton
-                  }
-                  onPress={() =>
-                    setShowSubmitModal(
-                      false,
-                    )
-                  }>
-
-                  <Text
-                    style={
-                      styles.cancelButtonText
-                    }>
-                    Cancel
-                  </Text>
-
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={
-                    styles.okButton
-                  }
-                  onPress={
-                    handleFinalSubmit
-                  }>
-
-                  <Text
-                    style={
-                      styles.okButtonText
-                    }>
-                    OK
-                  </Text>
-
-                </TouchableOpacity>
-
-              </View>
-            )}
-
-          </View>
-
+          </TouchableOpacity>
         </View>
-
-      </Modal>
-
+      </View>
     </SafeAreaView>
   );
 };
@@ -747,595 +719,361 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  scrollContent: {
-    padding: card.padding_samll,
-    paddingBottom: 20,
+  /* ============================================== */
+  /* LOADING */
+  /* ============================================== */
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
-  /*
-   * ==========================================
-   * MAIN CARD
-   * ==========================================
-   */
+  loadingText: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.medium,
+    color: Colors.text_light,
+  },
 
-  examCard: {
+  /* ============================================== */
+  /* TOP CARD */
+  /* ============================================== */
+
+  examTopCard: {
+    marginHorizontal: card.padding,
+    marginTop: card.padding_samll,
+    marginBottom: card.padding_samll,
+
     backgroundColor:
       Colors.background_list_item,
-
-    borderRadius:
-      card.border_radius_card_small,
-
-    padding: card.padding_samll,
-
-    borderWidth: 1,
-
-    borderColor:
-      Colors.border_color,
-  },
-
-  /*
-   * ==========================================
-   * TIMER
-   * ==========================================
-   */
-
-  timerContainer: {
-    height: 38,
-
-    backgroundColor:
-      Colors.background,
-
-    borderRadius:
-      card.border_radius_card_small,
-
-    borderWidth: 1,
-
-    borderColor:
-      Colors.border_color,
-
-    justifyContent: 'center',
-
-    paddingHorizontal: 8,
-
-    marginBottom: 5,
-  },
-
-  timerLeft: {
-    flexDirection: 'row',
-
-    alignItems: 'center',
-  },
-
-  smallIcon: {
-    width: 16,
-    height: 16,
-
-    marginRight: 6,
-
-    tintColor:
-      Colors.text_theme,
-  },
-
-  timerLabel: {
-    fontFamily:
-      FontFamily.semiBold,
-
-    fontSize:
-      FontSize.very_small,
-
-    color: Colors.text,
-  },
-
-  timerText: {
-    fontFamily:
-      FontFamily.bold,
-
-    fontSize:
-      FontSize.medium,
-
-    color: Colors.text_theme,
-
-    marginLeft: 6,
-
-    letterSpacing: 1,
-  },
-
-  /*
-   * ==========================================
-   * QUESTION NUMBER
-   * ==========================================
-   */
-
-  questionNumberContainer: {
-    minHeight: 38,
-
-    backgroundColor:
-      Colors.background,
-
-    borderRadius:
-      card.border_radius_card_small,
-
-    borderWidth: 1,
-
-    borderColor:
-      Colors.border_color,
-
-    flexDirection: 'row',
-
-    alignItems: 'center',
-
-    justifyContent:
-      'space-between',
-
-    paddingHorizontal: 8,
-
-    marginBottom: 7,
-  },
-
-  questionNumberLeft: {
-    flexDirection: 'row',
-
-    alignItems: 'center',
-  },
-
-  questionNumberLabel: {
-    fontFamily:
-      FontFamily.semiBold,
-
-    fontSize:
-      FontSize.very_small,
-
-    color: Colors.text,
-  },
-
-  currentQuestionNumber: {
-    fontFamily:
-      FontFamily.bold,
-
-    fontSize:
-      FontSize.regular,
-
-    color:
-      Colors.text_theme,
-
-    marginLeft: 6,
-  },
-
-  totalQuestionText: {
-    fontFamily:
-      FontFamily.regular,
-
-    fontSize:
-      FontSize.small,
-
-    color: Colors.text,
-
-    marginLeft: 2,
-  },
-
-  pointText: {
-    fontFamily:
-      FontFamily.regular,
-
-    fontSize:
-      FontSize.vv_small,
-
-    color: Colors.text,
-  },
-
-  /*
-   * ==========================================
-   * QUESTION
-   * ==========================================
-   */
-
-  questionCard: {
-    backgroundColor:
-      Colors.white,
-
-    borderWidth: 1,
-
-    borderColor:
-      Colors.border_color,
-
-    borderRadius:
-      card.border_radius_card_small,
-
-    padding: card.padding_samll,
-
-    marginBottom: 8,
-  },
-
-  questionLabel: {
-    fontFamily:
-      FontFamily.semiBold,
-
-    fontSize:
-      FontSize.small,
-
-    color: Colors.text,
-
-    marginBottom: 5,
-  },
-
-  questionText: {
-    fontFamily:
-      FontFamily.regular,
-
-    fontSize:
-      FontSize.small,
-
-    color: Colors.text,
-
-    lineHeight: 17,
-
-    marginBottom: 10,
-  },
-
-  questionImage: {
-    width: '100%',
-
-    height: 150,
-
-    marginBottom: 10,
-  },
-
-  /*
-   * ==========================================
-   * ANSWERS
-   * ==========================================
-   */
-
-  answerLabel: {
-    fontFamily:
-      FontFamily.semiBold,
-
-    fontSize:
-      FontSize.small,
-
-    color: Colors.text,
-
-    marginBottom: 7,
-  },
-
-  answerContainer: {
-    width: '100%',
-  },
-
-  answerItem: {
-    minHeight: 38,
-
-    borderWidth: 1,
-
-    borderColor:
-      Colors.border_color,
-
-    borderRadius:
-      card.border_radius_card_small,
-
-    flexDirection: 'row',
-
-    alignItems: 'center',
-
-    paddingHorizontal: 8,
-
-    marginBottom: 5,
-
-    backgroundColor:
-      Colors.white,
-  },
-
-  answerItemSelected: {
-    borderColor:
-      Colors.button_color,
-
-    backgroundColor:
-      Colors.white,
-  },
-
-  imageAnswerItem: {
-    minHeight: 105,
-
-    justifyContent: 'flex-start',
-
-    paddingVertical: 5,
-
-    alignItems: 'center',
-  },
-
-  /*
-   * ==========================================
-   * RADIO
-   * ==========================================
-   */
-
-  radioOuter: {
-    width: 14,
-
-    height: 14,
-
-    borderRadius: 7,
-
-    borderWidth: 1,
-
-    borderColor:
-      Colors.iconBackGrey,
-
-    justifyContent: 'center',
-
-    alignItems: 'center',
-
-    marginRight: 8,
-  },
-
-  radioOuterSelected: {
-    borderColor:
-      Colors.button_color,
-  },
-
-  radioInner: {
-    width: 6,
-
-    height: 6,
-
-    borderRadius: 3,
-
-    backgroundColor:
-      Colors.button_color,
-  },
-
-  answerText: {
-    flex: 1,
-
-    fontFamily:
-      FontFamily.regular,
-
-    fontSize:
-      FontSize.small,
-
-    color: Colors.text,
-  },
-
-  answerImage: {
-    width: 95,
-
-    height: 90,
-
-    marginHorizontal: 4,
-  },
-
-  /*
-   * ==========================================
-   * SUBMIT
-   * ==========================================
-   */
-
-  submitButton: {
-    height: 38,
-
-    backgroundColor:
-      Colors.button_color,
-
-    borderRadius:
-      card.border_radius_card_small,
-
-    justifyContent: 'center',
-
-    alignItems: 'center',
-
-    marginBottom: 8,
-  },
-
-  submitButtonText: {
-    fontFamily:
-      FontFamily.semiBold,
-
-    fontSize:
-      FontSize.small,
-
-    color: Colors.button_text,
-  },
-
-  /*
-   * ==========================================
-   * PREVIOUS / NEXT
-   * ==========================================
-   */
-
-  navigationContainer: {
-    flexDirection: 'row',
-
-    justifyContent:
-      'space-between',
-
-    gap: 6,
-  },
-
-  navigationButton: {
-    flex: 1,
-
-    height: 36,
-
-    borderWidth: 1,
-
-    borderColor:
-      Colors.border_color,
-
-    backgroundColor:
-      Colors.white,
-
-    borderRadius:
-      card.border_radius_card_small,
-
-    flexDirection: 'row',
-
-    alignItems: 'center',
-
-    justifyContent:
-      'center',
-  },
-
-  navigationButtonDisabled: {
-    opacity: 0.45,
-  },
-
-  navigationArrow: {
-    fontFamily:
-      FontFamily.regular,
-
-    fontSize:
-      FontSize.large,
-
-    color:
-      Colors.text_theme,
-
-    lineHeight: 20,
-
-    marginHorizontal: 4,
-  },
-
-  navigationText: {
-    fontFamily:
-      FontFamily.regular,
-
-    fontSize:
-      FontSize.vv_small,
-
-    color: Colors.text,
-  },
-
-  /*
-   * ==========================================
-   * SUBMIT MODAL
-   * ==========================================
-   */
-
-  modalOverlay: {
-    flex: 1,
-
-    backgroundColor:
-      Colors.loaderBackground,
-
-    justifyContent: 'center',
-
-    alignItems: 'center',
-
-    paddingHorizontal: 25,
-  },
-
-  submitModal: {
-    width: '100%',
-
-    backgroundColor:
-      Colors.white,
 
     borderRadius:
       card.border_radius_card,
 
     padding: card.padding,
 
-    elevation: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
 
     shadowColor: '#000',
-
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 2,
     },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
 
-    shadowOpacity: 0.25,
-
-    shadowRadius: 5,
+    elevation: 2,
   },
 
-  modalTitle: {
-    fontFamily:
-      FontFamily.semiBold,
+  /* ============================================== */
+  /* TIMER */
+  /* ============================================== */
 
-    fontSize:
-      FontSize.large,
+  timerContainer: {
+    flex: 1,
+  },
 
+  timerLabel: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.small,
+    color: Colors.text_light,
+    marginBottom: 2,
+  },
+
+  timerText: {
+    fontFamily: FontFamily.bold,
+    fontSize: FontSize.large,
+    color: Colors.primary,
+  },
+
+  timerDanger: {
+    color: Colors.red,
+  },
+
+  /* ============================================== */
+  /* QUESTION COUNTER */
+  /* ============================================== */
+
+  questionCounter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+
+  questionCounterText: {
+    fontFamily: FontFamily.bold,
+    fontSize: FontSize.xlarge,
+    color: Colors.primary,
+  },
+
+  questionCounterTotal: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.medium,
+    color: Colors.text_light,
+    marginLeft: 2,
+  },
+
+  /* ============================================== */
+  /* MARKS */
+  /* ============================================== */
+
+  marksContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+
+  marksValue: {
+    fontFamily: FontFamily.bold,
+    fontSize: FontSize.large,
+    color: Colors.success,
+  },
+
+  marksLabel: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.small,
+    color: Colors.text_light,
+  },
+
+  /* ============================================== */
+  /* SCROLL */
+  /* ============================================== */
+
+  scrollView: {
+    flex: 1,
+  },
+
+  scrollContent: {
+    paddingHorizontal: card.padding,
+    paddingBottom: 20,
+  },
+
+  /* ============================================== */
+  /* QUESTION CARD */
+  /* ============================================== */
+
+  questionCard: {
+    backgroundColor:
+      Colors.background_list_item,
+
+    borderRadius:
+      card.border_radius_card,
+
+    padding: card.padding,
+
+    marginBottom: card.margin_bottom,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+
+    elevation: 2,
+  },
+
+  questionLabel: {
+    fontFamily: FontFamily.semiBold,
+    fontSize: FontSize.regular,
+    color: Colors.primary,
+    marginBottom: 10,
+  },
+
+  questionText: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.medium,
+    lineHeight: 24,
     color: Colors.text,
+  },
 
-    textAlign: 'center',
+  questionImage: {
+    width: '100%',
+    height: 180,
+    marginTop: 14,
+    borderRadius:
+      card.border_radius_card_small,
+  },
 
+  /* ============================================== */
+  /* ANSWERS */
+  /* ============================================== */
+
+  optionsCard: {
+    backgroundColor:
+      Colors.background_list_item,
+
+    borderRadius:
+      card.border_radius_card,
+
+    padding: card.padding,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+
+    elevation: 2,
+  },
+
+  answerLabel: {
+    fontFamily: FontFamily.semiBold,
+    fontSize: FontSize.medium,
+    color: Colors.text,
     marginBottom: 12,
   },
 
-  modalMessage: {
-    fontFamily:
-      FontFamily.regular,
-
-    fontSize:
-      FontSize.small,
-
-    color: Colors.text,
-
-    lineHeight: 20,
-
-    textAlign: 'center',
-
-    marginBottom: 20,
-  },
-
-  modalButtonContainer: {
+  optionCard: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
 
-    gap: 10,
-  },
-
-  cancelButton: {
-    flex: 1,
-
-    height: 40,
+    minHeight: 52,
 
     borderWidth: 1,
-
-    borderColor:
-      Colors.border_color,
+    borderColor: Colors.border_color,
 
     borderRadius:
       card.border_radius_card_small,
 
-    justifyContent: 'center',
+    padding: 12,
 
-    alignItems: 'center',
+    marginBottom: 10,
+
+    backgroundColor:
+      Colors.background_list_item,
   },
 
-  cancelButtonText: {
-    fontFamily:
-      FontFamily.semiBold,
+  optionCardSelected: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.drawerItemActive,
+  },
 
-    fontSize:
-      FontSize.small,
+  /* ============================================== */
+  /* RADIO */
+  /* ============================================== */
 
+  radioOuter: {
+    width: 22,
+    height: 22,
+
+    borderRadius: 11,
+
+    borderWidth: 2,
+    borderColor: Colors.iconBackGrey,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    marginRight: 12,
+    marginTop: 2,
+  },
+
+  radioOuterSelected: {
+    borderColor: Colors.primary,
+  },
+
+  radioInner: {
+    width: 11,
+    height: 11,
+
+    borderRadius: 6,
+
+    backgroundColor: Colors.primary,
+  },
+
+  /* ============================================== */
+  /* OPTION CONTENT */
+  /* ============================================== */
+
+  optionContent: {
+    flex: 1,
+  },
+
+  optionText: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.regular,
+    lineHeight: 21,
     color: Colors.text,
   },
 
-  okButton: {
-    flex: 1,
+  optionImage: {
+    width: '100%',
+    height: 120,
+    marginTop: 8,
+    borderRadius:
+      card.border_radius_card_small,
+  },
 
-    height: 40,
+  /* ============================================== */
+  /* BOTTOM NAVIGATION */
+  /* ============================================== */
+
+  navigationContainer: {
+    flexDirection: 'row',
+
+    paddingHorizontal: card.padding,
+    paddingTop: 10,
+    paddingBottom: 10,
 
     backgroundColor:
-      Colors.button_color,
+      Colors.background_list_item,
+
+    borderTopWidth: 1,
+    borderTopColor: Colors.border_color,
+  },
+
+  navigationButton: {
+    flex: 1,
+
+    height: 46,
 
     borderRadius:
       card.border_radius_card_small,
 
     justifyContent: 'center',
-
     alignItems: 'center',
   },
 
-  okButtonText: {
-    fontFamily:
-      FontFamily.semiBold,
+  previousButton: {
+    backgroundColor:
+      Colors.button_color_light,
 
-    fontSize:
-      FontSize.small,
+    marginRight: 6,
+  },
 
-    color:
-      Colors.button_text,
+  nextButton: {
+    backgroundColor:
+      Colors.primary,
+
+    marginLeft: 6,
+  },
+
+  navigationButtonDisabled: {
+    backgroundColor: Colors.light_gray,
+  },
+
+  navigationButtonText: {
+    fontFamily: FontFamily.semiBold,
+    fontSize: FontSize.regular,
+    color: Colors.text,
+  },
+
+  navigationButtonTextDisabled: {
+    color: Colors.button_text_inactive,
+  },
+
+  nextButtonText: {
+    fontFamily: FontFamily.semiBold,
+    fontSize: FontSize.regular,
+    color: Colors.white,
+  },
+
+  bottomSpace: {
+    height: 10,
   },
 });

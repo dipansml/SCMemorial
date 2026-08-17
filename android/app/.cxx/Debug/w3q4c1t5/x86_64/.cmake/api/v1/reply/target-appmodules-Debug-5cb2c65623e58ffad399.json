@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/build/intermediates/cxx/Debug/w3q4c1t5/obj/x86/libappmodules.so"
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/build/intermediates/cxx/Debug/w3q4c1t5/obj/x86_64/libappmodules.so"
 		}
 	],
 	"backtrace" : 3,
@@ -328,10 +328,6 @@
 	[
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_RNImagePickerSpec::@f66ee9a2efecfb28bee4"
-		},
-		{
-			"backtrace" : 4,
 			"id" : "react_codegen_AsyncStorageSpec::@15af80695a6281ecf900"
 		},
 		{
@@ -340,11 +336,7 @@
 		},
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a"
-		},
-		{
-			"backtrace" : 4,
-			"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a"
+			"id" : "react_codegen_RNImagePickerSpec::@f66ee9a2efecfb28bee4"
 		},
 		{
 			"backtrace" : 4,
@@ -353,6 +345,14 @@
 		{
 			"backtrace" : 4,
 			"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a"
 		},
 		{
 			"backtrace" : 4,
@@ -369,37 +369,37 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--no-undefined-version -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments",
+				"fragment" : "-Wl,-z,max-page-size=16384 -Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--no-undefined-version -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments",
 				"role" : "flags"
 			},
 			{
 				"backtrace" : 4,
-				"fragment" : "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\android\\app\\build\\intermediates\\cxx\\Debug\\w3q4c1t5\\obj\\x86\\libreact_codegen_safeareacontext.so",
+				"fragment" : "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\android\\app\\build\\intermediates\\cxx\\Debug\\w3q4c1t5\\obj\\x86_64\\libreact_codegen_safeareacontext.so",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 4,
-				"fragment" : "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\android\\app\\build\\intermediates\\cxx\\Debug\\w3q4c1t5\\obj\\x86\\libreact_codegen_rnscreens.so",
+				"fragment" : "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\android\\app\\build\\intermediates\\cxx\\Debug\\w3q4c1t5\\obj\\x86_64\\libreact_codegen_rnscreens.so",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 4,
-				"fragment" : "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\android\\app\\build\\intermediates\\cxx\\Debug\\w3q4c1t5\\obj\\x86\\libreact_codegen_rnsvg.so",
+				"fragment" : "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\android\\app\\build\\intermediates\\cxx\\Debug\\w3q4c1t5\\obj\\x86_64\\libreact_codegen_rnsvg.so",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 5,
-				"fragment" : "C:\\Users\\Beasdeveloper\\.gradle\\caches\\9.3.1\\transforms\\3c01aea05d2737e987399f1309ae090e\\workspace\\transformed\\fbjni-0.7.0\\prefab\\modules\\fbjni\\libs\\android.x86\\libfbjni.so",
+				"fragment" : "C:\\Users\\Beasdeveloper\\.gradle\\caches\\9.3.1\\transforms\\3c01aea05d2737e987399f1309ae090e\\workspace\\transformed\\fbjni-0.7.0\\prefab\\modules\\fbjni\\libs\\android.x86_64\\libfbjni.so",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 5,
-				"fragment" : "C:\\Users\\Beasdeveloper\\.gradle\\caches\\9.3.1\\transforms\\427eee61930a909b20cb384104452e26\\workspace\\transformed\\react-android-0.85.0-debug\\prefab\\modules\\jsi\\libs\\android.x86\\libjsi.so",
+				"fragment" : "C:\\Users\\Beasdeveloper\\.gradle\\caches\\9.3.1\\transforms\\427eee61930a909b20cb384104452e26\\workspace\\transformed\\react-android-0.85.0-debug\\prefab\\modules\\jsi\\libs\\android.x86_64\\libjsi.so",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 5,
-				"fragment" : "C:\\Users\\Beasdeveloper\\.gradle\\caches\\9.3.1\\transforms\\427eee61930a909b20cb384104452e26\\workspace\\transformed\\react-android-0.85.0-debug\\prefab\\modules\\reactnative\\libs\\android.x86\\libreactnative.so",
+				"fragment" : "C:\\Users\\Beasdeveloper\\.gradle\\caches\\9.3.1\\transforms\\427eee61930a909b20cb384104452e26\\workspace\\transformed\\react-android-0.85.0-debug\\prefab\\modules\\reactnative\\libs\\android.x86_64\\libreactnative.so",
 				"role" : "libraries"
 			},
 			{
@@ -490,217 +490,217 @@
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/AsyncStorageSpec-generated.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/AsyncStorageSpec-generated.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/ComponentDescriptors.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/ComponentDescriptors.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/EventEmitters.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/EventEmitters.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/Props.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/Props.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/ShadowNodes.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/ShadowNodes.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/States.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir/react/renderer/components/AsyncStorageSpec/States.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/bac033cd950586cef66695376748dd33/ComponentDescriptors.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/bac033cd950586cef66695376748dd33/ComponentDescriptors.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/EventEmitters.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/EventEmitters.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/Props.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/Props.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/ShadowNodes.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/ShadowNodes.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/States.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/States.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/rngesturehandler_codegen-generated.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/rngesturehandler_codegen-generated.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/RNImagePickerSpec-generated.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/RNImagePickerSpec-generated.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/ComponentDescriptors.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/ComponentDescriptors.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/EventEmitters.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/EventEmitters.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/Props.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/Props.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/ShadowNodes.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/ShadowNodes.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/States.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/States.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/RNRazorpayCheckoutSpec-generated.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/RNRazorpayCheckoutSpec-generated.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/ComponentDescriptors.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/c0f7beae802eba3e272ef1b557086c84/ComponentDescriptors.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/EventEmitters.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/EventEmitters.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/Props.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/Props.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/ShadowNodes.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/ShadowNodes.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/States.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/RNRazorpayCheckoutSpec_autolinked_build/CMakeFiles/react_codegen_RNRazorpayCheckoutSpec.dir/react/renderer/components/RNRazorpayCheckoutSpec/States.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/ComponentDescriptors.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/ComponentDescriptors.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/EventEmitters.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/EventEmitters.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/Props.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/Props.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/ShadowNodes.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/ShadowNodes.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/States.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/react/renderer/components/rnreanimated/States.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/rnreanimated-generated.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnreanimated_autolinked_build/CMakeFiles/react_codegen_rnreanimated.dir/rnreanimated-generated.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/ComponentDescriptors.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/ComponentDescriptors.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/EventEmitters.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/EventEmitters.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/Props.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/Props.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/ShadowNodes.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/ShadowNodes.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/States.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/react/renderer/components/rnworklets/States.cpp.o",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 4,
 			"isGenerated" : true,
-			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/rnworklets-generated.cpp.o",
+			"path" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/rnworklets-generated.cpp.o",
 			"sourceGroupIndex" : 1
 		}
 	],

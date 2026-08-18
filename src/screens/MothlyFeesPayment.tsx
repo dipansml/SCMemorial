@@ -81,6 +81,59 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
   const [feeAmountLoading, setFeeAmountLoading] = useState(false);
   const [feeAmountData, setFeeAmountData] = useState<FeeAmountForSelectedMonthResponse | null>(null);
 
+  const buildPaymentRequest = async (formData: PaymentFormData) => {
+    const userId = await StorageManager.getStudentId();
+    const user = await StorageManager.getUser();
+
+    const amount = totalSelectedFee.toFixed(2);
+    const selectedMonthsStr = selectedMonthNames.join(', ');
+
+    return {
+      amount,
+      currency: 'INR',
+      billingName: formData.payeeName || user?.name || 'Student',
+      billingEmail: user?.email || 'student@example.com',
+      billingPhone: '9876543210',
+      description: `Academic Fees Payment - ${selectedMonthsStr}`,
+      meta: {
+        remark,
+        selectedMonths: selectedMonthsStr,
+        tuitionFine: formData.tuitionFine,
+        busFine: formData.busFine,
+        advancedAmount: formData.advancedAmount,
+        dueAmount: formData.dueAmount,
+        cashAmount: formData.cashAmount,
+      },
+      directResultScreen: 'PaymentResult',
+      directResultParams: {
+        parentScreen: 'MothlyFeePayment',
+        successScreen: 'Fees',
+        retryPaymentRequest: {
+          amount,
+          currency: 'INR',
+          billingName: formData.payeeName || user?.name || 'Student',
+          billingEmail: user?.email || 'student@example.com',
+          billingPhone: '9876543210',
+          description: `Academic Fees Payment - ${selectedMonthsStr}`,
+          meta: {
+            remark,
+            selectedMonths: selectedMonthsStr,
+            tuitionFine: formData.tuitionFine,
+            busFine: formData.busFine,
+            advancedAmount: formData.advancedAmount,
+            dueAmount: formData.dueAmount,
+            cashAmount: formData.cashAmount,
+          },
+          directResultScreen: 'PaymentResult',
+          directResultParams: {
+            parentScreen: 'MothlyFeePayment',
+            successScreen: 'Fees',
+          },
+        },
+      },
+    };
+  };
+
   const handleProceedToPay = async (formData: PaymentFormData) => {
     if (processing) {
       return;
@@ -89,36 +142,8 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
     setShowPaymentModal(false);
 
     try {
-      const userId = await StorageManager.getStudentId();
-      const user = await StorageManager.getUser();
-
-      const amount = totalSelectedFee.toFixed(2);
-      const selectedMonthsStr = selectedMonthNames.join(', ');
-
-      const result: PaymentResult = await paymentService.startPayment({
-        amount,
-        currency: 'INR',
-        billingName: formData.payeeName || user?.name || 'Student',
-        billingEmail: user?.email || 'student@example.com',
-        billingPhone: '9876543210',
-        description: `Academic Fees Payment - ${selectedMonthsStr}`,
-        meta: {
-          remark,
-          selectedMonths: selectedMonthsStr,
-          tuitionFine: formData.tuitionFine,
-          busFine: formData.busFine,
-          advancedAmount: formData.advancedAmount,
-          dueAmount: formData.dueAmount,
-          cashAmount: formData.cashAmount,
-        },
-        directResultScreen: 'PaymentResult',
-        directResultParams: {
-          parentScreen: 'MothlyFeePayment',
-          successScreen: 'Fees',
-        },
-      });
-      // Navigation is now handled directly by MockCCAvenuePaymentScreen via directResultScreen
-      // No need for navigation.replace here
+      const paymentRequest = await buildPaymentRequest(formData);
+      const result: PaymentResult = await paymentService.startPayment(paymentRequest);
     } catch (error) {
       console.log('Academic Fees Payment Error:', error);
       setProcessing(false);

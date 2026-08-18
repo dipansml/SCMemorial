@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../theme/colors';
@@ -13,11 +14,14 @@ import {
   PAYMENT_METHOD_LABEL,
 } from '../../services/payment/payment.types';
 import type { PaymentResult } from '../../services/payment/payment.types';
+import { paymentService } from '../../services/payment/PaymentService';
+import { mockCCAvenueProvider } from '../../services/payment/MockCCAvenueProvider';
 
 export type PaymentResultRouteParams = {
   result: PaymentResult;
   parentScreen?: string;
   successScreen?: string;
+  retryPaymentRequest?: any;
 };
 
 type Props = {
@@ -55,28 +59,40 @@ const STATUS_META: Record<
 };
 
 const PaymentResultScreen = ({ navigation, route }: Props) => {
-  const { result, parentScreen, successScreen } = route.params;
+  const { result, parentScreen, successScreen, retryPaymentRequest } = route.params;
   const meta = STATUS_META[result.status];
+  const [retrying, setRetrying] = useState(false);
 
   const handleDone = () => {
     if (result.status === 'success' && successScreen) {
       navigation.popToTop();
       navigation.navigate(successScreen);
-    } else if (parentScreen) {
-      navigation.popToTop();
-      navigation.navigate(parentScreen);
-    } else if (navigation.canGoBack()) {
-      navigation.goBack();
     } else {
+      // For cancelled/failed: BACK goes to Fees (Month Selection)
       navigation.popToTop();
+      navigation.navigate('Fees');
     }
   };
 
-  const handleRetry = () => {
-    if (parentScreen) {
-      navigation.replace(parentScreen);
-    } else {
-      navigation.replace('ReAdmission');
+  const handleRetry = async () => {
+    if (retrying || !retryPaymentRequest) {
+      return;
+    }
+    setRetrying(true);
+
+    try {
+      // Create order first, then replace current route with CCAvenue screen
+      // This ensures Payment Cancelled screen is removed from stack
+      const order = await mockCCAvenueProvider.createOrder(retryPaymentRequest);
+      const params = {
+        ...retryPaymentRequest,
+        orderId: order.orderId,
+      };
+      // Use replace to remove Payment Cancelled from stack before showing CCAvenue
+      navigation.replace('MockCCAvenuePayment', params);
+    } catch (error) {
+      console.log('Retry Payment Error:', error);
+      setRetrying(false);
     }
   };
 
@@ -138,8 +154,16 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
           </TouchableOpacity>
         ) : (
           <>
-            <TouchableOpacity style={styles.primaryButton} onPress={handleRetry}>
-              <Text style={styles.primaryButtonText}>RETRY PAYMENT</Text>
+            <TouchableOpacity
+              style={[styles.primaryButton, retrying && styles.primaryButtonDisabled]}
+              onPress={handleRetry}
+              disabled={retrying}
+            >
+              {retrying ? (
+                <ActivityIndicator size="small" color={Colors.white} />
+              ) : (
+                <Text style={styles.primaryButtonText}>RETRY PAYMENT</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity style={styles.secondaryButton} onPress={handleDone}>
               <Text style={styles.secondaryButtonText}>BACK</Text>
@@ -247,6 +271,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 24,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.6,
   },
   primaryButtonText: {
     color: Colors.white,

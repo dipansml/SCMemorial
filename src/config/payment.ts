@@ -75,6 +75,10 @@ export interface PaymentConfig {
     networkErrorCards: string[];
     /** Card that always produces a mocked gateway timeout. */
     timeoutCards: string[];
+    /** UPI IDs that always produce a mocked payment failure. */
+    failedUpiIds: string[];
+    /** Bank names that always produce a mocked payment failure. */
+    failedBankNames: string[];
   };
 }
 
@@ -112,5 +116,7 @@ export const PAYMENT_CONFIG: PaymentConfig = {
     simulateVerificationFailure: false,
     networkErrorCards: ['4000000000000069'],
     timeoutCards: ['4000000000000127'],
+    failedUpiIds: ['student@okfail'],
+    failedBankNames: ['Test Failure Bank'],
   },
 };

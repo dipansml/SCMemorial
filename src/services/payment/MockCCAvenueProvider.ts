@@ -39,6 +39,23 @@ export const MOCK_TEST_CARDS = {
   FAILED: '4000000000000002',
 } as const;
 
+/** Mock local UPI IDs (NOT real UPI IDs). */
+export const MOCK_TEST_UPI_IDS = {
+  SUCCESS: 'student@oksbi',
+  FAILED: 'student@okfail',
+} as const;
+
+/** Mock net-banking options shown on the test screen. */
+export const MOCK_NETBANKING_BANKS = [
+  'State Bank of India',
+  'HDFC Bank',
+  'ICICI Bank',
+  'Axis Bank',
+  'Punjab National Bank',
+  'Kotak Mahindra Bank',
+  'Test Failure Bank',
+] as const;
+
 export interface MockCardInput {
   cardNumber: string;
   cardHolderName: string;
@@ -46,6 +63,19 @@ export interface MockCardInput {
   expiryYear: string;
   cvv: string;
 }
+
+/**
+ * Input for the mock PAY button. Which fields the UI collected depends on the
+ * selected payment method. Everything is interpreted LOCALLY.
+ */
+export type MockPaymentInput =
+  | { method: 'credit_card' | 'debit_card'; card: MockCardInput }
+  | { method: 'net_banking'; bank: string }
+  | { method: 'upi'; upiId: string };
+
+type MockOutcome =
+  | { status: 'success' | 'failed' }
+  | { status: 'error'; error: PaymentError };
 
 type PendingSession = {
   request: PaymentRequest;
@@ -125,6 +155,7 @@ function buildResult(
     transactionId,
     amount: request.amount,
     currency: request.currency,
+    method: request.method,
     message:
       message ||
       (status === 'success'
@@ -220,6 +251,7 @@ export class MockCCAvenueProvider implements PaymentProvider {
         orderId: request.orderId || '',
         amount: request.amount,
         currency: request.currency,
+        method: request.method,
         billingName: request.billingName,
         billingEmail: request.billingEmail,
         billingPhone: request.billingPhone,
@@ -230,21 +262,18 @@ export class MockCCAvenueProvider implements PaymentProvider {
 
   /**
    * Called by the "CCAvenue Test Payment" screen when the user taps PAY NOW.
-   * Card data is interpreted LOCALLY and never leaves the device.
+   * Input is interpreted LOCALLY and never leaves the device.
    */
-  submitMockPayment(card: MockCardInput): Promise<PaymentResult> {
+  submitMockPayment(input: MockPaymentInput): Promise<PaymentResult> {
     const session = ensureSession();
-    const digits = card.cardNumber.replace(/\s+/g, '');
+    // Remember which method the user actually picked so the result reflects
+    // the chosen method.
+    session.request = { ...session.request, method: input.method };
 
-    // Local test-card mapping (mock values, not official CCAvenue test cards).
-    const isFailed = digits === MOCK_TEST_CARDS.FAILED;
-
-    if (!luhnCheck(digits)) {
-      throw new PaymentError({
-        code: 'UNKNOWN',
-        message: 'Invalid card number',
-        userMessage: 'Please enter a valid card number.',
-      });
+    // Per-method local validation + mock failure simulation.
+    const outcome = this.evaluateMockInput(input);
+    if (outcome.status === 'error') {
+      throw outcome.error;
     }
 
     if (PAYMENT_CONFIG.mock.simulateNetworkFailure) {
@@ -255,20 +284,23 @@ export class MockCCAvenueProvider implements PaymentProvider {
       );
     }
 
-    if (PAYMENT_CONFIG.mock.networkErrorCards.includes(digits)) {
-      return this.failWith(
-        session,
-        'NETWORK_ERROR',
-        'Payment could not be completed. Please check your connection.',
-      );
-    }
-
-    if (PAYMENT_CONFIG.mock.timeoutCards.includes(digits)) {
-      return this.failWith(
-        session,
-        'TIMEOUT',
-        'Payment timed out. Please try again.',
-      );
+    // Card-only special cards (network error / gateway timeout).
+    if (input.method === 'credit_card' || input.method === 'debit_card') {
+      const digits = input.card.cardNumber.replace(/\s+/g, '');
+      if (PAYMENT_CONFIG.mock.networkErrorCards.includes(digits)) {
+        return this.failWith(
+          session,
+          'NETWORK_ERROR',
+          'Payment could not be completed. Please check your connection.',
+        );
+      }
+      if (PAYMENT_CONFIG.mock.timeoutCards.includes(digits)) {
+        return this.failWith(
+          session,
+          'TIMEOUT',
+          'Payment timed out. Please try again.',
+        );
+      }
     }
 
     console.log('[MOCK PAYMENT] Starting payment');
@@ -309,14 +341,80 @@ export class MockCCAvenueProvider implements PaymentProvider {
 
     paymentStateStore.setState('PAYMENT_PROCESSING');
 
-    if (isFailed) {
+    if (outcome.status === 'failed') {
       console.log('[MOCK PAYMENT] Payment result: FAILED');
       return this.completeWith(session, 'failed');
     }
 
-    // Everything else that passes Luhn behaves like a successful payment.
+    // Everything else behaves like a successful payment.
     console.log('[MOCK PAYMENT] Payment result: SUCCESS');
     return this.completeWith(session, 'success');
+  }
+
+  /**
+   * Locally decides the outcome for the selected method. No data leaves the
+   * device. Returns a PaymentError for structurally invalid input, otherwise
+   * a success/failed outcome.
+   */
+  private evaluateMockInput(input: MockPaymentInput): MockOutcome {
+    if (input.method === 'upi') {
+      const upiId = input.upiId.trim().toLowerCase();
+      if (!/^[\w.-]{2,}@[a-zA-Z]{2,}$/.test(upiId)) {
+        return {
+          status: 'error',
+          error: new PaymentError({
+            code: 'UNKNOWN',
+            message: 'Invalid UPI ID',
+            userMessage: 'Please enter a valid UPI ID (e.g. name@bank).',
+          }),
+        };
+      }
+      if (
+        upiId === MOCK_TEST_UPI_IDS.FAILED ||
+        PAYMENT_CONFIG.mock.failedUpiIds.includes(upiId)
+      ) {
+        return { status: 'failed' };
+      }
+      return { status: 'success' };
+    }
+
+    if (input.method === 'net_banking') {
+      const bank = input.bank.trim();
+      if (!bank) {
+        return {
+          status: 'error',
+          error: new PaymentError({
+            code: 'UNKNOWN',
+            message: 'No bank selected',
+            userMessage: 'Please select a bank.',
+          }),
+        };
+      }
+      if (
+        bank === MOCK_NETBANKING_BANKS[MOCK_NETBANKING_BANKS.length - 1] ||
+        PAYMENT_CONFIG.mock.failedBankNames.includes(bank)
+      ) {
+        return { status: 'failed' };
+      }
+      return { status: 'success' };
+    }
+
+    // Credit / debit card.
+    const digits = input.card.cardNumber.replace(/\s+/g, '');
+    if (!luhnCheck(digits)) {
+      return {
+        status: 'error',
+        error: new PaymentError({
+          code: 'UNKNOWN',
+          message: 'Invalid card number',
+          userMessage: 'Please enter a valid card number.',
+        }),
+      };
+    }
+    if (digits === MOCK_TEST_CARDS.FAILED) {
+      return { status: 'failed' };
+    }
+    return { status: 'success' };
   }
 
   private async completeWith(

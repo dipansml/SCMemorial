@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,19 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  Alert,
 } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
+import { Api } from '../services/Api';
+import StorageManager from '../services/StorageManager';
+import FullScreenLoader from '../view/FullScreenLoader';
+import PayAcademicFeesModal from '../component/PayAcademicFeesModal';
+import PaymentConfirmationOverlay from '../component/PaymentConfirmationOverlay';
+import type { FeeStructureItem } from '../Model/ViewFeeStructure/FeeStructureItem';
+import type { FeeAmountForSelectedMonthResponse } from '../Model/FeeAmountForSelectedMonth/FeeAmountForSelectedMonthResponse';
 
 type Props = {
   navigation: any;
@@ -25,57 +33,130 @@ type FeeDetailRow = {
 
 type MonthData = {
   id: string;
+  apiId: string;
   name: string;
   totalFees: string;
+  totalAmount: string;
   checked: boolean;
+  paid: boolean;
   details: FeeDetailRow[];
 };
 
-const MAY_DETAILS: FeeDetailRow[] = [
-  { no: '01', route: 'ADMISSION FEE', fee: '0' },
-  { no: '02', route: 'SESSION CHARGES', fee: '7000' },
-  { no: '03', route: 'SECURITY DEPOSIT', fee: '0' },
-  { no: '04', route: 'TUITION FEE (MONTHLY)', fee: '3000' },
-  { no: '05', route: 'TUITION FINE AMOUNT', fee: '0' },
-  { no: '01', route: 'BUS SERVICES', fee: '0' },
-  { no: '01', route: 'BUS FINE AMOUNT', fee: '0' },
-];
+type PaymentFormData = {
+  tuitionFine: string;
+  busFine: string;
+  advancedAmount: string;
+  dueAmount: string;
+  cashAmount: string;
+  payeeName: string;
+};
 
-const DEFAULT_DETAILS: FeeDetailRow[] = [
-  { no: '01', route: 'ADMISSION FEE', fee: '0' },
-  { no: '02', route: 'SESSION CHARGES', fee: '0' },
-  { no: '03', route: 'SECURITY DEPOSIT', fee: '0' },
-  { no: '04', route: 'TUITION FEE (MONTHLY)', fee: '17000' },
-  { no: '05', route: 'TUITION FINE AMOUNT', fee: '0' },
-  { no: '01', route: 'BUS SERVICES', fee: '0' },
-  { no: '01', route: 'BUS FINE AMOUNT', fee: '0' },
-];
+const safeFee = (v: string | null): string => {
+  if (v === null || v === undefined || v === '') { return '0'; }
+  return v;
+};
 
-const months: MonthData[] = [
-  { id: 'april', name: 'April', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'may', name: 'May', totalFees: '₹5000', checked: true, details: MAY_DETAILS },
-  { id: 'june', name: 'June', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'july', name: 'July', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'august', name: 'August', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'september', name: 'September', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'october', name: 'October', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'november', name: 'November', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'december', name: 'December', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'january', name: 'January', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'february', name: 'February', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-  { id: 'march', name: 'March', totalFees: '₹17000', checked: true, details: DEFAULT_DETAILS },
-];
+function mapFeeStructureToDetails(item: FeeStructureItem): FeeDetailRow[] {
+    const sessionCharges = Number(safeFee(item.development_fee))
+      + Number(safeFee(item.exam_fee))
+      + Number(safeFee(item.festival_celebration_fee))
+      + Number(safeFee(item.games_sports_fee))
+      + Number(safeFee(item.audio_visual_lab_fee))
+      + Number(safeFee(item.library_fee))
+      + Number(safeFee(item.electricity_maintenance_fee))
+      + Number(safeFee(item.computer_fee));
+    return [
+      { no: '01', route: 'ADMISSION FEE', fee: safeFee(item.admission_fee) },
+      { no: '02', route: 'SESSION CHARGES', fee: String(sessionCharges) },
+    { no: '03', route: 'SECURITY DEPOSIT', fee: safeFee(item.security_deposite) },
+    { no: '04', route: 'TUITION FEE (MONTHLY)', fee: safeFee(item.tuition_fee) },
+    { no: '05', route: 'TUITION FINE AMOUNT', fee: safeFee(item.fine) },
+    { no: '06', route: 'BUS SERVICES', fee: safeFee(item.bus_services) },
+    { no: '07', route: 'BUS FINE AMOUNT', fee: safeFee(item.bus_fee_fine) },
+    { no: '08', route: 'TOTAL AMOUNT', fee: safeFee(item.total_amount_show) },
+  ];
+}
 
 const MothlyFeesPayment = ({ navigation }: Props) => {
   const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
   const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
   const [remark, setRemark] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [months, setMonths] = useState<MonthData[]>([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showConfirmationOverlay, setShowConfirmationOverlay] = useState(false);
+  const [feeAmountLoading, setFeeAmountLoading] = useState(false);
+  const [feeAmountData, setFeeAmountData] = useState<FeeAmountForSelectedMonthResponse | null>(null);
+  const [paymentFormData, setPaymentFormData] = useState<PaymentFormData>({
+    tuitionFine: '',
+    busFine: '',
+    advancedAmount: '',
+    dueAmount: '',
+    cashAmount: '',
+    payeeName: '',
+  });
+
+  useEffect(() => {
+    loadFeeStructure();
+  }, []);
+
+  const loadFeeStructure = async () => {
+    try {
+      setLoading(true);
+      const userId = await StorageManager.getStudentId();
+      const response = await Api.getViewFeeStructure({ user_id: userId });
+
+      if (response && response.status === 200 && response.data) {
+        const { fee_structure } = response.data;
+
+        if (fee_structure && fee_structure.length > 0) {
+          const mappedMonths: MonthData[] = fee_structure.map(
+            (item: FeeStructureItem) => {
+              const isPaid = item.ad_payment_status === '1';
+              return {
+                id: item.month_name?.toLowerCase() || '',
+                apiId: item.id || '',
+                name: item.month_name,
+                totalFees: `₹${item.total_amount_show}`,
+                totalAmount: safeFee(item.total_amount_show),
+                checked: !isPaid,
+                paid: isPaid,
+                details: mapFeeStructureToDetails(item),
+              };
+            },
+          );
+          setMonths(mappedMonths);
+          setSelectedMonths([]);
+        }
+      } else {
+        Alert.alert(
+          'Error',
+          response?.message || 'Failed to load fee structure',
+        );
+      }
+    } catch (error: any) {
+      console.log(
+        'Fee Structure Error:',
+        error?.response?.data || error.message,
+      );
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message || 'Something went wrong',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleAccordion = (id: string) => {
     setExpandedMonth(prev => (prev === id ? null : id));
   };
 
   const toggleMonthSelection = (id: string) => {
+    const month = months.find(m => m.id === id);
+    if (month?.paid) {
+      return;
+    }
     setSelectedMonths(prev =>
       prev.includes(id)
         ? prev.filter(monthId => monthId !== id)
@@ -83,8 +164,62 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
     );
   };
 
+  const totalSelectedFee = selectedMonths.reduce((sum, monthId) => {
+    const month = months.find(m => m.id === monthId);
+    if (!month) { return sum; }
+    const numericStr = month.totalFees.replace(/[^0-9]/g, '');
+    return sum + Number(numericStr);
+  }, 0);
+
+  const selectedMonthNames = selectedMonths
+    .map(id => months.find(m => m.id === id)?.name)
+    .filter(Boolean) as string[];
+
+  const handleOpenPaymentModal = async () => {
+    if (selectedMonths.length === 0) {
+      Alert.alert('Info', 'Please select at least one unpaid month to proceed.');
+      return;
+    }
+
+    const selectedIds = selectedMonths
+      .map(id => months.find(m => m.id === id)?.apiId)
+      .filter(id => id !== undefined && id !== '')
+      .map(id => Number(id));
+
+    try {
+      setFeeAmountLoading(true);
+      const userId = await StorageManager.getStudentId();
+      const response = await Api.getFeeAmountForSelectedMonth({
+        user_id: userId,
+        ids: selectedIds,
+      });
+      setFeeAmountData(response);
+    } catch (error: any) {
+      console.log(
+        'Fee Amount API Error:',
+        error?.response?.data || error.message,
+      );
+      setFeeAmountData(null);
+    } finally {
+      setFeeAmountLoading(false);
+      setShowPaymentModal(true);
+    }
+  };
+
+  const handleProceedToPay = (data: PaymentFormData) => {
+    setPaymentFormData(data);
+    setShowPaymentModal(false);
+    setShowConfirmationOverlay(true);
+  };
+
+  const handleConfirmPayment = () => {
+    setShowConfirmationOverlay(false);
+    Alert.alert('Success', 'Payment initiated successfully.');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <FullScreenLoader visible={loading} />
       <AppHeader
         title="Monthly Fees Payment"
         showBack={true}
@@ -102,23 +237,33 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
         {/* Total Re-Admission Fee */}
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>TOTAL RE-ADMISSION FEE :</Text>
-          <Text style={styles.summaryAmount}>42,000.00</Text>
+          <Text style={styles.summaryAmount}>
+            {totalSelectedFee.toLocaleString('en-IN')}.00
+          </Text>
         </View>
 
         {/* Months */}
         {months.map(month => (
           <View key={month.id} style={styles.monthWrapper}>
             <TouchableOpacity
-              style={styles.monthCard}
-              activeOpacity={0.85}
+              style={[
+                styles.monthCard,
+                month.paid && styles.monthCardPaid,
+              ]}
+              activeOpacity={month.paid ? 1 : 0.85}
               onPress={() => toggleMonthSelection(month.id)}
             >
               <TouchableOpacity
                 style={styles.checkbox}
                 onPress={() => toggleMonthSelection(month.id)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                disabled={month.paid}
               >
-                {selectedMonths.includes(month.id) ? (
+                {month.paid ? (
+                  <View style={styles.paidBadge}>
+                    <Text style={styles.paidBadgeText}>✓</Text>
+                  </View>
+                ) : selectedMonths.includes(month.id) ? (
                   <Image
                     source={require('../assets/images/icons/check_box.png')}
                     style={styles.checkboxImage}
@@ -134,10 +279,20 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
               </TouchableOpacity>
 
               <View style={styles.monthInfo}>
-                <Text style={styles.monthName}>{month.name}</Text>
+                <Text
+                  style={[
+                    styles.monthName,
+                    month.paid && styles.monthNamePaid,
+                  ]}
+                >
+                  {month.name}
+                </Text>
                 <Text style={styles.monthTotal}>
                   Total Fees: {month.totalFees}
                 </Text>
+                {month.paid ? (
+                  <Text style={styles.paidLabel}>Paid</Text>
+                ) : null}
               </View>
 
               <TouchableOpacity
@@ -155,7 +310,7 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
             </TouchableOpacity>
 
             {expandedMonth === month.id && (
-              <FeeDetailsCard details={month.details} />
+              <FeeDetailsCard details={month.details} totalAmount={month.totalAmount} />
             )}
           </View>
         ))}
@@ -176,24 +331,48 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
           <TouchableOpacity
             style={styles.proceedButton}
             activeOpacity={0.85}
-            onPress={() => console.log('Proceed pressed:', remark)}
+            onPress={handleOpenPaymentModal}
           >
             <Text style={styles.proceedButtonText}>PROCEED TO PAY</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <PayAcademicFeesModal
+        visible={showPaymentModal}
+        totalAmount={totalSelectedFee}
+        selectedMonthNames={selectedMonthNames}
+        initialPayeeName=""
+        feeAmountData={feeAmountData}
+        onClose={() => setShowPaymentModal(false)}
+        onProceedToPay={handleProceedToPay}
+      />
+
+      <PaymentConfirmationOverlay
+        visible={showConfirmationOverlay}
+        totalAmount={totalSelectedFee}
+        selectedMonthNames={selectedMonthNames}
+        formData={paymentFormData}
+        remark={remark}
+        feeAmountData={feeAmountData}
+        feeAmountLoading={feeAmountLoading}
+        onClose={() => {
+          setShowConfirmationOverlay(false);
+          setFeeAmountData(null);
+          setShowPaymentModal(true);
+        }}
+        onConfirm={handleConfirmPayment}
+      />
     </SafeAreaView>
   );
 };
 
-const FeeDetailsCard = ({ details }: { details: FeeDetailRow[] }) => {
-  const total = details.reduce((sum, row) => sum + Number(row.fee), 0);
-
+const FeeDetailsCard = ({ details, totalAmount }: { details: FeeDetailRow[]; totalAmount: string }) => {
   return (
     <View style={styles.accordionContainer}>
       <View style={styles.accordionHeader}>
         <Text style={[styles.headerText, styles.colNo]}>#</Text>
-        <Text style={[styles.headerText, styles.colName]}>BUS ROUTE</Text>
+        <Text style={[styles.headerText, styles.colName]}>FEE TYPE</Text>
         <Text style={[styles.headerText, styles.colFee]}>FEE</Text>
       </View>
 
@@ -209,8 +388,8 @@ const FeeDetailsCard = ({ details }: { details: FeeDetailRow[] }) => {
       ))}
 
       <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>TOTAL FEE:</Text>
-        <Text style={styles.totalAmount}>₹ {total}</Text>
+        <Text style={styles.totalLabel}>TOTAL AMOUNT:</Text>
+        <Text style={styles.totalAmount}>₹ {totalAmount}</Text>
       </View>
     </View>
   );
@@ -267,12 +446,28 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     elevation: 2,
   },
+  monthCardPaid: {
+    opacity: 0.5,
+  },
   checkbox: {
     padding: 3,
   },
   checkboxImage: {
     width: 24,
     height: 24,
+  },
+  paidBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: Colors.dark_green,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paidBadgeText: {
+    color: Colors.white,
+    fontFamily: FontFamily.bold,
+    fontSize: 12,
   },
   monthInfo: {
     flex: 1,
@@ -285,12 +480,21 @@ const styles = StyleSheet.create({
     lineHeight: 15.14,
     color: Colors.textColorInpuHeader,
   },
+  monthNamePaid: {
+    color: Colors.text_light,
+  },
   monthTotal: {
     fontFamily: FontFamily.regular,
     fontSize: 12.21,
     lineHeight: 12.21,
     color: Colors.text_light,
     marginTop: 4,
+  },
+  paidLabel: {
+    fontFamily: FontFamily.semiBold,
+    fontSize: 10,
+    color: Colors.dark_green,
+    marginTop: 2,
   },
   viewDetailsRow: {
     flexDirection: 'row',

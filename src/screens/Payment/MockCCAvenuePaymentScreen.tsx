@@ -14,13 +14,24 @@ import AppHeader from '../../component/AppHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../theme/colors';
 import { FontFamily, FontSize, card } from '../../theme/fonts_dimen';
-import { mockCCAvenueProvider, MOCK_TEST_CARDS } from '../../services/payment/MockCCAvenueProvider';
-import { PaymentError } from '../../services/payment/payment.types';
+import {
+  mockCCAvenueProvider,
+  MOCK_TEST_CARDS,
+  MOCK_TEST_UPI_IDS,
+  MOCK_NETBANKING_BANKS,
+} from '../../services/payment/MockCCAvenueProvider';
+import type { MockPaymentInput } from '../../services/payment/MockCCAvenueProvider';
+import {
+  PAYMENT_METHOD_LABEL,
+  PaymentError,
+} from '../../services/payment/payment.types';
+import type { PaymentMethod } from '../../services/payment/payment.types';
 
 export type MockCCAvenuePaymentRouteParams = {
   orderId: string;
   amount: string;
   currency: string;
+  method?: PaymentMethod;
   billingName?: string;
   billingEmail?: string;
   billingPhone?: string;
@@ -76,13 +87,34 @@ function luhnCheck(digits: string): boolean {
   return sum % 10 === 0;
 }
 
-const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
-  const { orderId, amount, currency, billingName, description } = route.params;
+const PAYMENT_METHOD_OPTIONS: PaymentMethod[] = [
+  'credit_card',
+  'debit_card',
+  'net_banking',
+  'upi',
+];
 
+const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
+  const {
+    orderId,
+    amount,
+    currency,
+    billingName,
+    description,
+    method: initialMethod,
+  } = route.params;
+
+  const [method, setMethod] = useState<PaymentMethod>(
+    initialMethod ?? 'credit_card',
+  );
   const [cardNumber, setCardNumber] = useState('');
   const [cardHolderName, setCardHolderName] = useState(billingName || '');
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
+  const [selectedBank, setSelectedBank] = useState<string>(
+    MOCK_NETBANKING_BANKS[0],
+  );
+  const [upiId, setUpiId] = useState('');
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(true);
@@ -105,7 +137,24 @@ const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
     };
   }, []);
 
+  const handleMethodChange = (next: PaymentMethod) => {
+    setMethod(next);
+    setError(null);
+  };
+
   const validate = (): string | null => {
+    if (method === 'net_banking') {
+      if (!selectedBank.trim()) {
+        return 'Please select a bank.';
+      }
+      return null;
+    }
+    if (method === 'upi') {
+      if (!upiId.trim()) {
+        return 'Please enter your UPI ID.';
+      }
+      return null;
+    }
     const digits = cardNumber.replace(/\s/g, '');
     if (!digits) {
       return 'Please enter a card number.';
@@ -128,13 +177,37 @@ const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
-    if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+    if (
+      expYear < currentYear ||
+      (expYear === currentYear && expMonth < currentMonth)
+    ) {
       return 'This card has expired.';
     }
     if (!/^\d{3,4}$/.test(cvv)) {
       return 'Please enter a valid CVV.';
     }
     return null;
+  };
+
+  const buildInput = (): MockPaymentInput => {
+    if (method === 'net_banking') {
+      return { method: 'net_banking', bank: selectedBank };
+    }
+    if (method === 'upi') {
+      return { method: 'upi', upiId: upiId.trim() };
+    }
+    const digits = cardNumber.replace(/\s/g, '');
+    const expiryMatch = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(expiry);
+    return {
+      method,
+      card: {
+        cardNumber: digits,
+        cardHolderName: cardHolderName.trim(),
+        expiryMonth: expiryMatch ? expiryMatch[1] : '',
+        expiryYear: expiryMatch ? expiryMatch[2] : '',
+        cvv,
+      },
+    };
   };
 
   const handlePayNow = async () => {
@@ -153,15 +226,7 @@ const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
     setProcessing(true);
 
     try {
-      const digits = cardNumber.replace(/\s/g, '');
-      const expiryMatch = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(expiry);
-      await mockCCAvenueProvider.submitMockPayment({
-        cardNumber: digits,
-        cardHolderName: cardHolderName.trim(),
-        expiryMonth: expiryMatch ? expiryMatch[1] : '',
-        expiryYear: expiryMatch ? expiryMatch[2] : '',
-        cvv,
-      });
+      await mockCCAvenueProvider.submitMockPayment(buildInput());
       // The session is complete. Pop this leaf screen so the orchestrator
       // (PaymentService → caller) can land the user on the result screen.
       navigation.goBack();
@@ -239,92 +304,201 @@ const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
             ) : null}
           </View>
 
-          {/* Card fields */}
+          {/* Payment method selector + fields */}
           <View style={styles.formCard}>
-            <Text style={styles.fieldLabel}>Card Number</Text>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="4111 1111 1111 1111"
-                placeholderTextColor={Colors.text_light}
-                value={cardNumber}
-                onChangeText={value => {
-                  console.log('[MOCK PAYMENT] Card number changed');
-                  setCardNumber(formatCardNumber(value));
-                }}
-                keyboardType="number-pad"
-                maxLength={23}
-              />
+            <Text style={styles.fieldLabel}>Pay Using</Text>
+            <View style={styles.methodRow}>
+              {PAYMENT_METHOD_OPTIONS.map(opt => (
+                <TouchableOpacity
+                  key={opt}
+                  style={[
+                    styles.methodButton,
+                    method === opt && styles.methodButtonActive,
+                  ]}
+                  activeOpacity={0.85}
+                  onPress={() => handleMethodChange(opt)}
+                >
+                  <Text
+                    style={[
+                      styles.methodButtonText,
+                      method === opt && styles.methodButtonTextActive,
+                    ]}
+                  >
+                    {PAYMENT_METHOD_LABEL[opt]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
 
-            <Text style={styles.fieldLabel}>Card Holder Name</Text>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="Name on card"
-                placeholderTextColor={Colors.text_light}
-                value={cardHolderName}
-                onChangeText={value => {
-                  console.log('[MOCK PAYMENT] Card holder name changed');
-                  setCardHolderName(value);
-                }}
-                autoCapitalize="characters"
-                maxLength={40}
-              />
-            </View>
-
-            <View style={styles.row}>
-              <View style={styles.col}>
-                <Text style={styles.fieldLabel}>Expiry</Text>
+            {method === 'credit_card' || method === 'debit_card' ? (
+              <>
+                <Text style={styles.fieldLabel}>Card Number</Text>
                 <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
-                    placeholder="MM/YY"
+                    placeholder="4111 1111 1111 1111"
                     placeholderTextColor={Colors.text_light}
-                    value={expiry}
+                    value={cardNumber}
                     onChangeText={value => {
-                      console.log('[MOCK PAYMENT] Expiry changed');
-                      setExpiry(formatExpiry(value));
+                      console.log('[MOCK PAYMENT] Card number changed');
+                      setCardNumber(formatCardNumber(value));
                     }}
                     keyboardType="number-pad"
-                    maxLength={5}
+                    maxLength={23}
                   />
                 </View>
-              </View>
-              <View style={styles.col}>
-                <Text style={styles.fieldLabel}>CVV</Text>
+
+                <Text style={styles.fieldLabel}>Card Holder Name</Text>
                 <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
-                    placeholder="123"
+                    placeholder="Name on card"
                     placeholderTextColor={Colors.text_light}
-                    value={cvv}
+                    value={cardHolderName}
                     onChangeText={value => {
-                      console.log('[MOCK PAYMENT] CVV changed');
-                      setCvv(value.replace(/\D/g, '').slice(0, 4));
+                      console.log('[MOCK PAYMENT] Card holder name changed');
+                      setCardHolderName(value);
                     }}
-                    keyboardType="number-pad"
-                    secureTextEntry
-                    maxLength={4}
+                    autoCapitalize="characters"
+                    maxLength={40}
                   />
                 </View>
-              </View>
-            </View>
+
+                <View style={styles.row}>
+                  <View style={styles.col}>
+                    <Text style={styles.fieldLabel}>Expiry</Text>
+                    <View style={styles.inputWrapper}>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="MM/YY"
+                        placeholderTextColor={Colors.text_light}
+                        value={expiry}
+                        onChangeText={value => {
+                          console.log('[MOCK PAYMENT] Expiry changed');
+                          setExpiry(formatExpiry(value));
+                        }}
+                        keyboardType="number-pad"
+                        maxLength={5}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.col}>
+                    <Text style={styles.fieldLabel}>CVV</Text>
+                    <View style={styles.inputWrapper}>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="123"
+                        placeholderTextColor={Colors.text_light}
+                        value={cvv}
+                        onChangeText={value => {
+                          console.log('[MOCK PAYMENT] CVV changed');
+                          setCvv(value.replace(/\D/g, '').slice(0, 4));
+                        }}
+                        keyboardType="number-pad"
+                        secureTextEntry
+                        maxLength={4}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </>
+            ) : method === 'net_banking' ? (
+              <>
+                <Text style={styles.fieldLabel}>Select Bank</Text>
+                {MOCK_NETBANKING_BANKS.map(bank => (
+                  <TouchableOpacity
+                    key={bank}
+                    style={[
+                      styles.bankItem,
+                      selectedBank === bank && styles.bankItemActive,
+                    ]}
+                    activeOpacity={0.85}
+                    onPress={() => {
+                      console.log('[MOCK PAYMENT] Bank selected:', bank);
+                      setSelectedBank(bank);
+                      setError(null);
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.bankItemText,
+                        selectedBank === bank && styles.bankItemTextActive,
+                      ]}
+                    >
+                      {bank}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </>
+            ) : (
+              <>
+                <Text style={styles.fieldLabel}>UPI ID</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="name@bank"
+                    placeholderTextColor={Colors.text_light}
+                    value={upiId}
+                    onChangeText={value => {
+                      console.log('[MOCK PAYMENT] UPI ID changed');
+                      setUpiId(value);
+                      setError(null);
+                    }}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    maxLength={40}
+                  />
+                </View>
+              </>
+            )}
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-            {/* Test card hints */}
+            {/* Per-method mock hints */}
             <View style={styles.hintBox}>
-              <Text style={styles.hintTitle}>Test cards (mock values)</Text>
-              <Text style={styles.hintText}>
-                {MOCK_TEST_CARDS.SUCCESS} → Success
-              </Text>
-              <Text style={styles.hintText}>
-                {MOCK_TEST_CARDS.FAILED} → Failed
-              </Text>
-              <Text style={styles.hintText}>
-                Any other valid card → Success · Invalid number → Error
-              </Text>
+              {method === 'credit_card' || method === 'debit_card' ? (
+                <>
+                  <Text style={styles.hintTitle}>Test cards (mock values)</Text>
+                  <Text style={styles.hintText}>
+                    {MOCK_TEST_CARDS.SUCCESS} → Success
+                  </Text>
+                  <Text style={styles.hintText}>
+                    {MOCK_TEST_CARDS.FAILED} → Failed
+                  </Text>
+                  <Text style={styles.hintText}>
+                    Any other valid card → Success · Invalid number → Error
+                  </Text>
+                </>
+              ) : method === 'net_banking' ? (
+                <>
+                  <Text style={styles.hintTitle}>
+                    Net banking (mock values)
+                  </Text>
+                  <Text style={styles.hintText}>
+                    {MOCK_NETBANKING_BANKS[0]} → Success
+                  </Text>
+                  <Text style={styles.hintText}>
+                    {MOCK_NETBANKING_BANKS[MOCK_NETBANKING_BANKS.length - 1]} →
+                    Failed
+                  </Text>
+                  <Text style={styles.hintText}>
+                    Any other listed bank → Success
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.hintTitle}>UPI (mock values)</Text>
+                  <Text style={styles.hintText}>
+                    {MOCK_TEST_UPI_IDS.SUCCESS} → Success
+                  </Text>
+                  <Text style={styles.hintText}>
+                    {MOCK_TEST_UPI_IDS.FAILED} → Failed
+                  </Text>
+                  <Text style={styles.hintText}>
+                    Any valid name@bank ID → Success
+                  </Text>
+                </>
+              )}
             </View>
           </View>
 
@@ -434,6 +608,53 @@ const styles = StyleSheet.create({
     color: Colors.textColorInpuHeader,
     marginTop: 12,
     marginBottom: 6,
+  },
+  methodRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+  },
+  methodButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.inputBorder,
+    backgroundColor: Colors.background,
+  },
+  methodButtonActive: {
+    borderColor: Colors.theme_color,
+    backgroundColor: Colors.theme_color,
+  },
+  methodButtonText: {
+    fontFamily: FontFamily.medium,
+    fontSize: FontSize.small,
+    color: Colors.textColorInpuHeader,
+  },
+  methodButtonTextActive: {
+    color: Colors.white,
+  },
+  bankItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.inputBorder,
+    backgroundColor: Colors.inputBackground,
+    marginTop: 8,
+  },
+  bankItemActive: {
+    borderColor: Colors.theme_color,
+    backgroundColor: Colors.theme_color,
+  },
+  bankItemText: {
+    fontFamily: FontFamily.medium,
+    fontSize: FontSize.regular,
+    color: Colors.textColorInpuHeader,
+  },
+  bankItemTextActive: {
+    color: Colors.white,
   },
   inputWrapper: {
     borderWidth: 1,

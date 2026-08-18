@@ -9,6 +9,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../theme/colors';
 import { FontFamily, FontSize, card } from '../../theme/fonts_dimen';
+import {
+  PAYMENT_METHOD_LABEL,
+} from '../../services/payment/payment.types';
 import type { PaymentResult } from '../../services/payment/payment.types';
 
 export type PaymentResultRouteParams = {
@@ -95,6 +98,12 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
             label="Payment Mode"
             value={result.mode === 'MOCK' ? 'CCAvenue (MOCK)' : 'CCAvenue'}
           />
+          {result.method ? (
+            <DetailRow
+              label="Payment Method"
+              value={PAYMENT_METHOD_LABEL[result.method]}
+            />
+          ) : null}
           {result.verificationStatus ? (
             <DetailRow
               label="Verification"

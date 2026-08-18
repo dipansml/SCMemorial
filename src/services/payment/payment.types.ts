@@ -21,6 +21,25 @@ export type PaymentOutcome = 'success' | 'failed' | 'cancelled';
 
 export type PaymentVerificationOutcome = 'verified' | 'failed' | 'pending';
 
+/**
+ * Payment methods supported by the CCAvenue checkout.
+ * MOCK mode interprets these locally; the same identifiers will map onto the
+ * official CCAvenue SDK/API when real integration lands.
+ */
+export type PaymentMethod =
+  | 'credit_card'
+  | 'debit_card'
+  | 'net_banking'
+  | 'upi';
+
+/** Human-readable labels for each supported payment method. */
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  credit_card: 'Credit Card',
+  debit_card: 'Debit Card',
+  net_banking: 'Net Banking',
+  upi: 'UPI',
+};
+
 /** Order status kept by the (mock) order service. */
 export type OrderStatus = 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED';
 
@@ -32,6 +51,11 @@ export interface PaymentRequest {
   amount: string;
   /** ISO currency code, e.g. "INR". */
   currency: string;
+  /**
+   * Preferred payment method. Optional — if omitted the payment screen lets
+   * the user choose (credit/debit card, net banking or UPI).
+   */
+  method?: PaymentMethod;
   billingName?: string;
   billingEmail?: string;
   billingPhone?: string;
@@ -64,6 +88,8 @@ export interface PaymentResult {
   transactionId?: string;
   amount: string;
   currency: string;
+  /** Payment method the user actually paid with, if known. */
+  method?: PaymentMethod;
   message: string;
   provider: string;
   mode: PaymentMode;

@@ -63,6 +63,14 @@ export interface PaymentRequest {
   description?: string;
   /** Free-form metadata (kept local, not sent to a server). */
   meta?: Record<string, string>;
+  /** Optional navigation target on payment success. */
+  successScreen?: string;
+  /** Optional navigation target on payment failure/cancel. */
+  failureScreen?: string;
+  /** If provided, the payment screen will directly replace itself with this screen instead of going back. */
+  directResultScreen?: string;
+  /** Params to pass to the direct result screen. */
+  directResultParams?: Record<string, unknown>;
 }
 
 /** Order record produced before payment starts. */

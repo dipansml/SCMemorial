@@ -17,9 +17,11 @@ import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
 import FullScreenLoader from '../view/FullScreenLoader';
 import PayAcademicFeesModal from '../component/PayAcademicFeesModal';
-import PaymentConfirmationOverlay from '../component/PaymentConfirmationOverlay';
+import { paymentService } from '../services/payment/PaymentService';
+import type { PaymentResult } from '../services/payment/payment.types';
 import type { FeeStructureItem } from '../Model/ViewFeeStructure/FeeStructureItem';
 import type { FeeAmountForSelectedMonthResponse } from '../Model/FeeAmountForSelectedMonth/FeeAmountForSelectedMonthResponse';
+import type { PaymentFormData } from '../component/PayAcademicFeesModal';
 
 type Props = {
   navigation: any;
@@ -40,15 +42,6 @@ type MonthData = {
   checked: boolean;
   paid: boolean;
   details: FeeDetailRow[];
-};
-
-type PaymentFormData = {
-  tuitionFine: string;
-  busFine: string;
-  advancedAmount: string;
-  dueAmount: string;
-  cashAmount: string;
-  payeeName: string;
 };
 
 const safeFee = (v: string | null): string => {
@@ -84,17 +77,54 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
   const [loading, setLoading] = useState(false);
   const [months, setMonths] = useState<MonthData[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showConfirmationOverlay, setShowConfirmationOverlay] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [feeAmountLoading, setFeeAmountLoading] = useState(false);
   const [feeAmountData, setFeeAmountData] = useState<FeeAmountForSelectedMonthResponse | null>(null);
-  const [paymentFormData, setPaymentFormData] = useState<PaymentFormData>({
-    tuitionFine: '',
-    busFine: '',
-    advancedAmount: '',
-    dueAmount: '',
-    cashAmount: '',
-    payeeName: '',
-  });
+
+  const handleProceedToPay = async (formData: PaymentFormData) => {
+    if (processing) {
+      return;
+    }
+    setProcessing(true);
+    setShowPaymentModal(false);
+
+    try {
+      const userId = await StorageManager.getStudentId();
+      const user = await StorageManager.getUser();
+
+      const amount = totalSelectedFee.toFixed(2);
+      const selectedMonthsStr = selectedMonthNames.join(', ');
+
+      const result: PaymentResult = await paymentService.startPayment({
+        amount,
+        currency: 'INR',
+        billingName: formData.payeeName || user?.name || 'Student',
+        billingEmail: user?.email || 'student@example.com',
+        billingPhone: '9876543210',
+        description: `Academic Fees Payment - ${selectedMonthsStr}`,
+        meta: {
+          remark,
+          selectedMonths: selectedMonthsStr,
+          tuitionFine: formData.tuitionFine,
+          busFine: formData.busFine,
+          advancedAmount: formData.advancedAmount,
+          dueAmount: formData.dueAmount,
+          cashAmount: formData.cashAmount,
+        },
+        directResultScreen: 'PaymentResult',
+        directResultParams: {
+          parentScreen: 'MothlyFeePayment',
+          successScreen: 'Fees',
+        },
+      });
+      // Navigation is now handled directly by MockCCAvenuePaymentScreen via directResultScreen
+      // No need for navigation.replace here
+    } catch (error) {
+      console.log('Academic Fees Payment Error:', error);
+      setProcessing(false);
+      setShowPaymentModal(true);
+    }
+  };
 
   useEffect(() => {
     loadFeeStructure();
@@ -204,17 +234,6 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
       setFeeAmountLoading(false);
       setShowPaymentModal(true);
     }
-  };
-
-  const handleProceedToPay = (data: PaymentFormData) => {
-    setPaymentFormData(data);
-    setShowPaymentModal(false);
-    setShowConfirmationOverlay(true);
-  };
-
-  const handleConfirmPayment = () => {
-    setShowConfirmationOverlay(false);
-    Alert.alert('Success', 'Payment initiated successfully.');
   };
 
   return (
@@ -346,22 +365,6 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
         feeAmountData={feeAmountData}
         onClose={() => setShowPaymentModal(false)}
         onProceedToPay={handleProceedToPay}
-      />
-
-      <PaymentConfirmationOverlay
-        visible={showConfirmationOverlay}
-        totalAmount={totalSelectedFee}
-        selectedMonthNames={selectedMonthNames}
-        formData={paymentFormData}
-        remark={remark}
-        feeAmountData={feeAmountData}
-        feeAmountLoading={feeAmountLoading}
-        onClose={() => {
-          setShowConfirmationOverlay(false);
-          setFeeAmountData(null);
-          setShowPaymentModal(true);
-        }}
-        onConfirm={handleConfirmPayment}
       />
     </SafeAreaView>
   );

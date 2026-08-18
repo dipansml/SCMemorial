@@ -16,6 +16,8 @@ import type { PaymentResult } from '../../services/payment/payment.types';
 
 export type PaymentResultRouteParams = {
   result: PaymentResult;
+  parentScreen?: string;
+  successScreen?: string;
 };
 
 type Props = {
@@ -53,11 +55,17 @@ const STATUS_META: Record<
 };
 
 const PaymentResultScreen = ({ navigation, route }: Props) => {
-  const { result } = route.params;
+  const { result, parentScreen, successScreen } = route.params;
   const meta = STATUS_META[result.status];
 
   const handleDone = () => {
-    if (navigation.canGoBack()) {
+    if (result.status === 'success' && successScreen) {
+      navigation.popToTop();
+      navigation.navigate(successScreen);
+    } else if (parentScreen) {
+      navigation.popToTop();
+      navigation.navigate(parentScreen);
+    } else if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
       navigation.popToTop();
@@ -65,7 +73,11 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
   };
 
   const handleRetry = () => {
-    navigation.replace('ReAdmission');
+    if (parentScreen) {
+      navigation.replace(parentScreen);
+    } else {
+      navigation.replace('ReAdmission');
+    }
   };
 
   return (

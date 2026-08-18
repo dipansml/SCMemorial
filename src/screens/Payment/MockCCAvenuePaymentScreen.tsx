@@ -36,6 +36,10 @@ export type MockCCAvenuePaymentRouteParams = {
   billingEmail?: string;
   billingPhone?: string;
   description?: string;
+  successScreen?: string;
+  failureScreen?: string;
+  directResultScreen?: string;
+  directResultParams?: Record<string, unknown>;
 };
 
 type Props = {
@@ -102,6 +106,10 @@ const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
     billingName,
     description,
     method: initialMethod,
+    successScreen,
+    failureScreen,
+    directResultScreen,
+    directResultParams,
   } = route.params;
 
   const [method, setMethod] = useState<PaymentMethod>(
@@ -226,10 +234,21 @@ const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
     setProcessing(true);
 
     try {
-      await mockCCAvenueProvider.submitMockPayment(buildInput());
-      // The session is complete. Pop this leaf screen so the orchestrator
-      // (PaymentService → caller) can land the user on the result screen.
-      navigation.goBack();
+      const result = await mockCCAvenueProvider.submitMockPayment(buildInput());
+      // If directResultScreen is provided, navigate directly to it without exposing the previous screen
+      if (directResultScreen) {
+        navigation.replace(directResultScreen, {
+          ...directResultParams,
+          result,
+        });
+      } else if (result.status === 'success' && successScreen) {
+        navigation.replace(successScreen, { result });
+      } else if (failureScreen) {
+        navigation.replace(failureScreen, { result });
+      } else {
+        // Fallback for existing callers (e.g. ReAdmission) that don't provide navigation targets
+        navigation.goBack();
+      }
     } catch (payError) {
       if (mounted.current) {
         setProcessing(false);
@@ -252,7 +271,34 @@ const MockCCAvenuePaymentScreen = ({ navigation, route }: Props) => {
     } catch {
       // No active session — nothing to cancel.
     }
-    navigation.goBack();
+    if (directResultScreen) {
+      navigation.replace(directResultScreen, {
+        ...directResultParams,
+        result: {
+          status: 'cancelled' as const,
+          orderId: '',
+          amount: '',
+          currency: '',
+          message: 'Payment cancelled',
+          provider: 'CCAvenue',
+          mode: 'MOCK',
+        },
+      });
+    } else if (failureScreen) {
+      navigation.replace(failureScreen, {
+        result: {
+          status: 'cancelled' as const,
+          orderId: '',
+          amount: '',
+          currency: '',
+          message: 'Payment cancelled',
+          provider: 'CCAvenue',
+          mode: 'MOCK',
+        },
+      });
+    } else {
+      navigation.goBack();
+    }
   };
 
   return (

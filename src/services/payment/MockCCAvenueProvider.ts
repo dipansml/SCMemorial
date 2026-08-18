@@ -256,6 +256,10 @@ export class MockCCAvenueProvider implements PaymentProvider {
         billingEmail: request.billingEmail,
         billingPhone: request.billingPhone,
         description: request.description,
+        successScreen: request.successScreen,
+        failureScreen: request.failureScreen,
+        directResultScreen: request.directResultScreen,
+        directResultParams: request.directResultParams,
       });
     });
   }

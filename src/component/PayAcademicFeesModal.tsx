@@ -14,7 +14,7 @@ import Colors from '../theme/colors';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
 import type { FeeAmountForSelectedMonthResponse } from '../Model/FeeAmountForSelectedMonth/FeeAmountForSelectedMonthResponse';
 
-type PaymentFormData = {
+export type PaymentFormData = {
   tuitionFine: string;
   busFine: string;
   advancedAmount: string;
@@ -207,7 +207,7 @@ const PayAcademicFeesModal = ({
               activeOpacity={0.85}
               onPress={handleProceed}
             >
-              <Text style={styles.proceedButtonText}>PROCEED TO PAY</Text>
+              <Text style={styles.proceedButtonText}>CONFIRM AND PAY</Text>
             </TouchableOpacity>
 
             <TouchableOpacity

@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   View,
@@ -12,14 +7,16 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  NativeModules,
+  BackHandler,
 } from 'react-native';
 
 import AppHeader from '../component/AppHeader';
-import {openParentDrawer} from '../navigation/navigationRef';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { openParentDrawer } from '../navigation/navigationRef';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {RootStackParamList} from '../../App';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../App';
 
 import {
   LiveExamData,
@@ -31,24 +28,19 @@ import {
 
 import Colors from '../theme/colors';
 
-import {
-  card,
-  FontFamily,
-  FontSize,
-} from '../theme/fonts_dimen';
+import { card, FontFamily, FontSize } from '../theme/fonts_dimen';
 
 import ExamQuestionAnswer from '../component/ExamQuestionAnswer';
 import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
 import FullScreenLoader from '../view/FullScreenLoader';
 
-type Props = NativeStackScreenProps<
-  RootStackParamList,
-  'StartExam'
->;
+const { ExamMode } = NativeModules;
 
-const StartExam = ({navigation, route}: Props) => {
-  const {examDetail} = route.params;
+type Props = NativeStackScreenProps<RootStackParamList, 'StartExam'>;
+
+const StartExam = ({ navigation, route }: Props) => {
+  const { examDetail } = route.params;
 
   const [loading, setLoading] = useState(false);
 
@@ -65,9 +57,7 @@ const StartExam = ({navigation, route}: Props) => {
    *
    * No other page logic needs to change.
    */
-  const [examData, setExamData] =
-    useState<LiveExamData | null>();
-
+  const [examData, setExamData] = useState<LiveExamData | null>();
 
   // =========================
   // LOAD Question List API
@@ -77,143 +67,115 @@ const StartExam = ({navigation, route}: Props) => {
     try {
       setLoading(true);
 
-      const response = await Api.getExamQuestion(
-        { user_id: await StorageManager.getStudentId(), 
-          set_unique_id: examDetail.set_unique_id,
-          set_id: examDetail.set_details.set_id
-        });
+      const response = await Api.getExamQuestion({
+        user_id: await StorageManager.getStudentId(),
+        set_unique_id: examDetail.set_unique_id,
+        set_id: examDetail.set_details.set_id,
+      });
 
       console.log('Question List Response:', response);
 
-      if (
-        response &&
-        response.status === 200 &&
-        response.data
-      ) {
-
+      if (response && response.status === 200 && response.data) {
         setExamData(response.data);
-
       } else {
-        Alert.alert(
-          'Error',
-          response?.message || 'Failed to load exam list'
-        );
+        Alert.alert('Error', response?.message || 'Failed to load exam list');
       }
-
     } catch (error: any) {
-      console.log(
-        'Exam List Error:',
-        error?.response?.data || error.message
-      );
+      console.log('Exam List Error:', error?.response?.data || error.message);
 
       Alert.alert(
         'Error',
-        error?.response?.data?.message ||
-          'Something went wrong'
+        error?.response?.data?.message || 'Something went wrong',
       );
-
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   // =========================
   // LOAD API WHEN PAGE OPENS
   // =========================
 
-    useEffect(() => {
-      loadQuestion();
-    }, []);
+  useEffect(() => {
+    loadQuestion();
+  }, []);
 
+  // =========================
+  // Call exam submit  API
+  // =========================
 
-    // =========================
-    // Call exam submit  API
-    // =========================
+  const callSubmitExamApi = async (
+    data: StudentExamAnswer,
+    isAutomatic: boolean,
+  ) => {
+    try {
+      setLoading(true);
+      console.log('Student Exam Answer:', JSON.stringify(data, null, 2));
 
-    const callSubmitExamApi = async (data : StudentExamAnswer, isAutomatic : boolean ) => {
-      try {
-        setLoading(true);
-        console.log(
-          'Student Exam Answer:',
-          JSON.stringify(data, null, 2),
-        );
+      const response = await Api.submitExam(data);
 
-        const response = await Api.submitExam(data);
+      console.log('Submit Exam Response:', response);
 
-        console.log('Submit Exam Response:', response);
+      if (response && response.status === 200) {
+        isSubmittingRef.current = false;
+        setIsSubmitting(false);
 
-        if (
-          response &&
-          response.status === 200 &&
-          response.data
-        ) {
-          isSubmittingRef.current = false;
-          setIsSubmitting(false);
-
-          if (isAutomatic) {
-            Alert.alert(
-              'Time Up',
-              'Your exam time has ended. Your exam has been submitted automatically.',
-              [
-                {
-                  text: 'OK',
-                  onPress: () => {
-                    navigation.goBack();
-                  },
-                },
-              ],
+        if (isAutomatic) {
+          Alert.alert(
+            'Time Up',
+            //'Your exam time has ended. Your exam has been submitted automatically.',
+            response.message,
+            [
               {
-                cancelable: false,
-              },
-            );
-          } else {
-            Alert.alert(
-              'Exam Submitted',
-              'Your exam has been submitted successfully.',
-              [
-                {
-                  text: 'OK',
-                  onPress: () => {
-                    navigation.goBack();
-                  },
+                text: 'OK',
+                onPress: () => {
+                  navigation.goBack();
                 },
-              ],
-              {
-                cancelable: false,
               },
-            );
-          }
+            ],
+            {
+              cancelable: false,
+            },
+          );
         } else {
           Alert.alert(
-            'Error',
-            response?.message || 'Failed to load exam list'
+            'Exam Submitted',
+            //'Your exam has been submitted successfully.',
+            response.message,
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  navigation.goBack();
+                },
+              },
+            ],
+            {
+              cancelable: false,
+            },
           );
         }
-
-      } catch (error: any) {
-        console.log(
-          'Exam List Error:',
-          error?.response?.data || error.message
-        );
-
-        Alert.alert(
-          'Error',
-          error?.response?.data?.message ||
-            'Something went wrong'
-        );
-
-      } finally {
-        setLoading(false);
+      } else {
+        Alert.alert('Error', response?.message || 'Failed to load exam list');
       }
-    };  
+    } catch (error: any) {
+      console.log('Exam List Error:', error?.response?.data || error.message);
+
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message || 'Something went wrong',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /*
    * =========================================================
    * CURRENT QUESTION
    * =========================================================
    */
-  const [currentQuestionIndex, setCurrentQuestionIndex] =
-    useState<number>(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
 
   /*
    * =========================================================
@@ -229,8 +191,9 @@ const StartExam = ({navigation, route}: Props) => {
    *
    * question_id -> option_id
    */
-  const [selectedAnswers, setSelectedAnswers] =
-    useState<Record<string, string>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<string, string>
+  >({});
 
   /*
    * IMPORTANT:
@@ -240,9 +203,7 @@ const StartExam = ({navigation, route}: Props) => {
    * This fixes the auto-submit problem where the timer
    * was submitting an old/empty answer dataset.
    */
-  const selectedAnswersRef = useRef<
-    Record<string, string>
-  >({});
+  const selectedAnswersRef = useRef<Record<string, string>>({});
 
   /*
    * Keep ref synchronized with state.
@@ -256,8 +217,7 @@ const StartExam = ({navigation, route}: Props) => {
    * SUBMITTING FLAG
    * =========================================================
    */
-  const [isSubmitting, setIsSubmitting] =
-    useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   /*
    * Ref also prevents timer/manual submit from triggering
@@ -287,10 +247,7 @@ const StartExam = ({navigation, route}: Props) => {
 
     const minutes = Number(examDetail?.set_details.exm_time);
 
-    if (
-      Number.isNaN(minutes) ||
-      minutes <= 0
-    ) {
+    if (Number.isNaN(minutes) || minutes <= 0) {
       return 0;
     }
 
@@ -303,9 +260,7 @@ const StartExam = ({navigation, route}: Props) => {
    * =========================================================
    */
   const [remainingSeconds, setRemainingSeconds] =
-    useState<number>(
-      examDurationSeconds,
-    );
+    useState<number>(examDurationSeconds);
 
   /*
    * =========================================================
@@ -314,9 +269,7 @@ const StartExam = ({navigation, route}: Props) => {
    */
   useEffect(() => {
     if (examDurationSeconds > 0) {
-      setRemainingSeconds(
-        examDurationSeconds,
-      );
+      setRemainingSeconds(examDurationSeconds);
     }
   }, [examDurationSeconds]);
 
@@ -341,30 +294,23 @@ const StartExam = ({navigation, route}: Props) => {
     const optionids: number[] = [];
 
     examData.examset.forEach(item => {
-      const questionId =
-        item.question.question_id;
+      const questionId = item.question.question_id;
 
-      const selectedOptionId =
-        answers[questionId];
+      const selectedOptionId = answers[questionId];
 
       /*
        * Only submit answered questions.
        */
       if (selectedOptionId) {
-        questionids.push(
-          Number(questionId),
-        );
+        questionids.push(Number(questionId));
 
-        optionids.push(
-          Number(selectedOptionId),
-        );
+        optionids.push(Number(selectedOptionId));
       }
     });
 
     return {
       user_id: examData.user_id,
-      set_unique_id:
-        examData.set_unique_id,
+      set_unique_id: examData.set_unique_id,
       set_id: examData.set_id,
       result_id: examData.result_id,
       questionids,
@@ -377,9 +323,7 @@ const StartExam = ({navigation, route}: Props) => {
    * FINAL SUBMIT
    * =========================================================
    */
-  const submitExam = (
-    isAutomatic: boolean = false,
-  ) => {
+  const submitExam = (isAutomatic: boolean = false) => {
     /*
      * Prevent double submit.
      */
@@ -395,45 +339,19 @@ const StartExam = ({navigation, route}: Props) => {
      *
      * Read the latest answers from ref.
      */
-    const latestAnswers =
-      selectedAnswersRef.current;
+    const latestAnswers = selectedAnswersRef.current;
 
-    const answerData =
-      createSubmissionData(
-        latestAnswers,
-      );
+    const answerData = createSubmissionData(latestAnswers);
 
-    console.log(
-      '================================',
-    );
+    console.log('================================');
 
-    console.log(
-      isAutomatic
-        ? 'AUTO SUBMIT'
-        : 'MANUAL SUBMIT',
-    );
+    console.log(isAutomatic ? 'AUTO SUBMIT' : 'MANUAL SUBMIT');
 
-    console.log(
-      'Selected Answers:',
-      JSON.stringify(
-        latestAnswers,
-        null,
-        2,
-      ),
-    );
+    console.log('Selected Answers:', JSON.stringify(latestAnswers, null, 2));
 
-    console.log(
-      'Student Exam Answer:',
-      JSON.stringify(
-        answerData,
-        null,
-        2,
-      ),
-    );
+    console.log('Student Exam Answer:', JSON.stringify(answerData, null, 2));
 
-    console.log(
-      '================================',
-    );
+    console.log('================================');
 
     /*
      * =====================================================
@@ -441,51 +359,51 @@ const StartExam = ({navigation, route}: Props) => {
      * =====================================================
      */
 
-    // if (answerData) {
-    //   callSubmitExamApi(answerData, isAutomatic);
-    // }
+    if (answerData) {
+      callSubmitExamApi(answerData, isAutomatic);
+    }
 
     /*
      * Demo delay.
      */
-    setTimeout(() => {
-      isSubmittingRef.current = false;
-      setIsSubmitting(false);
+    //   setTimeout(() => {
+    //     isSubmittingRef.current = false;
+    //     setIsSubmitting(false);
 
-      if (isAutomatic) {
-        Alert.alert(
-          'Time Up',
-          'Your exam time has ended. Your exam has been submitted automatically.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.goBack();
-              },
-            },
-          ],
-          {
-            cancelable: false,
-          },
-        );
-      } else {
-        Alert.alert(
-          'Exam Submitted',
-          'Your exam has been submitted successfully.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.goBack();
-              },
-            },
-          ],
-          {
-            cancelable: false,
-          },
-        );
-      }
-    }, 500);
+    //     if (isAutomatic) {
+    //       Alert.alert(
+    //         'Time Up',
+    //         'Your exam time has ended. Your exam has been submitted automatically.',
+    //         [
+    //           {
+    //             text: 'OK',
+    //             onPress: () => {
+    //               navigation.goBack();
+    //             },
+    //           },
+    //         ],
+    //         {
+    //           cancelable: false,
+    //         },
+    //       );
+    //     } else {
+    //       Alert.alert(
+    //         'Exam Submitted',
+    //         'Your exam has been submitted successfully.',
+    //         [
+    //           {
+    //             text: 'OK',
+    //             onPress: () => {
+    //               navigation.goBack();
+    //             },
+    //           },
+    //         ],
+    //         {
+    //           cancelable: false,
+    //         },
+    //       );
+    //     }
+    //   }, 500);
   };
 
   /*
@@ -516,10 +434,7 @@ const StartExam = ({navigation, route}: Props) => {
    * start_time and end_time are completely ignored.
    */
   useEffect(() => {
-    if (
-      !examData ||
-      examDurationSeconds <= 0
-    ) {
+    if (!examData || examDurationSeconds <= 0) {
       return;
     }
 
@@ -543,30 +458,22 @@ const StartExam = ({navigation, route}: Props) => {
     return () => {
       clearInterval(timer);
     };
-  }, [
-    examData,
-    examDurationSeconds,
-  ]);
+  }, [examData, examDurationSeconds]);
 
   /*
    * =========================================================
    * FORMAT TIMER
    * =========================================================
    */
-  const formatTime = (
-    seconds: number,
-  ) => {
-    const minutes =
-      Math.floor(seconds / 60);
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
 
-    const secs =
-      seconds % 60;
+    const secs = seconds % 60;
 
-    return `${String(
-      minutes,
-    ).padStart(2, '0')}:${String(
-      secs,
-    ).padStart(2, '0')}`;
+    return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(
+      2,
+      '0',
+    )}`;
   };
 
   /*
@@ -574,10 +481,7 @@ const StartExam = ({navigation, route}: Props) => {
    * CURRENT QUESTION
    * =========================================================
    */
-  const currentQuestion =
-    examData?.examset?.[
-      currentQuestionIndex
-    ];
+  const currentQuestion = examData?.examset?.[currentQuestionIndex];
 
   /*
    * =========================================================
@@ -586,19 +490,14 @@ const StartExam = ({navigation, route}: Props) => {
    *
    * This is the ONLY option selection function.
    */
-  const handleSelectOption = (
-    option: ExamOption,
-  ) => {
+  const handleSelectOption = (option: ExamOption) => {
     if (!currentQuestion) {
       return;
     }
 
-    const questionId =
-      currentQuestion.question
-        .question_id;
+    const questionId = currentQuestion.question.question_id;
 
-    const optionId =
-      option.option_id;
+    const optionId = option.option_id;
 
     if (!questionId || !optionId) {
       return;
@@ -620,17 +519,9 @@ const StartExam = ({navigation, route}: Props) => {
        * Therefore if timer finishes immediately after
        * selecting an answer, auto-submit still gets it.
        */
-      selectedAnswersRef.current =
-        updatedAnswers;
+      selectedAnswersRef.current = updatedAnswers;
 
-      console.log(
-        'Selected Answer:',
-        JSON.stringify(
-          updatedAnswers,
-          null,
-          2,
-        ),
-      );
+      console.log('Selected Answer:', JSON.stringify(updatedAnswers, null, 2));
 
       return updatedAnswers;
     });
@@ -642,13 +533,8 @@ const StartExam = ({navigation, route}: Props) => {
    * =========================================================
    */
   const handlePrevious = () => {
-    if (
-      currentQuestionIndex > 0 &&
-      !isSubmittingRef.current
-    ) {
-      setCurrentQuestionIndex(
-        prev => prev - 1,
-      );
+    if (currentQuestionIndex > 0 && !isSubmittingRef.current) {
+      setCurrentQuestionIndex(prev => prev - 1);
     }
   };
 
@@ -662,13 +548,9 @@ const StartExam = ({navigation, route}: Props) => {
       return;
     }
 
-    const answeredCount =
-      Object.keys(
-        selectedAnswersRef.current,
-      ).length;
+    const answeredCount = Object.keys(selectedAnswersRef.current).length;
 
-    const totalQuestions =
-      examData?.examset?.length || 0;
+    const totalQuestions = examData?.examset?.length || 0;
 
     Alert.alert(
       'Submit Exam',
@@ -694,20 +576,12 @@ const StartExam = ({navigation, route}: Props) => {
    * =========================================================
    */
   const handleNext = () => {
-    if (
-      !examData ||
-      isSubmittingRef.current
-    ) {
+    if (!examData || isSubmittingRef.current) {
       return;
     }
 
-    if (
-      currentQuestionIndex <
-      examData.examset.length - 1
-    ) {
-      setCurrentQuestionIndex(
-        prev => prev + 1,
-      );
+    if (currentQuestionIndex < examData.examset.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
     } else {
       /*
        * Last question.
@@ -716,46 +590,50 @@ const StartExam = ({navigation, route}: Props) => {
     }
   };
 
+  useEffect(() => {
+    // Hide navigation when exam screen opens
+    if (ExamMode && ExamMode.enableExamMode) {
+      ExamMode.enableExamMode();
+    }
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        // Prevent Android back button during exam
+        return true;
+      },
+    );
+
+    return () => {
+      // Restore navigation when leaving StartExam
+      if (ExamMode && ExamMode.disableExamMode) {
+        ExamMode.disableExamMode();
+      }
+
+      backHandler.remove();
+    };
+  }, []);
+
   /*
    * =========================================================
    * LOADING
    * =========================================================
    */
-  if (
-    !examData ||
-    !currentQuestion
-  ) {
+  if (!examData || !currentQuestion) {
     return (
-      <SafeAreaView
-        style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <FullScreenLoader visible={loading} />
         <AppHeader
-          title={
-            examDetail?.set_details
-              ?.title ||
-            'Online Exam'
-          }
-          onMenuPress={
-            openParentDrawer
-          }
+          title={examDetail?.set_details?.title || 'Online Exam'}
+          onMenuPress={openParentDrawer}
           isMenuVisible={false}
-          isNotificationVisible={
-            false
-          }
+          isNotificationVisible={false}
           onBellPress={() => {}}
           onProfilePress={() => {}}
           navigation={navigation}
         />
-        <View
-          style={
-            styles.loadingContainer
-          }>
-          <Text
-            style={
-              styles.loadingText
-            }>
-            Loading exam...
-          </Text>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading exam...</Text>
         </View>
       </SafeAreaView>
     );
@@ -766,9 +644,7 @@ const StartExam = ({navigation, route}: Props) => {
    * CURRENT QUESTION ID
    * =========================================================
    */
-  const currentQuestionId =
-    currentQuestion.question
-      .question_id;
+  const currentQuestionId = currentQuestion.question.question_id;
 
   /*
    * IMPORTANT:
@@ -778,115 +654,63 @@ const StartExam = ({navigation, route}: Props) => {
    * When Previous/Next is pressed, this automatically
    * changes to the selected answer of that question.
    */
-  const selectedOptionId =
-    selectedAnswers[
-      currentQuestionId
-    ];
+  const selectedOptionId = selectedAnswers[currentQuestionId];
 
-  const isLastQuestion =
-    currentQuestionIndex ===
-    examData.examset.length - 1;
+  const isLastQuestion = currentQuestionIndex === examData.examset.length - 1;
 
   return (
-    <SafeAreaView
-      style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <AppHeader
-        title={
-          examDetail?.set_details
-            ?.title ||
-          'Online Exam'
-        }
-        onMenuPress={
-          openParentDrawer
-        }
+        title={examDetail?.set_details?.title || 'Online Exam'}
+        onMenuPress={openParentDrawer}
         isMenuVisible={false}
-        isNotificationVisible={
-          false
-        }
+        isNotificationVisible={false}
         onBellPress={() => {}}
         onProfilePress={() => {}}
         navigation={navigation}
       />
 
       <View style={styles.content}>
-
         {/* ================================================= */}
         {/* TOP INFORMATION */}
         {/* ================================================= */}
 
-        <View
-          style={
-            styles.examTopCard
-          }>
-
+        <View style={styles.examTopCard}>
           {/* TIMER */}
 
-          <View
-            style={
-              styles.timerContainer
-            }>
-            <Text
-              style={
-                styles.timerLabel
-              }>
-              Time Left
-            </Text>
+          <View style={styles.timerContainer}>
+            <Text style={styles.timerLabel}>Time Left</Text>
 
             <Text
               style={[
                 styles.timerText,
-                remainingSeconds <=
-                  60 &&
-                  styles.timerDanger,
-              ]}>
-              {formatTime(
-                remainingSeconds,
-              )}
+                remainingSeconds <= 60 && styles.timerDanger,
+              ]}
+            >
+              {formatTime(remainingSeconds)}
             </Text>
           </View>
 
           {/* QUESTION NUMBER */}
 
-          <View
-            style={
-              styles.questionCounter
-            }>
-            <Text
-              style={
-                styles.questionCounterText
-              }>
-              {currentQuestionIndex +
-                1}
+          <View style={styles.questionCounter}>
+            <Text style={styles.questionCounterText}>
+              {currentQuestionIndex + 1}
             </Text>
 
-            <Text
-              style={
-                styles.questionCounterTotal
-              }>
+            <Text style={styles.questionCounterTotal}>
               / {examData.examset.length}
             </Text>
           </View>
 
           {/* MARKS */}
 
-          <View
-            style={
-              styles.marksContainer
-            }>
-            <Text
-              style={
-                styles.marksValue
-              }>
-              {currentQuestion.question
-                .marks || '0'}
+          <View style={styles.marksContainer}>
+            <Text style={styles.marksValue}>
+              {currentQuestion.question.marks || '0'}
             </Text>
 
-            <Text
-              style={
-                styles.marksLabel
-              }>
-              Point
-            </Text>
+            <Text style={styles.marksLabel}>Point</Text>
           </View>
         </View>
 
@@ -895,79 +719,49 @@ const StartExam = ({navigation, route}: Props) => {
         {/* ================================================= */}
 
         <ScrollView
-          style={
-            styles.scrollView
-          }
-          contentContainerStyle={
-            styles.scrollContent
-          }
-          showsVerticalScrollIndicator={
-            false
-          }>
-
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           <ExamQuestionAnswer
             key={currentQuestionId}
-            examItem={
-              currentQuestion
-            }
-            questionNumber={
-              currentQuestionIndex + 1
-            }
-            selectedOptionId={
-              selectedOptionId
-            }
-            onSelectOption={
-              handleSelectOption
-            }
+            examItem={currentQuestion}
+            questionNumber={currentQuestionIndex + 1}
+            selectedOptionId={selectedOptionId}
+            onSelectOption={handleSelectOption}
           />
 
           {/* Bottom space */}
 
-          <View
-            style={
-              styles.bottomSpace
-            }
-          />
+          <View style={styles.bottomSpace} />
         </ScrollView>
 
         {/* ================================================= */}
         {/* PREVIOUS / NEXT */}
         {/* ================================================= */}
 
-        <View
-          style={
-            styles.navigationContainer
-          }>
-
+        <View style={styles.navigationContainer}>
           {/* PREVIOUS */}
 
           <TouchableOpacity
             activeOpacity={0.8}
-            disabled={
-              currentQuestionIndex ===
-                0 ||
-              isSubmitting
-            }
-            onPress={
-              handlePrevious
-            }
+            disabled={currentQuestionIndex === 0 || isSubmitting}
+            onPress={handlePrevious}
             style={[
               styles.navigationButton,
               styles.previousButton,
 
-              currentQuestionIndex ===
-                0 &&
-                styles.navigationButtonDisabled,
-            ]}>
-
+              currentQuestionIndex === 0 && styles.navigationButtonDisabled,
+            ]}
+          >
             <Text
               style={[
                 styles.navigationButtonText,
 
-                currentQuestionIndex ===
-                  0 &&
+                currentQuestionIndex === 0 &&
                   styles.navigationButtonTextDisabled,
-              ]}>
+              ]}
+            >
               Previous
             </Text>
           </TouchableOpacity>
@@ -976,24 +770,12 @@ const StartExam = ({navigation, route}: Props) => {
 
           <TouchableOpacity
             activeOpacity={0.8}
-            disabled={
-              isSubmitting
-            }
-            onPress={
-              handleNext
-            }
-            style={[
-              styles.navigationButton,
-              styles.nextButton,
-            ]}>
-
-            <Text
-              style={
-                styles.nextButtonText
-              }>
-              {isLastQuestion
-                ? 'Submit'
-                : 'Next'}
+            disabled={isSubmitting}
+            onPress={handleNext}
+            style={[styles.navigationButton, styles.nextButton]}
+          >
+            <Text style={styles.nextButtonText}>
+              {isLastQuestion ? 'Submit' : 'Next'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -1011,8 +793,7 @@ export default StartExam;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:
-      Colors.background,
+    backgroundColor: Colors.background,
   },
 
   content: {
@@ -1025,18 +806,14 @@ const styles = StyleSheet.create({
 
   loadingContainer: {
     flex: 1,
-    justifyContent:
-      'center',
+    justifyContent: 'center',
     alignItems: 'center',
   },
 
   loadingText: {
-    fontFamily:
-      FontFamily.regular,
-    fontSize:
-      FontSize.medium,
-    color:
-      Colors.text_light,
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.medium,
+    color: Colors.text_light,
   },
 
   /* ======================================================= */
@@ -1044,23 +821,17 @@ const styles = StyleSheet.create({
   /* ======================================================= */
 
   examTopCard: {
-    marginHorizontal:
-      card.padding,
+    marginHorizontal: card.padding,
 
-    marginTop:
-      card.padding_samll,
+    marginTop: card.padding_samll,
 
-    marginBottom:
-      card.padding_samll,
+    marginBottom: card.padding_samll,
 
-    backgroundColor:
-      Colors.background_list_item,
+    backgroundColor: Colors.background_list_item,
 
-    borderRadius:
-      card.border_radius_card,
+    borderRadius: card.border_radius_card,
 
-    padding:
-      card.padding,
+    padding: card.padding,
 
     flexDirection: 'row',
 
@@ -1089,32 +860,25 @@ const styles = StyleSheet.create({
   },
 
   timerLabel: {
-    fontFamily:
-      FontFamily.regular,
+    fontFamily: FontFamily.regular,
 
-    fontSize:
-      FontSize.small,
+    fontSize: FontSize.small,
 
-    color:
-      Colors.text_light,
+    color: Colors.text_light,
 
     marginBottom: 2,
   },
 
   timerText: {
-    fontFamily:
-      FontFamily.bold,
+    fontFamily: FontFamily.bold,
 
-    fontSize:
-      FontSize.large,
+    fontSize: FontSize.large,
 
-    color:
-      Colors.primary,
+    color: Colors.primary,
   },
 
   timerDanger: {
-    color:
-      Colors.red,
+    color: Colors.red,
   },
 
   /* ======================================================= */
@@ -1124,36 +888,27 @@ const styles = StyleSheet.create({
   questionCounter: {
     flex: 1,
 
-    alignItems:
-      'center',
+    alignItems: 'center',
 
-    justifyContent:
-      'center',
+    justifyContent: 'center',
 
-    flexDirection:
-      'row',
+    flexDirection: 'row',
   },
 
   questionCounterText: {
-    fontFamily:
-      FontFamily.bold,
+    fontFamily: FontFamily.bold,
 
-    fontSize:
-      FontSize.xlarge,
+    fontSize: FontSize.xlarge,
 
-    color:
-      Colors.primary,
+    color: Colors.primary,
   },
 
   questionCounterTotal: {
-    fontFamily:
-      FontFamily.regular,
+    fontFamily: FontFamily.regular,
 
-    fontSize:
-      FontSize.medium,
+    fontSize: FontSize.medium,
 
-    color:
-      Colors.text_light,
+    color: Colors.text_light,
 
     marginLeft: 2,
   },
@@ -1165,30 +920,23 @@ const styles = StyleSheet.create({
   marksContainer: {
     flex: 1,
 
-    alignItems:
-      'flex-end',
+    alignItems: 'flex-end',
   },
 
   marksValue: {
-    fontFamily:
-      FontFamily.bold,
+    fontFamily: FontFamily.bold,
 
-    fontSize:
-      FontSize.large,
+    fontSize: FontSize.large,
 
-    color:
-      Colors.success,
+    color: Colors.success,
   },
 
   marksLabel: {
-    fontFamily:
-      FontFamily.regular,
+    fontFamily: FontFamily.regular,
 
-    fontSize:
-      FontSize.small,
+    fontSize: FontSize.small,
 
-    color:
-      Colors.text_light,
+    color: Colors.text_light,
   },
 
   /* ======================================================= */
@@ -1200,8 +948,7 @@ const styles = StyleSheet.create({
   },
 
   scrollContent: {
-    paddingHorizontal:
-      card.padding,
+    paddingHorizontal: card.padding,
 
     paddingBottom: 20,
   },
@@ -1211,23 +958,19 @@ const styles = StyleSheet.create({
   /* ======================================================= */
 
   navigationContainer: {
-    flexDirection:
-      'row',
+    flexDirection: 'row',
 
-    paddingHorizontal:
-      card.padding,
+    paddingHorizontal: card.padding,
 
     paddingTop: 10,
 
     paddingBottom: 10,
 
-    backgroundColor:
-      Colors.background_list_item,
+    backgroundColor: Colors.background_list_item,
 
     borderTopWidth: 1,
 
-    borderTopColor:
-      Colors.border_color,
+    borderTopColor: Colors.border_color,
   },
 
   navigationButton: {
@@ -1235,60 +978,47 @@ const styles = StyleSheet.create({
 
     height: 46,
 
-    borderRadius:
-      card.border_radius_card_small,
+    borderRadius: card.border_radius_card_small,
 
-    justifyContent:
-      'center',
+    justifyContent: 'center',
 
-    alignItems:
-      'center',
+    alignItems: 'center',
   },
 
   previousButton: {
-    backgroundColor:
-      Colors.button_color_light,
+    backgroundColor: Colors.button_color_light,
 
     marginRight: 6,
   },
 
   nextButton: {
-    backgroundColor:
-      Colors.primary,
+    backgroundColor: Colors.primary,
 
     marginLeft: 6,
   },
 
   navigationButtonDisabled: {
-    backgroundColor:
-      Colors.light_gray,
+    backgroundColor: Colors.light_gray,
   },
 
   navigationButtonText: {
-    fontFamily:
-      FontFamily.semiBold,
+    fontFamily: FontFamily.semiBold,
 
-    fontSize:
-      FontSize.regular,
+    fontSize: FontSize.regular,
 
-    color:
-      Colors.text,
+    color: Colors.text,
   },
 
   navigationButtonTextDisabled: {
-    color:
-      Colors.button_text_inactive,
+    color: Colors.button_text_inactive,
   },
 
   nextButtonText: {
-    fontFamily:
-      FontFamily.semiBold,
+    fontFamily: FontFamily.semiBold,
 
-    fontSize:
-      FontSize.regular,
+    fontSize: FontSize.regular,
 
-    color:
-      Colors.white,
+    color: Colors.white,
   },
 
   bottomSpace: {

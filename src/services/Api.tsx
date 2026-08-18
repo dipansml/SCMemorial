@@ -12,6 +12,7 @@ import { StudentListResponse } from '../Model/StudentList/StudentListResponse';
 import { StudentAttemptExamResponse } from '../Model/Exam/StudentAttemptExam'
 import { LiveExamResponse } from '../Model/ExamDataset/LiveExamData'
 import { StudentExamAnswer } from '../Model/ExamDataset/LiveExamData'
+import { GenericResponse } from '../Model/GenericResponse/GenericResponse'
 import { RestApi } from './RestApi';
 
 // Request
@@ -168,7 +169,7 @@ export const Api = {
 
   submitExam: async (
     payload: ExamQuestionPayload,
-  ): Promise<LiveExamResponse> => {
+  ): Promise<GenericResponse> => {
     const response = await RestApi.post('/student-finish-exam', payload);
     return response.data;
   },

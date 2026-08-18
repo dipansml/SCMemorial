@@ -18,7 +18,9 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import { changeDateFormat } from '../utils/helper';
 import { CommonStyles } from '../style/CommonStyles';
-
+import type { PaymentResult } from '../services/payment/payment.types';
+import { paymentService } from '../services/payment/PaymentService';
+import StorageManager from '../services/StorageManager';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
@@ -26,6 +28,44 @@ const EventDetail = ({ navigation, route }: Props) => {
   const { event } = route.params;
   const [joinModalVisible, setJoinModalVisible] = useState(false);
   const [remarks, setRemarks] = useState('');
+  const [processing, setProcessing] = useState(false);
+  const [remarksError, setRemarksError] = useState('');
+
+  const handleProceedToPay = async () => {
+      // Duplicate-payment protection: ignore taps while a payment is running.
+      if (processing) {
+        return;
+      }
+  
+      setProcessing(true);
+  
+      try {
+        // The UI only talks to PaymentService. Whether the underlying provider
+        // is MOCK CCAvenue or the real CCAvenue adapter is decided by
+        // PAYMENT_CONFIG.mode — this screen never changes.
+        const result: PaymentResult = await paymentService.startPayment({
+          amount: event.event_fee + ".00",
+          currency: 'INR',
+          billingName: '',
+          billingEmail: '',
+          billingPhone: '',
+          description:  event.event_name + ' Joing Fees Payment',
+          meta: remarks ? { remarks } : undefined,
+        });
+  
+        // Success, failure and cancellation all land on the result screen.
+        //navigation.replace('PaymentResult', { result });
+        console.log("PaymentDetail", result);
+        if(result.status === 'cancelled'){
+          navigation.replace('PaymentResult', { result });
+        } else{
+
+        }
+      } catch {
+        // Duplicate-payment / unexpected errors: stay on this screen.
+        setProcessing(false);
+      }
+    };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -170,15 +210,29 @@ const EventDetail = ({ navigation, route }: Props) => {
                 </Text>
 
                 <TextInput
-                  value={remarks}
-                  onChangeText={setRemarks}
-                  placeholder="Enter remarks..."
-                  placeholderTextColor={Colors.text_hint}
-                  multiline
-                  numberOfLines={4}
-                  textAlignVertical="top"
-                  style={styles.remarksInput}
-                />
+                    value={remarks}
+                    onChangeText={(text) => {
+                      setRemarks(text);
+                      if (text.trim()) {
+                        setRemarksError('');
+                      }
+                    }}
+                    placeholder="Enter remarks..."
+                    placeholderTextColor={Colors.text_hint}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                    style={[
+                      styles.remarksInput,
+                      remarksError && { borderColor: 'red' },
+                    ]}
+                  />
+
+                  {remarksError ? (
+                    <Text style={{ color: 'red', marginTop: 5 }}>
+                      {remarksError}
+                    </Text>
+                  ) : null}
 
                 <View style={styles.modalButtons}>
 
@@ -196,25 +250,25 @@ const EventDetail = ({ navigation, route }: Props) => {
                   </TouchableOpacity>
 
                   {/* Submit */}
-                  <TouchableOpacity
+                 <TouchableOpacity
                     style={styles.submitButton}
                     onPress={() => {
-                      setJoinModalVisible(false);
+                      if (!remarks.trim()) {
+                        setRemarksError('Please enter your remarks.');
+                        return;
+                      }
 
-                      // navigation.navigate('EventJoinConfirmation', {
-                      //   remarks: remarks,
-                      // });
+                      setRemarksError('');
+                      setJoinModalVisible(false);
+                      handleProceedToPay();
                     }}
                   >
                     <Text style={styles.submitButtonText}>
                       Submit
                     </Text>
                   </TouchableOpacity>
-
                 </View>
-
               </View>
-
             </View>
           </TouchableWithoutFeedback>
         </Modal>

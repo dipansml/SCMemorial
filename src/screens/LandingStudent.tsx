@@ -10,11 +10,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../theme/colors';
 import { FontFamily } from '../theme/fonts_dimen';
 import DashboardStudent from './DashboardStudent';
+import Fees from './Fees';
 
 type LandingStudentList = {
   DashboardStudent: undefined;
   Academics: undefined;
-  Messages: undefined;
+  Fees: undefined;
   Settings: undefined;
 };
 
@@ -43,8 +44,8 @@ const LandingStudent = () => {
             icon = require('../assets/images/icons/dashboard.png');
           } else if (route.name === 'Academics') {
             icon = require('../assets/images/icons/academic.png');
-          } else if (route.name === 'Messages') {
-            icon = require('../assets/images/icons/messages.png');
+          } else if (route.name === 'Fees') {
+            icon = require('../assets/images/icons/fees.png');
           } else if (route.name === 'Settings') {
             icon = require('../assets/images/icons/settings.png');
           }
@@ -76,7 +77,8 @@ const LandingStudent = () => {
     >
       <Tab.Screen name="DashboardStudent" component={DashboardStudent} options={{tabBarLabel : 'Dashboard'}}/>
       <Tab.Screen name="Academics" component={Academics} />
-      <Tab.Screen name="Messages" component={Messages} />
+      {/* <Tab.Screen name="Messages" component={Messages} /> */}
+      <Tab.Screen name="Fees" component={Fees} />
       <Tab.Screen name="Settings" component={Settings}/>
     </Tab.Navigator>
   );

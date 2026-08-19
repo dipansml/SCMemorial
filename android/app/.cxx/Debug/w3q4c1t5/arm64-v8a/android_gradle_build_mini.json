@@ -8,6 +8,7 @@
     "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\node_modules\\react-native-safe-area-context\\android\\src\\main\\jni\\CMakeLists.txt",
     "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\node_modules\\react-native-screens\\android\\src\\main\\jni\\CMakeLists.txt",
     "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\node_modules\\react-native-svg\\android\\src\\main\\jni\\CMakeLists.txt",
+    "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\node_modules\\react-native-webview\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\node_modules\\react-native-worklets\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\Dipan\\ReactNativeProject\\SCM\\SCMemorial\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt"
   ],
@@ -43,6 +44,11 @@
     },
     "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec": {
       "artifactName": "react_codegen_rngesturehandler_codegen",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    },
+    "react_codegen_RNCWebViewSpec::@eb48929f9f7453740a6c": {
+      "artifactName": "react_codegen_RNCWebViewSpec",
       "abi": "arm64-v8a",
       "runtimeFiles": []
     },

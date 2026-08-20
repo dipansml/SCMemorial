@@ -9,10 +9,14 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
 import type { FeeAmountForSelectedMonthResponse } from '../Model/FeeAmountForSelectedMonth/FeeAmountForSelectedMonthResponse';
+import { CCAvenueService } from '../services/ccavenue/CCAvenueService';
+import type { CCAvenuePaymentResponse } from '../services/ccavenue/CCAvenueTypes';
+import { generateOrderId } from '../utils/orderId';
 
 export type PaymentFormData = {
   tuitionFine: string;
@@ -53,6 +57,7 @@ const PayAcademicFeesModal = ({
   const [dueAmount, setDueAmount] = useState('');
   const [cashAmount, setCashAmount] = useState('');
   const [payeeName, setPayeeName] = useState(initialPayeeName);
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     if (visible && feeAmountData?.data) {
@@ -66,15 +71,50 @@ const PayAcademicFeesModal = ({
 
   if (!visible) { return null; }
 
-  const handleProceed = () => {
-    onProceedToPay({
-      tuitionFine,
-      busFine,
-      advancedAmount,
-      dueAmount,
-      cashAmount,
-      payeeName,
-    });
+  const handleProceed = async () => {
+    if (paying) { return; }
+    setPaying(true);
+
+    try {
+      const orderId = generateOrderId();
+      const amount = totalAmount.toFixed(2);
+
+      const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
+        orderId,
+        amount,
+        currency: 'INR',
+        customerName: payeeName || 'Student',
+      });
+
+      setPaying(false);
+
+      if (response.orderStatus === 'Success') {
+        Alert.alert(
+          'Payment Successful',
+          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: ₹${response.amount}`,
+          [{ text: 'OK', onPress: () => {
+            onProceedToPay({
+              tuitionFine,
+              busFine,
+              advancedAmount,
+              dueAmount,
+              cashAmount,
+              payeeName,
+            });
+          }}],
+        );
+      } else if (response.orderStatus === 'Aborted') {
+        Alert.alert('Payment Cancelled', 'You cancelled the payment.');
+      } else {
+        Alert.alert(
+          'Payment Failed',
+          `Status: ${response.orderStatus}\n${response.failureMessage || response.statusMessage || 'Unknown error'}`,
+        );
+      }
+    } catch (error: any) {
+      setPaying(false);
+      Alert.alert('Payment Error', error?.message || 'Something went wrong');
+    }
   };
 
   return (
@@ -203,11 +243,14 @@ const PayAcademicFeesModal = ({
 
             {/* Buttons */}
             <TouchableOpacity
-              style={styles.proceedButton}
+              style={[styles.proceedButton, paying && { opacity: 0.6 }]}
               activeOpacity={0.85}
               onPress={handleProceed}
+              disabled={paying}
             >
-              <Text style={styles.proceedButtonText}>CONFIRM AND PAY</Text>
+              <Text style={styles.proceedButtonText}>
+                {paying ? 'PROCESSING...' : 'CONFIRM AND PAY'}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity

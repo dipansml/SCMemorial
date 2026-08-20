@@ -9,11 +9,13 @@ import Messages from './Messages';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../theme/colors';
 import { FontFamily } from '../theme/fonts_dimen';
+import Fees from './Fees';
 
 type LandingParentsList = {
   DashboardParents: undefined;
   Academics: undefined;
-  Messages: undefined;
+  //Messages: undefined;
+  Fees: undefined;
   Settings: undefined;
 };
 
@@ -42,9 +44,14 @@ const LandingParents = () => {
             icon = require('../assets/images/icons/dashboard.png');
           } else if (route.name === 'Academics') {
             icon = require('../assets/images/icons/academic.png');
-          } else if (route.name === 'Messages') {
-            icon = require('../assets/images/icons/messages.png');
-          } else if (route.name === 'Settings') {
+          } 
+          // else if (route.name === 'Messages') {
+          //   icon = require('../assets/images/icons/messages.png');
+          // } 
+           else if (route.name === 'Fees') {
+              icon = require('../assets/images/icons/fees.png');
+          } 
+          else if (route.name === 'Settings') {
             icon = require('../assets/images/icons/settings.png');
           }
           return (
@@ -75,7 +82,8 @@ const LandingParents = () => {
     >
       <Tab.Screen name="DashboardParents" component={DashboardParents} options={{tabBarLabel : 'Dashboard'}}/>
       <Tab.Screen name="Academics" component={Academics} />
-      <Tab.Screen name="Messages" component={Messages} />
+      {/* <Tab.Screen name="Messages" component={Messages} /> */}
+      <Tab.Screen name ="Fees" component={Fees} />
       <Tab.Screen name="Settings" component={Settings}/>
     </Tab.Navigator>
   );

@@ -38,6 +38,7 @@ import MockCCAvenuePaymentScreen, {
 import PaymentResultScreen, {
   PaymentResultRouteParams,
 } from './src/screens/PaymentResult/PaymentResultScreen';
+import CCAvenuePayment from './src/screens/CCAvenuePayment'
 
 enableScreens();
 
@@ -75,6 +76,9 @@ export type RootStackParamList = {
   }
   MockCCAvenuePayment: MockCCAvenuePaymentRouteParams;
   PaymentResult: PaymentResultRouteParams;
+  CCAvenuePayment: {
+    paymentUrl: string;
+  }
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -208,6 +212,11 @@ const App = () => {
             <Stack.Screen
               name="PaymentResult"
               component={PaymentResultScreen}
+              options={{ headerShown: false }}
+            /> 
+            <Stack.Screen
+              name="CCAvenuePayment"
+              component={CCAvenuePayment}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

@@ -59,13 +59,20 @@ const EventDetail = ({ navigation, route }: Props) => {
         if(result.status === 'cancelled'){
           navigation.replace('PaymentResult', { result });
         } else{
-
+            
         }
       } catch {
         // Duplicate-payment / unexpected errors: stay on this screen.
         setProcessing(false);
       }
     };
+
+    const handleProceedToPayWebview = async () => {
+      navigation.navigate('CCAvenuePayment', {
+            paymentUrl: 'https://www.google.com/',
+          });
+    }
+    
 
   return (
     <SafeAreaView style={styles.container}>
@@ -261,6 +268,7 @@ const EventDetail = ({ navigation, route }: Props) => {
                       setRemarksError('');
                       setJoinModalVisible(false);
                       handleProceedToPay();
+                      //handleProceedToPayWebview();
                     }}
                   >
                     <Text style={styles.submitButtonText}>

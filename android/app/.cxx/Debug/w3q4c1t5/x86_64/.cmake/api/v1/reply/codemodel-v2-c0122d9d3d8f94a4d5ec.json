@@ -222,77 +222,77 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appmodules::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appmodules-Debug-e22588af349f48372b96.json",
+					"jsonFile" : "target-appmodules-Debug-e0b7300a86f2cd4043dd.json",
 					"name" : "appmodules",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "react_codegen_AsyncStorageSpec::@15af80695a6281ecf900",
-					"jsonFile" : "target-react_codegen_AsyncStorageSpec-Debug-70ecf28618eb6a258cb9.json",
+					"jsonFile" : "target-react_codegen_AsyncStorageSpec-Debug-b4cd224c5826b81d6386.json",
 					"name" : "react_codegen_AsyncStorageSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 9,
 					"id" : "react_codegen_RNCWebViewSpec::@eb48929f9f7453740a6c",
-					"jsonFile" : "target-react_codegen_RNCWebViewSpec-Debug-642299fd39551ce60f52.json",
+					"jsonFile" : "target-react_codegen_RNCWebViewSpec-Debug-eb9d4a4abe66c78ca3e9.json",
 					"name" : "react_codegen_RNCWebViewSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 3,
 					"id" : "react_codegen_RNImagePickerSpec::@f66ee9a2efecfb28bee4",
-					"jsonFile" : "target-react_codegen_RNImagePickerSpec-Debug-81085a0faf82b5bf618c.json",
+					"jsonFile" : "target-react_codegen_RNImagePickerSpec-Debug-f9296e459bda9fb2b522.json",
 					"name" : "react_codegen_RNImagePickerSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 4,
 					"id" : "react_codegen_RNRazorpayCheckoutSpec::@ba471378ee2eecf9e7b3",
-					"jsonFile" : "target-react_codegen_RNRazorpayCheckoutSpec-Debug-088a7e73b9b305e3c820.json",
+					"jsonFile" : "target-react_codegen_RNRazorpayCheckoutSpec-Debug-5be4946b9c6f1706eeb1.json",
 					"name" : "react_codegen_RNRazorpayCheckoutSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec",
-					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-Debug-b7c1af6743c376d7c9b0.json",
+					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-Debug-d146a01253a926e9c06b.json",
 					"name" : "react_codegen_rngesturehandler_codegen",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 5,
 					"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a",
-					"jsonFile" : "target-react_codegen_rnreanimated-Debug-986749ac856157d05514.json",
+					"jsonFile" : "target-react_codegen_rnreanimated-Debug-bc0b0ece3a6e593b6038.json",
 					"name" : "react_codegen_rnreanimated",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 7,
 					"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad",
-					"jsonFile" : "target-react_codegen_rnscreens-Debug-f6ea209c72546795968c.json",
+					"jsonFile" : "target-react_codegen_rnscreens-Debug-e0fe4e1aa67c092dcae3.json",
 					"name" : "react_codegen_rnscreens",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 8,
 					"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65",
-					"jsonFile" : "target-react_codegen_rnsvg-Debug-6a087ab014d8387102d8.json",
+					"jsonFile" : "target-react_codegen_rnsvg-Debug-95162de62bf41218b886.json",
 					"name" : "react_codegen_rnsvg",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 10,
 					"id" : "react_codegen_rnworklets::@68f58d84d4754f193387",
-					"jsonFile" : "target-react_codegen_rnworklets-Debug-649123dcf9a26fc8a717.json",
+					"jsonFile" : "target-react_codegen_rnworklets-Debug-1d434029c1b792690cfa.json",
 					"name" : "react_codegen_rnworklets",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 6,
 					"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a",
-					"jsonFile" : "target-react_codegen_safeareacontext-Debug-932bce66c3db67b85bc9.json",
+					"jsonFile" : "target-react_codegen_safeareacontext-Debug-ca80d77033cad1e0ebc2.json",
 					"name" : "react_codegen_safeareacontext",
 					"projectIndex" : 0
 				}
@@ -302,7 +302,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/armeabi-v7a",
+		"build" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/android/app/.cxx/Debug/w3q4c1t5/x86_64",
 		"source" : "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
 	},
 	"version" : 

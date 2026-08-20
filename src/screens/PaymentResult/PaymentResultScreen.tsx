@@ -1,18 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../theme/colors';
 import { FontFamily, FontSize, card } from '../../theme/fonts_dimen';
+import {
+  PAYMENT_METHOD_LABEL,
+} from '../../services/payment/payment.types';
 import type { PaymentResult } from '../../services/payment/payment.types';
+import { paymentService } from '../../services/payment/PaymentService';
 
 export type PaymentResultRouteParams = {
   result: PaymentResult;
+  parentScreen?: string;
+  successScreen?: string;
+  retryPaymentRequest?: any;
 };
 
 type Props = {
@@ -21,7 +29,7 @@ type Props = {
 };
 
 /**
- * Payment result screen — identical for MOCK and real CCAvenue.
+ * Payment result screen.
  * Shows Order ID, Payment Status, Transaction ID, Amount and Payment Mode.
  */
 
@@ -50,19 +58,38 @@ const STATUS_META: Record<
 };
 
 const PaymentResultScreen = ({ navigation, route }: Props) => {
-  const { result } = route.params;
+  const { result, parentScreen, successScreen, retryPaymentRequest } = route.params;
   const meta = STATUS_META[result.status];
+  const [retrying, setRetrying] = useState(false);
 
   const handleDone = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
+    if (result.status === 'success' && successScreen) {
+      navigation.popToTop();
+      navigation.navigate(successScreen);
     } else {
       navigation.popToTop();
+      navigation.navigate('Fees');
     }
   };
 
-  const handleRetry = () => {
-    navigation.replace('ReAdmission');
+  const handleRetry = async () => {
+    if (retrying || !retryPaymentRequest) {
+      return;
+    }
+    setRetrying(true);
+
+    try {
+      const retryResult: PaymentResult = await paymentService.startPayment(retryPaymentRequest);
+      navigation.replace('PaymentResult', {
+        result: retryResult,
+        parentScreen,
+        successScreen,
+        retryPaymentRequest,
+      });
+    } catch (error) {
+      console.log('Retry Payment Error:', error);
+      setRetrying(false);
+    }
   };
 
   return (
@@ -93,8 +120,14 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
           />
           <DetailRow
             label="Payment Mode"
-            value={result.mode === 'MOCK' ? 'CCAvenue (MOCK)' : 'CCAvenue'}
+            value={result.mode || '—'}
           />
+          {result.method ? (
+            <DetailRow
+              label="Payment Method"
+              value={PAYMENT_METHOD_LABEL[result.method]}
+            />
+          ) : null}
           {result.verificationStatus ? (
             <DetailRow
               label="Verification"
@@ -117,20 +150,22 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
           </TouchableOpacity>
         ) : (
           <>
-            <TouchableOpacity style={styles.primaryButton} onPress={handleRetry}>
-              <Text style={styles.primaryButtonText}>RETRY PAYMENT</Text>
+            <TouchableOpacity
+              style={[styles.primaryButton, retrying && styles.primaryButtonDisabled]}
+              onPress={handleRetry}
+              disabled={retrying}
+            >
+              {retrying ? (
+                <ActivityIndicator size="small" color={Colors.white} />
+              ) : (
+                <Text style={styles.primaryButtonText}>RETRY PAYMENT</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity style={styles.secondaryButton} onPress={handleDone}>
               <Text style={styles.secondaryButtonText}>BACK</Text>
             </TouchableOpacity>
           </>
         )}
-
-        <Text style={styles.mockNote}>
-          {result.mode === 'MOCK'
-            ? 'This payment was processed in MOCK/TEST mode. No real money moved.'
-            : ''}
-        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -227,6 +262,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 24,
   },
+  primaryButtonDisabled: {
+    opacity: 0.6,
+  },
   primaryButtonText: {
     color: Colors.white,
     fontFamily: FontFamily.semiBold,
@@ -246,12 +284,5 @@ const styles = StyleSheet.create({
     color: Colors.text_light,
     fontFamily: FontFamily.semiBold,
     fontSize: FontSize.regular,
-  },
-  mockNote: {
-    marginTop: 20,
-    textAlign: 'center',
-    fontFamily: FontFamily.regular,
-    fontSize: FontSize.vv_small,
-    color: Colors.text_light,
   },
 });

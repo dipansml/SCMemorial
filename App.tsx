@@ -26,9 +26,6 @@ import ReAdmission from './src/screens/ReAdmission';
 import LandingStudent from './src/screens/LandingStudent';
 import StudentDrawer from './src/Drawer/StudentDrawer';
 import EventDetail from './src/screens/EventDetail';
-import MockCCAvenuePaymentScreen, {
-  MockCCAvenuePaymentRouteParams,
-} from './src/screens/Payment/MockCCAvenuePaymentScreen';
 import PaymentResultScreen, {
   PaymentResultRouteParams,
 } from './src/screens/PaymentResult/PaymentResultScreen';
@@ -64,7 +61,6 @@ export type RootStackParamList = {
       event_description: string;
     };
   };
-  MockCCAvenuePayment: MockCCAvenuePaymentRouteParams;
   PaymentResult: PaymentResultRouteParams;
 };
 
@@ -111,7 +107,6 @@ const App = () => {
             <Stack.Screen name="ReAdmission" component={ReAdmission}  options={{ headerShown: false }} />
             <Stack.Screen name="LandingStudent" component={LandingStudent}  options={{ headerShown: false }} />
             <Stack.Screen name="EventDetail" component={EventDetail}  options={{ headerShown: false }} />
-            <Stack.Screen name="MockCCAvenuePayment" component={MockCCAvenuePaymentScreen}  options={{ headerShown: false }} />
             <Stack.Screen name="PaymentResult" component={PaymentResultScreen}  options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>

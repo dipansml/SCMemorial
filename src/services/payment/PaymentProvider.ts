@@ -9,47 +9,28 @@ import type {
 /**
  * Contract every payment gateway adapter must implement.
  *
- * The CheckoutScreen talks only to PaymentService (see PaymentService.ts).
  * PaymentService talks only to an object implementing this interface.
- * Today that object is MockCCAvenueProvider; later it will be
- * RealCCAvenueProvider — the UI never changes.
+ * The UI never changes regardless of the underlying provider.
  */
 export interface PaymentProvider {
-  /** Provider display name, e.g. "CCAvenue". */
+  /** Provider display name. */
   readonly name: string;
   /** Which mode this adapter implements. */
   readonly mode: PaymentMode;
 
-  /**
-   * Create an order before starting payment.
-   * Real flow: backend order creation API.
-   * Mock flow: local MockOrderService.
-   */
+  /** Create an order before starting payment. */
   createOrder(request: PaymentRequest): Promise<PaymentOrder>;
 
-  /**
-   * Start the actual payment session.
-   * Mock flow: opens the "CCAvenue Test Payment" screen and resolves when the
-   * user picks SUCCESS / FAILED / CANCELLED.
-   * Real flow: launches the official CCAvenue SDK/webview.
-   */
+  /** Start the actual payment session. */
   startPayment(request: PaymentRequest): Promise<PaymentResult>;
 
-  /**
-   * Verify a completed payment (idempotency + fraud check).
-   * Real flow: backend verification API against CCAvenue.
-   * Mock flow: local MockPaymentVerificationService.
-   */
+  /** Verify a completed payment (idempotency + fraud check). */
   verifyPayment(
     orderId: string,
     transactionId?: string,
     amount?: string,
   ): Promise<PaymentVerificationResult>;
 
-  /**
-   * Cancel an in-flight payment session.
-   * Mock flow: resolves the pending test screen as CANCELLED.
-   * Real flow: closes the CCAvenue session if possible.
-   */
+  /** Cancel an in-flight payment session. */
   cancelPayment(): Promise<void>;
 }

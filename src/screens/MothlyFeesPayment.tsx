@@ -144,6 +144,13 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
     try {
       const paymentRequest = await buildPaymentRequest(formData);
       const result: PaymentResult = await paymentService.startPayment(paymentRequest);
+      setProcessing(false);
+      navigation.navigate('PaymentResult', {
+        result,
+        parentScreen: 'MothlyFeePayment',
+        successScreen: 'Fees',
+        retryPaymentRequest: paymentRequest,
+      });
     } catch (error) {
       console.log('Academic Fees Payment Error:', error);
       setProcessing(false);

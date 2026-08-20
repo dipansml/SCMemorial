@@ -2,8 +2,8 @@ import type { PaymentMode } from '../../config/payment';
 
 /**
  * Payment state machine exposed to the UI.
- * The UI only reacts to these states; it never cares whether the
- * underlying provider is MOCK or real CCAvenue.
+ * The UI only reacts to these states; it never cares about the
+ * underlying provider implementation.
  */
 export type PaymentState =
   | 'IDLE'
@@ -22,9 +22,7 @@ export type PaymentOutcome = 'success' | 'failed' | 'cancelled';
 export type PaymentVerificationOutcome = 'verified' | 'failed' | 'pending';
 
 /**
- * Payment methods supported by the CCAvenue checkout.
- * MOCK mode interprets these locally; the same identifiers will map onto the
- * official CCAvenue SDK/API when real integration lands.
+ * Payment methods supported by the payment checkout.
  */
 export type PaymentMethod =
   | 'credit_card'
@@ -40,7 +38,7 @@ export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
   upi: 'UPI',
 };
 
-/** Order status kept by the (mock) order service. */
+/** Order status. */
 export type OrderStatus = 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED';
 
 /** A payment initiated from the checkout/UI. */
@@ -86,7 +84,6 @@ export interface PaymentOrder {
 
 /**
  * Normalized payment result returned to the UI.
- * Identical shape whether the payment was MOCK or real CCAvenue.
  */
 export interface PaymentResult {
   /** success | failed | cancelled */
@@ -101,13 +98,13 @@ export interface PaymentResult {
   message: string;
   provider: string;
   mode: PaymentMode;
-  /** Verification outcome once the (mock) backend check runs. */
+  /** Verification outcome once the backend check runs. */
   verificationStatus?: PaymentVerificationOutcome;
   /** ISO timestamp of completion. */
   paidAt?: string;
 }
 
-/** Result of verifying a payment against the (mock) backend. */
+/** Result of verifying a payment against the backend. */
 export interface PaymentVerificationResult {
   status: PaymentVerificationOutcome;
   orderId: string;

@@ -15,7 +15,6 @@ import {
 } from '../../services/payment/payment.types';
 import type { PaymentResult } from '../../services/payment/payment.types';
 import { paymentService } from '../../services/payment/PaymentService';
-import { mockCCAvenueProvider } from '../../services/payment/MockCCAvenueProvider';
 
 export type PaymentResultRouteParams = {
   result: PaymentResult;
@@ -30,7 +29,7 @@ type Props = {
 };
 
 /**
- * Payment result screen — identical for MOCK and real CCAvenue.
+ * Payment result screen.
  * Shows Order ID, Payment Status, Transaction ID, Amount and Payment Mode.
  */
 
@@ -68,7 +67,6 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
       navigation.popToTop();
       navigation.navigate(successScreen);
     } else {
-      // For cancelled/failed: BACK goes to Fees (Month Selection)
       navigation.popToTop();
       navigation.navigate('Fees');
     }
@@ -81,15 +79,13 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
     setRetrying(true);
 
     try {
-      // Create order first, then replace current route with CCAvenue screen
-      // This ensures Payment Cancelled screen is removed from stack
-      const order = await mockCCAvenueProvider.createOrder(retryPaymentRequest);
-      const params = {
-        ...retryPaymentRequest,
-        orderId: order.orderId,
-      };
-      // Use replace to remove Payment Cancelled from stack before showing CCAvenue
-      navigation.replace('MockCCAvenuePayment', params);
+      const retryResult: PaymentResult = await paymentService.startPayment(retryPaymentRequest);
+      navigation.replace('PaymentResult', {
+        result: retryResult,
+        parentScreen,
+        successScreen,
+        retryPaymentRequest,
+      });
     } catch (error) {
       console.log('Retry Payment Error:', error);
       setRetrying(false);
@@ -124,7 +120,7 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
           />
           <DetailRow
             label="Payment Mode"
-            value={result.mode === 'MOCK' ? 'CCAvenue (MOCK)' : 'CCAvenue'}
+            value={result.mode || '—'}
           />
           {result.method ? (
             <DetailRow
@@ -170,12 +166,6 @@ const PaymentResultScreen = ({ navigation, route }: Props) => {
             </TouchableOpacity>
           </>
         )}
-
-        <Text style={styles.mockNote}>
-          {result.mode === 'MOCK'
-            ? 'This payment was processed in MOCK/TEST mode. No real money moved.'
-            : ''}
-        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -294,12 +284,5 @@ const styles = StyleSheet.create({
     color: Colors.text_light,
     fontFamily: FontFamily.semiBold,
     fontSize: FontSize.regular,
-  },
-  mockNote: {
-    marginTop: 20,
-    textAlign: 'center',
-    fontFamily: FontFamily.regular,
-    fontSize: FontSize.vv_small,
-    color: Colors.text_light,
   },
 });

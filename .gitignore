@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build folders
+ios/build/
+ios/Pods/
+android/build/
+android/app/build/
+
+# React Native / Metro
+.expo/
+.expo-shared/
+metro-cache/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+
+# Android
+android/local.properties
+android/.gradle/
+android/app/.cxx/
+
+# iOS
+ios/*.xcworkspace
+ios/xcuserdata/
+
+# Misc
+*.apk
+*.aab
+*.iml

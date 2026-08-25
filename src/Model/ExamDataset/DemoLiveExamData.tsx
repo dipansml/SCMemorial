@@ -1,0 +1,160 @@
+import {
+  LiveExamResponse,
+} from '../Model/ExamDataset/LiveExamData';
+
+export const demoLiveExamResponse: LiveExamResponse = {
+  status: 200,
+  message: 'Live Exam details fetched',
+
+  data: {
+    user_id: '10212',
+    set_unique_id: '5E3464B4B893A',
+    set_id: '4',
+    exm_time: '1',
+    examset: [
+      {
+        question: {
+          question_id: '6',
+          set_id: '4',
+          question:
+            'When we click on the Draw Border option in the font group under the home tab, cursor shape changes into __________.',
+          question_file: '',
+          marks: '2',
+          option_number: '4',
+          deleted: 'f',
+          created_by: '3640',
+          created_date: '2020-01-29 13:22:17',
+          modified_by: '0',
+          modified_date: '2026-05-22 17:32:20.467787',
+        },
+
+        option: [
+          {
+            option_id: '17',
+            question_id: '6',
+            option: 'A pen',
+            option_file: '',
+            is_correct: 'f',
+            deleted: 'f',
+            created_by: '3640',
+            created_date: '2020-01-29 13:22:17',
+            modified_by: '0',
+            modified_date: '2026-05-22 17:43:40.042433',
+          },
+          {
+            option_id: '18',
+            question_id: '6',
+            option: 'A pencil',
+            option_file: '',
+            is_correct: 't',
+            deleted: 'f',
+            created_by: '3640',
+            created_date: '2020-01-29 13:22:17',
+            modified_by: '0',
+            modified_date: '2026-05-22 17:43:40.042433',
+          },
+          {
+            option_id: '19',
+            question_id: '6',
+            option: 'A pencil with a square box',
+            option_file: '',
+            is_correct: 'f',
+            deleted: 'f',
+            created_by: '3640',
+            created_date: '2020-01-29 13:22:17',
+            modified_by: '0',
+            modified_date: '2026-05-22 17:43:40.042433',
+          },
+          {
+            option_id: '20',
+            question_id: '6',
+            option: 'A bordered box',
+            option_file: '',
+            is_correct: 'f',
+            deleted: 'f',
+            created_by: '3640',
+            created_date: '2020-01-29 13:22:17',
+            modified_by: '3640',
+            modified_date: '2026-05-22 17:43:40.042433',
+          },
+        ],
+      },
+
+      {
+        question: {
+          question_id: '7',
+          set_id: '4',
+          question:
+            '_______ option in excel helps to put the text in multiple lines into a cell.',
+          question_file: '',
+          marks: '1',
+          option_number: '4',
+          deleted: 'f',
+          created_by: '3640',
+          created_date: '2020-01-29 13:23:40',
+          modified_by: '0',
+          modified_date: '2026-05-22 17:32:20.467787',
+        },
+
+        option: [
+          {
+            option_id: '21',
+            question_id: '7',
+            option: 'Merge Cell',
+            option_file: '',
+            is_correct: 'f',
+            deleted: 'f',
+            created_by: '3640',
+            created_date: '2020-01-29 13:23:40',
+            modified_by: '0',
+            modified_date: '2026-05-22 17:43:40.042433',
+          },
+          {
+            option_id: '22',
+            question_id: '7',
+            option: 'Wrap text',
+            option_file: '',
+            is_correct: 't',
+            deleted: 'f',
+            created_by: '3640',
+            created_date: '2020-01-29 13:23:40',
+            modified_by: '0',
+            modified_date: '2026-05-22 17:43:40.042433',
+          },
+          {
+            option_id: '23',
+            question_id: '7',
+            option: 'Merge & Center',
+            option_file: '',
+            is_correct: 'f',
+            deleted: 'f',
+            created_by: '3640',
+            created_date: '2020-01-29 13:23:40',
+            modified_by: '0',
+            modified_date: '2026-05-22 17:43:40.042433',
+          },
+          {
+            option_id: '24',
+            question_id: '7',
+            option: 'None of these',
+            option_file: '',
+            is_correct: 'f',
+            deleted: 'f',
+            created_by: '3640',
+            created_date: '2020-01-29 13:23:40',
+            modified_by: '0',
+            modified_date: '2026-05-22 17:43:40.042433',
+          },
+        ],
+      },
+    ],
+
+    num_of_ques: 2,
+
+    // For demo/testing you can make this longer.
+    start_time: '2026-05-26 18:17:32',
+    end_time: '2026-05-26 18:18:32',
+
+    result_id: '41',
+  },
+};

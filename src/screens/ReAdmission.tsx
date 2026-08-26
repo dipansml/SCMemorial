@@ -9,13 +9,17 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
-import { paymentService } from '../services/payment/PaymentService';
-import type { PaymentResult } from '../services/payment/payment.types';
+import { CCAvenueService } from '../services/ccavenue/CCAvenueService';
+import type { CCAvenuePaymentResponse } from '../services/ccavenue/CCAvenueTypes';
+import { generateOrderId } from '../utils/orderId';
 import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
 import type { ReAdmissionFormDetails } from '../Model/ReAdmission/ReAdmissionFormDetails';
@@ -137,6 +141,10 @@ const ReAdmission = ({ navigation }: Props) => {
   const [feeCategories, setFeeCategories] = useState<FeeCategory[]>([]);
   const [summaryTotal, setSummaryTotal] = useState('0');
   const [paymentAmount, setPaymentAmount] = useState('0');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [studentName, setStudentName] = useState('');
+  const [studentCode, setStudentCode] = useState('');
+  const [formNo, setFormNo] = useState('');
 
   useEffect(() => {
     fetchReAdmissionFee();
@@ -200,6 +208,16 @@ const ReAdmission = ({ navigation }: Props) => {
         setFeeCategories(categories);
         setSummaryTotal(formatCurrency(total));
         setPaymentAmount(String(total));
+
+        if (fd.first_name) {
+          setStudentName(fd.first_name);
+        }
+        if (fd.student_id) {
+          setStudentCode(String(fd.student_id));
+        }
+        if (fd.form_no) {
+          setFormNo(String(fd.form_no));
+        }
       } else {
         Alert.alert('Error', response?.message || 'Failed to load fee details');
       }
@@ -221,27 +239,54 @@ const ReAdmission = ({ navigation }: Props) => {
     setExpandedCategory(prev => (prev === id ? null : id));
   };
 
-  const handleProceedToPay = async () => {
+  const handleProceedToPay = () => {
+    if (processing) {
+      return;
+    }
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmPayment = async () => {
     if (processing) {
       return;
     }
 
+    setShowConfirmModal(false);
     setProcessing(true);
 
     try {
-      const result: PaymentResult = await paymentService.startPayment({
-        amount: `${Number(paymentAmount).toFixed(2)}`,
+      const orderId = generateOrderId();
+      const amount = Number(paymentAmount).toFixed(2);
+
+      const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
+        orderId,
+        amount,
         currency: 'INR',
-        billingName: 'Student Name',
-        billingEmail: 'student@gmail.com',
-        billingPhone: '9876543210',
-        description: 'Re-Admission Fee Payment',
-        meta: remark ? { remark } : undefined,
+        customerName: studentName || 'Student',
+        studentCode: studentCode || undefined,
+        formNo: formNo || undefined,
+        merchantParam1: remark || undefined,
       });
 
-      navigation.replace('PaymentResult', { result });
-    } catch {
       setProcessing(false);
+
+      if (response.orderStatus === 'Success') {
+        Alert.alert(
+          'Payment Successful',
+          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: \u20B9${response.amount}`,
+          [{ text: 'OK', onPress: () => navigation.goBack() }],
+        );
+      } else if (response.orderStatus === 'Aborted') {
+        Alert.alert('Payment Cancelled', 'You cancelled the payment.');
+      } else {
+        Alert.alert(
+          'Payment Failed',
+          `Status: ${response.orderStatus}\n${response.failureMessage || response.statusMessage || 'Unknown error'}`,
+        );
+      }
+    } catch (error: any) {
+      setProcessing(false);
+      Alert.alert('Payment Error', error?.message || 'Something went wrong');
     }
   };
 
@@ -358,6 +403,71 @@ const ReAdmission = ({ navigation }: Props) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {showConfirmModal && (
+        <Pressable
+          style={styles.overlay}
+          onPress={() => setShowConfirmModal(false)}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            style={styles.keyboardAvoid}
+          >
+            <Pressable
+              style={styles.confirmCard}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <View style={styles.confirmHeader}>
+                <Text style={styles.confirmTitle}>Confirm Payment</Text>
+                <TouchableOpacity
+                  onPress={() => setShowConfirmModal(false)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Text style={styles.confirmCloseIcon}>✕</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.confirmSection}>
+                <Text style={styles.confirmLabel}>Payment Type</Text>
+                <Text style={styles.confirmValue}>Re-Admission Fee</Text>
+              </View>
+
+              <View style={styles.confirmSection}>
+                <Text style={styles.confirmLabel}>Total Amount</Text>
+                <Text style={styles.confirmTotalAmount}>
+                  {`₹${Number(paymentAmount).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`}
+                </Text>
+              </View>
+
+              <View style={styles.confirmNote}>
+                <Text style={styles.confirmNoteTitle}>Important Note</Text>
+                <Text style={styles.confirmNoteText}>
+                  Please ensure all details are correct before proceeding with the payment.
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.confirmPayButton}
+                activeOpacity={0.85}
+                onPress={handleConfirmPayment}
+              >
+                <Text style={styles.confirmPayButtonText}>CONFIRM AND PAY</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.confirmCancelButton}
+                activeOpacity={0.85}
+                onPress={() => setShowConfirmModal(false)}
+              >
+                <Text style={styles.confirmCancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </Pressable>
+          </KeyboardAvoidingView>
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 };
@@ -714,6 +824,124 @@ const styles = StyleSheet.create({
   },
   proceedButtonText: {
     color: Colors.white,
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.regular,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  keyboardAvoid: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  confirmCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    marginHorizontal: 20,
+    maxHeight: '85%',
+    width: '90%',
+    padding: 20,
+    shadowColor: '#000000',
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5,
+  },
+  confirmHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  confirmTitle: {
+    fontFamily: FontFamily.bold,
+    fontWeight: '700',
+    fontSize: FontSize.large,
+    color: Colors.textColorInpuHeader,
+  },
+  confirmCloseIcon: {
+    fontFamily: FontFamily.bold,
+    fontSize: FontSize.large,
+    color: Colors.text_light,
+    padding: 4,
+  },
+  confirmSection: {
+    marginBottom: 12,
+  },
+  confirmLabel: {
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.small,
+    color: Colors.textColorInpuHeader,
+    marginBottom: 4,
+  },
+  confirmValue: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.small,
+    color: Colors.text,
+  },
+  confirmTotalAmount: {
+    fontFamily: FontFamily.bold,
+    fontWeight: '700',
+    fontSize: FontSize.regular,
+    color: Colors.textColorInpuHeader,
+  },
+  confirmNote: {
+    backgroundColor: Colors.instruction_box,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    marginTop: 4,
+  },
+  confirmNoteTitle: {
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.small,
+    color: Colors.instruction_text,
+    marginBottom: 4,
+  },
+  confirmNoteText: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.very_small,
+    color: Colors.instruction_text,
+    lineHeight: 16,
+  },
+  confirmPayButton: {
+    height: 46,
+    backgroundColor: Colors.theme_color,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  confirmPayButtonText: {
+    color: Colors.white,
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.regular,
+  },
+  confirmCancelButton: {
+    height: 46,
+    backgroundColor: Colors.white,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.iconBackGrey,
+  },
+  confirmCancelButtonText: {
+    color: Colors.textColorInpuHeader,
     fontFamily: FontFamily.semiBold,
     fontWeight: '600',
     fontSize: FontSize.regular,

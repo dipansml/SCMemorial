@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  StyleSheet, 
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  StyleSheet,
   ScrollView,
   Text,
-  Image, 
+  Image,
   TouchableOpacity,
   Modal,
   TextInput,
   TouchableWithoutFeedback,
-  Keyboard,} from 'react-native';
+  Keyboard,
+  Alert,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { card, container, FontFamily, FontSize } from '../theme/fonts_dimen';
@@ -18,10 +23,10 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import { changeDateFormat } from '../utils/helper';
 import { CommonStyles } from '../style/CommonStyles';
-import type { PaymentResult } from '../services/payment/payment.types';
-import { paymentService } from '../services/payment/PaymentService';
+import { CCAvenueService } from '../services/ccavenue/CCAvenueService';
+import type { CCAvenuePaymentResponse } from '../services/ccavenue/CCAvenueTypes';
+import { generateOrderId } from '../utils/orderId';
 import StorageManager from '../services/StorageManager';
-import type { PaymentFormData } from '../component/PayAcademicFeesModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
@@ -31,98 +36,68 @@ const EventDetail = ({ navigation, route }: Props) => {
   const [remarks, setRemarks] = useState('');
   const [processing, setProcessing] = useState(false);
   const [remarksError, setRemarksError] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [userName, setUserName] = useState('');
 
-  const handleProceedToPay = async () => {
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await StorageManager.getUser();
+      if (user?.name) {
+        setUserName(user.name);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const handleProceedToPay = () => {
+    if (processing) {
+      return;
+    }
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmPayment = async () => {
     if (processing) {
       return;
     }
 
+    setShowConfirmModal(false);
     setProcessing(true);
 
     try {
-      const paymentRequest = await buildPaymentRequest();
+      const orderId = generateOrderId();
+      const amount = Number(event?.event_fee ?? 0).toFixed(2);
 
-      console.log('EVENT PAYMENT REQUEST:', JSON.stringify(paymentRequest, null, 2));
-
-      const result: PaymentResult =
-        await paymentService.startPayment(paymentRequest);
-
-      console.log('EVENT PAYMENT RESULT:', result);
-
-      setProcessing(false);
-
-      navigation.navigate('PaymentResult', {
-        result,
-        parentScreen: 'EventDetail',
-        successScreen: 'EventDetail',
-        retryPaymentRequest: paymentRequest,
-      });
-    } catch (error) {
-      console.log('Event Fees Payment Error:', error);
-
-      setProcessing(false);
-    }
-  };
-
-  const buildPaymentRequest = async () => {
-      const user = await StorageManager.getUser();
-
-      const amount = Number(event.event_fee || 0).toFixed(2);
-
-      return {
+      const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
+        orderId,
         amount,
         currency: 'INR',
-
-        billingName: user?.name || 'Student',
-        billingEmail: user?.email || 'student@example.com',
-        billingPhone: '9876543210',
-
-        description: `Event Joining Fee Payment - ${event.event_name}`,
-
-        meta: {
-          remark: remarks || '',
-          selectedMonths: event.event_name,
-          cashAmount: amount,
-        },
-
-        directResultScreen: 'PaymentResult',
-
-        directResultParams: {
-          parentScreen: 'EventDetail',
-          successScreen: 'EventDetail',
-
-          retryPaymentRequest: {
-            amount,
-            currency: 'INR',
-
-            billingName: user?.name || 'Student',
-            billingEmail: user?.email || 'student@example.com',
-            billingPhone: '9876543210',
-
-            description: `Event Joining Fee Payment - ${event.event_name}`,
-
-            meta: {
-              remark: remarks || '',
-              selectedMonths: event.event_name,
-              cashAmount: amount,
-            },
-
-            directResultScreen: 'PaymentResult',
-
-            directResultParams: {
-              parentScreen: 'EventDetail',
-              successScreen: 'EventDetail',
-            },
-          },
-        },
-      };
-    };
-
-    const handleProceedToPayWebview = async () => {
-      navigation.navigate('CCAvenuePayment', {
-            paymentUrl: 'https://www.google.com/',
+        customerName: userName || 'Student',
+        merchantParam1: event?.event_name || undefined,
+        merchantParam2: remarks || undefined,
       });
+
+      setProcessing(false);
+
+      if (response.orderStatus === 'Success') {
+        Alert.alert(
+          'Payment Successful',
+          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: ₹${response.amount}`,
+          [{ text: 'OK', onPress: () => navigation.goBack() }],
+        );
+      } else if (response.orderStatus === 'Aborted') {
+        Alert.alert('Payment Cancelled', 'You cancelled the payment.');
+      } else {
+        Alert.alert(
+          'Payment Failed',
+          `Status: ${response.orderStatus}\n${response.failureMessage || response.statusMessage || 'Unknown error'}`,
+        );
+      }
+    } catch (error: any) {
+      setProcessing(false);
+      Alert.alert('Payment Error', error?.message || 'Something went wrong');
     }
+  };
     
 
   return (
@@ -309,7 +284,8 @@ const EventDetail = ({ navigation, route }: Props) => {
 
                   {/* Submit */}
                  <TouchableOpacity
-                    style={styles.submitButton}
+                    style={[styles.submitButton, processing && { opacity: 0.6 }]}
+                    disabled={processing}
                     onPress={() => {
                       if (!remarks.trim()) {
                         setRemarksError('Please enter your remarks.');
@@ -319,11 +295,10 @@ const EventDetail = ({ navigation, route }: Props) => {
                       setRemarksError('');
                       setJoinModalVisible(false);
                       handleProceedToPay();
-                      //handleProceedToPayWebview();
                     }}
                   >
                     <Text style={styles.submitButtonText}>
-                      Submit
+                      {processing ? 'PROCESSING...' : 'Submit'}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -331,6 +306,74 @@ const EventDetail = ({ navigation, route }: Props) => {
             </View>
           </TouchableWithoutFeedback>
         </Modal>
+
+        {showConfirmModal && (
+          <Pressable
+            style={styles.overlay}
+            onPress={() => setShowConfirmModal(false)}
+          >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              style={styles.keyboardAvoid}
+            >
+              <Pressable
+                style={styles.confirmCard}
+                onPress={(e) => e.stopPropagation()}
+              >
+                <View style={styles.confirmHeader}>
+                  <Text style={styles.confirmTitle}>Confirm Payment</Text>
+                  <TouchableOpacity
+                    onPress={() => setShowConfirmModal(false)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Text style={styles.confirmCloseIcon}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.confirmSection}>
+                  <Text style={styles.confirmLabel}>Payment Type</Text>
+                  <Text style={styles.confirmValue}>Event Fee</Text>
+                </View>
+
+                <View style={styles.confirmSection}>
+                  <Text style={styles.confirmLabel}>Total Amount</Text>
+                  <Text style={styles.confirmTotalAmount}>
+                    {`₹${Number(event?.event_fee ?? 0).toLocaleString('en-IN', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}`}
+                  </Text>
+                </View>
+
+                <View style={styles.confirmNote}>
+                  <Text style={styles.confirmNoteTitle}>Important Note</Text>
+                  <Text style={styles.confirmNoteText}>
+                    Please ensure all details are correct before proceeding with the payment.
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.confirmPayButton, processing && { opacity: 0.6 }]}
+                  activeOpacity={0.85}
+                  onPress={handleConfirmPayment}
+                  disabled={processing}
+                >
+                  <Text style={styles.confirmPayButtonText}>
+                    {processing ? 'PROCESSING...' : 'CONFIRM AND PAY'}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.confirmCancelButton}
+                  activeOpacity={0.85}
+                  onPress={() => setShowConfirmModal(false)}
+                >
+                  <Text style={styles.confirmCancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </Pressable>
+            </KeyboardAvoidingView>
+          </Pressable>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -579,6 +622,124 @@ participatedText: {
   submitButtonText: {
     color: Colors.white,
     fontFamily: FontFamily.medium,
+    fontSize: FontSize.regular,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  keyboardAvoid: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  confirmCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    marginHorizontal: 20,
+    maxHeight: '85%',
+    width: '90%',
+    padding: 20,
+    shadowColor: '#000000',
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5,
+  },
+  confirmHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  confirmTitle: {
+    fontFamily: FontFamily.bold,
+    fontWeight: '700',
+    fontSize: FontSize.large,
+    color: Colors.textColorInpuHeader,
+  },
+  confirmCloseIcon: {
+    fontFamily: FontFamily.bold,
+    fontSize: FontSize.large,
+    color: Colors.text_light,
+    padding: 4,
+  },
+  confirmSection: {
+    marginBottom: 12,
+  },
+  confirmLabel: {
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.small,
+    color: Colors.textColorInpuHeader,
+    marginBottom: 4,
+  },
+  confirmValue: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.small,
+    color: Colors.text,
+  },
+  confirmTotalAmount: {
+    fontFamily: FontFamily.bold,
+    fontWeight: '700',
+    fontSize: FontSize.regular,
+    color: Colors.textColorInpuHeader,
+  },
+  confirmNote: {
+    backgroundColor: Colors.instruction_box,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    marginTop: 4,
+  },
+  confirmNoteTitle: {
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.small,
+    color: Colors.instruction_text,
+    marginBottom: 4,
+  },
+  confirmNoteText: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.very_small,
+    color: Colors.instruction_text,
+    lineHeight: 16,
+  },
+  confirmPayButton: {
+    height: 46,
+    backgroundColor: Colors.theme_color,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  confirmPayButtonText: {
+    color: Colors.white,
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.regular,
+  },
+  confirmCancelButton: {
+    height: 46,
+    backgroundColor: Colors.white,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.iconBackGrey,
+  },
+  confirmCancelButtonText: {
+    color: Colors.textColorInpuHeader,
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
     fontSize: FontSize.regular,
   },
 });

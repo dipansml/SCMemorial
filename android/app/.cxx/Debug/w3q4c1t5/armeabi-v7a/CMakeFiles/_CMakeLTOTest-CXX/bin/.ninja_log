@@ -1,4 +1,10 @@
 # ninja log v5
+<<<<<<< HEAD
 115	715	8094302455633720	CMakeFiles/boo.dir/main.cpp.o	bac56c4c5bea3fb8
 1	719	8094302455633720	CMakeFiles/foo.dir/foo.cpp.o	23d09dfe54976db9
 719	1055	8094302458297197	libfoo.a	c6ce125a0cc785b
+=======
+1	272	8093416971616031	CMakeFiles/foo.dir/foo.cpp.o	23d09dfe54976db9
+127	365	8093416971715673	CMakeFiles/boo.dir/main.cpp.o	bac56c4c5bea3fb8
+273	770	8093416975058428	libfoo.a	c6ce125a0cc785b
+>>>>>>> 6e4ad4ebce4da91d5a411d7c080a3c51cf7acd94

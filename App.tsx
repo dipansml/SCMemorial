@@ -32,9 +32,6 @@ import OnlineExam from './src/screens/OnlineExam';
 import ExamDetail from './src/screens/ExamDetail';
 import StartExam from './src/screens/StartExam';
 import StudentAttemptExamData from './src/Model/Exam/StudentAttemptExam';
-import MockCCAvenuePaymentScreen, {
-  MockCCAvenuePaymentRouteParams,
-} from './src/screens/Payment/MockCCAvenuePaymentScreen';
 import PaymentResultScreen, {
   PaymentResultRouteParams,
 } from './src/screens/PaymentResult/PaymentResultScreen';
@@ -74,7 +71,6 @@ export type RootStackParamList = {
   StartExam: {
     examDetail: StudentAttemptExamData;
   }
-  MockCCAvenuePayment: MockCCAvenuePaymentRouteParams;
   PaymentResult: PaymentResultRouteParams;
   CCAvenuePayment: {
     paymentUrl: string;
@@ -205,11 +201,6 @@ const App = () => {
               options={{ headerShown: false }}
             />      
             <Stack.Screen
-              name="MockCCAvenuePayment"
-              component={MockCCAvenuePaymentScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
               name="PaymentResult"
               component={PaymentResultScreen}
               options={{ headerShown: false }}
@@ -227,3 +218,5 @@ const App = () => {
 };
 
 export default App;
+
+//comment out for test

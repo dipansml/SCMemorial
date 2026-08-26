@@ -21,6 +21,7 @@ import { CommonStyles } from '../style/CommonStyles';
 import type { PaymentResult } from '../services/payment/payment.types';
 import { paymentService } from '../services/payment/PaymentService';
 import StorageManager from '../services/StorageManager';
+import type { PaymentFormData } from '../component/PayAcademicFeesModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
@@ -32,45 +33,95 @@ const EventDetail = ({ navigation, route }: Props) => {
   const [remarksError, setRemarksError] = useState('');
 
   const handleProceedToPay = async () => {
-      // Duplicate-payment protection: ignore taps while a payment is running.
-      if (processing) {
-        return;
-      }
-  
-      setProcessing(true);
-  
-      try {
-        // The UI only talks to PaymentService. Whether the underlying provider
-        // is MOCK CCAvenue or the real CCAvenue adapter is decided by
-        // PAYMENT_CONFIG.mode — this screen never changes.
-        const result: PaymentResult = await paymentService.startPayment({
-          amount: event.event_fee + ".00",
-          currency: 'INR',
-          billingName: '',
-          billingEmail: '',
-          billingPhone: '',
-          description:  event.event_name + ' Joing Fees Payment',
-          meta: remarks ? { remarks } : undefined,
-        });
-  
-        // Success, failure and cancellation all land on the result screen.
-        //navigation.replace('PaymentResult', { result });
-        console.log("PaymentDetail", result);
-        if(result.status === 'cancelled'){
-          navigation.replace('PaymentResult', { result });
-        } else{
-            
-        }
-      } catch {
-        // Duplicate-payment / unexpected errors: stay on this screen.
-        setProcessing(false);
-      }
+    if (processing) {
+      return;
+    }
+
+    setProcessing(true);
+
+    try {
+      const paymentRequest = await buildPaymentRequest();
+
+      console.log('EVENT PAYMENT REQUEST:', JSON.stringify(paymentRequest, null, 2));
+
+      const result: PaymentResult =
+        await paymentService.startPayment(paymentRequest);
+
+      console.log('EVENT PAYMENT RESULT:', result);
+
+      setProcessing(false);
+
+      navigation.navigate('PaymentResult', {
+        result,
+        parentScreen: 'EventDetail',
+        successScreen: 'EventDetail',
+        retryPaymentRequest: paymentRequest,
+      });
+    } catch (error) {
+      console.log('Event Fees Payment Error:', error);
+
+      setProcessing(false);
+    }
+  };
+
+  const buildPaymentRequest = async () => {
+      const user = await StorageManager.getUser();
+
+      const amount = Number(event.event_fee || 0).toFixed(2);
+
+      return {
+        amount,
+        currency: 'INR',
+
+        billingName: user?.name || 'Student',
+        billingEmail: user?.email || 'student@example.com',
+        billingPhone: '9876543210',
+
+        description: `Event Joining Fee Payment - ${event.event_name}`,
+
+        meta: {
+          remark: remarks || '',
+          selectedMonths: event.event_name,
+          cashAmount: amount,
+        },
+
+        directResultScreen: 'PaymentResult',
+
+        directResultParams: {
+          parentScreen: 'EventDetail',
+          successScreen: 'EventDetail',
+
+          retryPaymentRequest: {
+            amount,
+            currency: 'INR',
+
+            billingName: user?.name || 'Student',
+            billingEmail: user?.email || 'student@example.com',
+            billingPhone: '9876543210',
+
+            description: `Event Joining Fee Payment - ${event.event_name}`,
+
+            meta: {
+              remark: remarks || '',
+              selectedMonths: event.event_name,
+              cashAmount: amount,
+            },
+
+            directResultScreen: 'PaymentResult',
+
+            directResultParams: {
+              parentScreen: 'EventDetail',
+              successScreen: 'EventDetail',
+            },
+          },
+        },
+      };
     };
 
     const handleProceedToPayWebview = async () => {
       navigation.navigate('CCAvenuePayment', {
             paymentUrl: 'https://www.google.com/',
-          });
+      });
     }
     
 

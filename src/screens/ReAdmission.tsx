@@ -123,9 +123,7 @@ const ReAdmission = ({ navigation }: Props) => {
     setProcessing(true);
 
     try {
-      // The UI only talks to PaymentService. Whether the underlying provider
-      // is MOCK CCAvenue or the real CCAvenue adapter is decided by
-      // PAYMENT_CONFIG.mode — this screen never changes.
+      // The UI only talks to PaymentService.
       const result: PaymentResult = await paymentService.startPayment({
         amount: '42000.00',
         currency: 'INR',

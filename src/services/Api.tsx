@@ -1,6 +1,7 @@
 import { BookListResponse } from '../Model/AllBook/BookListData';
 import { DashboardResponse } from '../Model/Dashboard/DashboardResponse';
 import { EventResponse } from '../Model/EventList/EventResponse';
+import { FeeAmountForSelectedMonthResponse } from '../Model/FeeAmountForSelectedMonth/FeeAmountForSelectedMonthResponse';
 import { StudentExamResponse } from '../Model/ExamList/StudentExamResponse';
 import { FeeStructureResponse } from '../Model/FeesStructure/FeeStructureResponse';
 import { StudentHomeworkResponse } from '../Model/Homework/StudentHomeworkResponse';
@@ -13,6 +14,7 @@ import { StudentAttemptExamResponse } from '../Model/Exam/StudentAttemptExam'
 import { LiveExamResponse } from '../Model/ExamDataset/LiveExamData'
 import { StudentExamAnswer } from '../Model/ExamDataset/LiveExamData'
 import { GenericResponse } from '../Model/GenericResponse/GenericResponse'
+import { ViewFeeStructureResponse } from '../Model/ViewFeeStructure/ViewFeeStructureResponse';
 import { RestApi } from './RestApi';
 
 // Request
@@ -69,6 +71,11 @@ export interface ExamQuestionPayload{
 export interface SubmitExamPayload{
   data: StudentExamAnswer
 }
+export interface FeeAmountForSelectedMonthPayload {
+  user_id: string;
+  ids: number[];
+}
+
 
 // API
 export const Api = {
@@ -174,4 +181,13 @@ export const Api = {
     return response.data;
   },
   
+  getViewFeeStructure: async (payload: FeesStructurePayload): Promise<ViewFeeStructureResponse> => {
+    const response = await RestApi.post('/view-fee-structure', payload);
+    return response.data;
+  },
+
+  getFeeAmountForSelectedMonth: async (payload: FeeAmountForSelectedMonthPayload): Promise<FeeAmountForSelectedMonthResponse> => {
+    const response = await RestApi.post('/fee-amount-for-selected-month', payload);
+    return response.data;
+  },
 };

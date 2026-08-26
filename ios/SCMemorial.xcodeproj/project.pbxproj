@@ -15,6 +15,10 @@
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		CB8A6707AF8F4065A9D16FFC /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F149E697C324DB6A2989BBC /* Roboto-Bold.ttf */; };
+		CC1A000100000000000000B1 /* CCAvenueModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1A000100000000000000A1 /* CCAvenueModule.swift */; };
+		CC1A000100000000000000B2 /* CCAvenueModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A000100000000000000A2 /* CCAvenueModule.m */; };
+		CC1A000100000000000000B3 /* CCAvenueCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1A000100000000000000A3 /* CCAvenueCrypto.swift */; };
+		CC1A000100000000000000B4 /* CCAvenueCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1A000100000000000000A4 /* CCAvenueCheckoutViewController.swift */; };
 		FD90B0F6225A23A307148D11 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +35,11 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SCMemorial/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		915312BBFED9481EB2FA27BC /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../src/assets/fonts/Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		A8E87E5A91B94C6DBAF4294B /* medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = medium.ttf; path = ../src/assets/fonts/medium.ttf; sourceTree = "<group>"; };
+		CC1A000100000000000000A1 /* CCAvenueModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CCAvenueModule.swift; path = SCMemorial/CCAvenue/CCAvenueModule.swift; sourceTree = "<group>"; };
+		CC1A000100000000000000A2 /* CCAvenueModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CCAvenueModule.m; path = SCMemorial/CCAvenue/CCAvenueModule.m; sourceTree = "<group>"; };
+		CC1A000100000000000000A3 /* CCAvenueCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CCAvenueCrypto.swift; path = SCMemorial/CCAvenue/CCAvenueCrypto.swift; sourceTree = "<group>"; };
+		CC1A000100000000000000A4 /* CCAvenueCheckoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CCAvenueCheckoutViewController.swift; path = SCMemorial/CCAvenue/CCAvenueCheckoutViewController.swift; sourceTree = "<group>"; };
+		CC1A000100000000000000A5 /* CCAvenuePayment-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CCAvenuePayment-Bridging-Header.h"; path = "SCMemorial/CCAvenue/CCAvenuePayment-Bridging-Header.h"; sourceTree = "<group>"; };
 		E8BA97396EA1452188F08F31 /* semibold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = semibold.ttf; path = ../src/assets/fonts/semibold.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -52,6 +61,7 @@
 			children = (
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
+				CC1A000100000000000000C1 /* CCAvenue */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
@@ -116,6 +126,18 @@
 				5709B34CF0A7D63546082F79 /* Pods-SCMemorial.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		CC1A000100000000000000C1 /* CCAvenue */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A000100000000000000A1 /* CCAvenueModule.swift */,
+				CC1A000100000000000000A2 /* CCAvenueModule.m */,
+				CC1A000100000000000000A3 /* CCAvenueCrypto.swift */,
+				CC1A000100000000000000A4 /* CCAvenueCheckoutViewController.swift */,
+				CC1A000100000000000000A5 /* CCAvenuePayment-Bridging-Header.h */,
+			);
+			name = CCAvenue;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -271,6 +293,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
+				CC1A000100000000000000B1 /* CCAvenueModule.swift in Sources */,
+				CC1A000100000000000000B2 /* CCAvenueModule.m in Sources */,
+				CC1A000100000000000000B3 /* CCAvenueCrypto.swift in Sources */,
+				CC1A000100000000000000B4 /* CCAvenueCheckoutViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,6 +327,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SCMemorial;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "SCMemorial/CCAvenue/CCAvenuePayment-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -331,6 +358,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SCMemorial;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "SCMemorial/CCAvenue/CCAvenuePayment-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

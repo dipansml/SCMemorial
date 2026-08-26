@@ -2,8 +2,8 @@ import type { PaymentMode } from '../../config/payment';
 
 /**
  * Payment state machine exposed to the UI.
- * The UI only reacts to these states; it never cares whether the
- * underlying provider is MOCK or real CCAvenue.
+ * The UI only reacts to these states; it never cares about the
+ * underlying provider implementation.
  */
 export type PaymentState =
   | 'IDLE'
@@ -21,7 +21,24 @@ export type PaymentOutcome = 'success' | 'failed' | 'cancelled';
 
 export type PaymentVerificationOutcome = 'verified' | 'failed' | 'pending';
 
-/** Order status kept by the (mock) order service. */
+/**
+ * Payment methods supported by the payment checkout.
+ */
+export type PaymentMethod =
+  | 'credit_card'
+  | 'debit_card'
+  | 'net_banking'
+  | 'upi';
+
+/** Human-readable labels for each supported payment method. */
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  credit_card: 'Credit Card',
+  debit_card: 'Debit Card',
+  net_banking: 'Net Banking',
+  upi: 'UPI',
+};
+
+/** Order status. */
 export type OrderStatus = 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED';
 
 /** A payment initiated from the checkout/UI. */
@@ -32,6 +49,11 @@ export interface PaymentRequest {
   amount: string;
   /** ISO currency code, e.g. "INR". */
   currency: string;
+  /**
+   * Preferred payment method. Optional — if omitted the payment screen lets
+   * the user choose (credit/debit card, net banking or UPI).
+   */
+  method?: PaymentMethod;
   billingName?: string;
   billingEmail?: string;
   billingPhone?: string;
@@ -39,6 +61,14 @@ export interface PaymentRequest {
   description?: string;
   /** Free-form metadata (kept local, not sent to a server). */
   meta?: Record<string, string>;
+  /** Optional navigation target on payment success. */
+  successScreen?: string;
+  /** Optional navigation target on payment failure/cancel. */
+  failureScreen?: string;
+  /** If provided, the payment screen will directly replace itself with this screen instead of going back. */
+  directResultScreen?: string;
+  /** Params to pass to the direct result screen. */
+  directResultParams?: Record<string, unknown>;
 }
 
 /** Order record produced before payment starts. */
@@ -54,7 +84,6 @@ export interface PaymentOrder {
 
 /**
  * Normalized payment result returned to the UI.
- * Identical shape whether the payment was MOCK or real CCAvenue.
  */
 export interface PaymentResult {
   /** success | failed | cancelled */
@@ -64,16 +93,18 @@ export interface PaymentResult {
   transactionId?: string;
   amount: string;
   currency: string;
+  /** Payment method the user actually paid with, if known. */
+  method?: PaymentMethod;
   message: string;
   provider: string;
   mode: PaymentMode;
-  /** Verification outcome once the (mock) backend check runs. */
+  /** Verification outcome once the backend check runs. */
   verificationStatus?: PaymentVerificationOutcome;
   /** ISO timestamp of completion. */
   paidAt?: string;
 }
 
-/** Result of verifying a payment against the (mock) backend. */
+/** Result of verifying a payment against the backend. */
 export interface PaymentVerificationResult {
   status: PaymentVerificationOutcome;
   orderId: string;

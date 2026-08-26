@@ -1,9 +1,5 @@
-import { PAYMENT_CONFIG } from '../../config/payment';
 import type { PaymentProvider } from './PaymentProvider';
-import { mockCCAvenueProvider } from './MockCCAvenueProvider';
-import { realCCAvenueProvider } from './RealCCAvenueProvider';
 import { paymentStateStore } from './PaymentStateStore';
-import { MockOrderService } from './MockOrderService';
 import {
   PaymentError,
   toPaymentError,
@@ -18,27 +14,19 @@ import type {
 
 /**
  * PaymentService — the ONLY payment entry point used by the UI.
- *
- * CheckoutScreen → PaymentService → PaymentProvider (MOCK or CCAVENUE).
- *
- * The UI never knows whether the underlying provider is the MockCCAvenue
- * adapter or the real CCAvenue adapter. Swapping providers is a one-line
- * configuration change (PAYMENT_CONFIG.mode) with zero UI changes.
  */
 class PaymentService {
-  private provider: PaymentProvider;
+  private provider: PaymentProvider | null = null;
   private processing = false;
   private lastOrder: PaymentOrder | null = null;
 
-  constructor() {
-    this.provider =
-      PAYMENT_CONFIG.mode === 'CCAVENUE'
-        ? realCCAvenueProvider
-        : mockCCAvenueProvider;
+  /** Register a payment provider at runtime. */
+  setProvider(provider: PaymentProvider): void {
+    this.provider = provider;
   }
 
   /** Currently active provider (useful for diagnostics only). */
-  getActiveProvider(): PaymentProvider {
+  getActiveProvider(): PaymentProvider | null {
     return this.provider;
   }
 
@@ -72,6 +60,14 @@ class PaymentService {
       });
     }
 
+    if (!this.provider) {
+      throw new PaymentError({
+        code: 'PROVIDER_NOT_CONFIGURED',
+        message: 'No payment provider is configured',
+        userMessage: 'Online payment is not available right now. Please try again later.',
+      });
+    }
+
     this.processing = true;
     this.lastOrder = null;
 
@@ -92,8 +88,6 @@ class PaymentService {
       try {
         result = await this.provider.startPayment(paymentRequest);
       } catch (error) {
-        // Network / timeout / interruption land the user on a FAILED result
-        // so they can retry — never leak internal details.
         const paymentError = toPaymentError(error);
         result = {
           status: 'failed',
@@ -112,17 +106,15 @@ class PaymentService {
       // 3. Non-terminal outcome bookkeeping.
       if (result.status === 'cancelled') {
         this.setState('PAYMENT_CANCELLED');
-        await MockOrderService.updateOrderStatus(order.orderId, 'CANCELLED');
         return result;
       }
 
       if (result.status === 'failed') {
         this.setState('PAYMENT_FAILED');
-        await MockOrderService.updateOrderStatus(order.orderId, 'FAILED');
         return result;
       }
 
-      // 4. Verify a successful payment against the (mock) backend.
+      // 4. Verify a successful payment.
       this.setState('PAYMENT_VERIFICATION_PENDING');
       let verification: PaymentVerificationResult;
       try {
@@ -148,13 +140,11 @@ class PaymentService {
           verificationStatus: 'failed',
           message: 'Payment could not be verified. Please try again.',
         };
-        await MockOrderService.updateOrderStatus(order.orderId, 'FAILED');
         return result;
       }
 
       this.setState('PAYMENT_VERIFIED');
       result = { ...result, verificationStatus: 'verified' };
-      await MockOrderService.updateOrderStatus(order.orderId, 'PAID');
       this.setState('PAYMENT_SUCCESS');
       return result;
     } finally {
@@ -162,9 +152,11 @@ class PaymentService {
     }
   }
 
-  /** Cancel the in-flight payment session (mock screen cancel/back). */
+  /** Cancel the in-flight payment session. */
   async cancelPayment(): Promise<void> {
-    await this.provider.cancelPayment();
+    if (this.provider) {
+      await this.provider.cancelPayment();
+    }
   }
 
   /** Reset the state store (e.g. when the user leaves the payment flow). */

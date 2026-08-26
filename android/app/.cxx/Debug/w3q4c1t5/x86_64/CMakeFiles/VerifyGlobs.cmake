@@ -189,6 +189,8 @@ endif()
 # LIB_CUSTOM_SRCS at D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt:23 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/*.cpp")
 set(OLD_GLOB
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSFormSheetHostShadowNode.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSFormSheetHostState.cpp"
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSFullWindowOverlayShadowNode.cpp"
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSModalScreenShadowNode.cpp"
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSSafeAreaViewShadowNode.cpp"
@@ -200,7 +202,15 @@ set(OLD_GLOB
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderSubviewShadowNode.cpp"
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderSubviewState.cpp"
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSScreenState.cpp"
-  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSSplitViewScreenShadowNode.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSSplitScreenShadowNode.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSStackHeaderConfigShadowNode.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSStackHeaderConfigState.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSStackHeaderItemShadowNode.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSStackHeaderItemState.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSStackHeaderSubviewShadowNode.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSStackHeaderSubviewState.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSStackScreenShadowNode.cpp"
+  "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSStackScreenState.cpp"
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSTabsBottomAccessoryShadowNode.cpp"
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSTabsHostShadowNode.cpp"
   "D:/Dipan/ReactNativeProject/SCM/SCMemorial/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnscreens/RNSTabsHostState.cpp"

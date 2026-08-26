@@ -21,10 +21,10 @@ class CCAvenueModule(reactContext: ReactApplicationContext) :
         private const val ACCESS_CODE = "AVCO86GH94AD42OCDA"
         private const val WORKING_KEY = "80EE0DCADBEE34DC409A6F550B92630E"
         private const val CHECKOUT_URL = "https://secure.ccavenue.com/transaction/transaction.do"
-        private const val CCAVENUE_REDIRECT_URL =
-            "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
-        private const val CCAVENUE_CANCEL_URL =
-            "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
+        // private const val CCAVENUE_REDIRECT_URL =
+        //     "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
+        // private const val CCAVENUE_CANCEL_URL =
+        //     "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
     }
 
     private var pendingPromise: Promise? = null
@@ -58,8 +58,8 @@ class CCAvenueModule(reactContext: ReactApplicationContext) :
             "finalPayAmt" to amount,
             "first_name" to customerName,
             "form_no" to formNo,
-            "redirect_url" to CCAVENUE_REDIRECT_URL,
-            "cancel_url" to CCAVENUE_CANCEL_URL,
+            // "redirect_url" to CCAVENUE_REDIRECT_URL,
+            // "cancel_url" to CCAVENUE_CANCEL_URL,
             "currency" to "INR",
             "language" to "EN",
             "amount" to String.format("%.2f", amount.toDoubleOrNull() ?: 0.0),

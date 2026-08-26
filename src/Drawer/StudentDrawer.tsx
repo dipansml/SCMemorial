@@ -42,12 +42,12 @@ const menuItems: MenuItem[] = [
     route: 'Attendance',
     icon: require('../assets/images/icons/attendance.png'),
   },
-  {
-    key: 'Fees',
-    label: 'Fees Overview',
-    route: 'Fees',
-    icon: require('../assets/images/icons/fees_overview.png'),
-  },
+  // {
+  //   key: 'Fees',
+  //   label: 'Fees Overview',
+  //   route: 'Fees',
+  //   icon: require('../assets/images/icons/fees_overview.png'),
+  // },
   {
     key: 'PaymentHistory',
     label: 'Payment History',
@@ -60,18 +60,18 @@ const menuItems: MenuItem[] = [
     route: 'Events',
     icon: require('../assets/images/icons/events.png'),
   },
-  {
-    key: 'notice',
-    label: 'Notices & Announcements',
-    route: 'Notice',
-    icon: require('../assets/images/icons/notice.png'),
-  },
-  {
-    key: 'homework',
-    label: 'Homework & Updates',
-    route: 'Homework',
-    icon: require('../assets/images/icons/homework.png'),
-  },
+  // {
+  //   key: 'notice',
+  //   label: 'Notices & Announcements',
+  //   route: 'Notice',
+  //   icon: require('../assets/images/icons/notice.png'),
+  // },
+  // {
+  //   key: 'homework',
+  //   label: 'Homework & Updates',
+  //   route: 'Homework',
+  //   icon: require('../assets/images/icons/homework.png'),
+  // },
   {
     key: 'Library',
     label: 'Library',

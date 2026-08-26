@@ -16,7 +16,7 @@ type LandingStudentList = {
   DashboardStudent: undefined;
   Academics: undefined;
   Fees: undefined;
-  Settings: undefined;
+  //Settings: undefined;
 };
 
 const Tab = createBottomTabNavigator<LandingStudentList>();
@@ -46,9 +46,10 @@ const LandingStudent = () => {
             icon = require('../assets/images/icons/academic.png');
           } else if (route.name === 'Fees') {
             icon = require('../assets/images/icons/fees.png');
-          } else if (route.name === 'Settings') {
-            icon = require('../assets/images/icons/settings.png');
           }
+          //  else if (route.name === 'Settings') {
+          //   icon = require('../assets/images/icons/settings.png');
+          // }
           return (
             <Image
               source={icon}
@@ -79,7 +80,7 @@ const LandingStudent = () => {
       <Tab.Screen name="Academics" component={Academics} />
       {/* <Tab.Screen name="Messages" component={Messages} /> */}
       <Tab.Screen name="Fees" component={Fees} />
-      <Tab.Screen name="Settings" component={Settings}/>
+      {/* <Tab.Screen name="Settings" component={Settings}/> */}
     </Tab.Navigator>
   );
 };

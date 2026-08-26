@@ -318,8 +318,8 @@ const EventDetail = ({ navigation, route }: Props) => {
 
                       setRemarksError('');
                       setJoinModalVisible(false);
-                      handleProceedToPay();
-                      //handleProceedToPayWebview();
+                      //handleProceedToPay();
+                      handleProceedToPayWebview();
                     }}
                   >
                     <Text style={styles.submitButtonText}>

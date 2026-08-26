@@ -15,6 +15,7 @@ import { LiveExamResponse } from '../Model/ExamDataset/LiveExamData'
 import { StudentExamAnswer } from '../Model/ExamDataset/LiveExamData'
 import { GenericResponse } from '../Model/GenericResponse/GenericResponse'
 import { ViewFeeStructureResponse } from '../Model/ViewFeeStructure/ViewFeeStructureResponse';
+import { ReAdmissionApiResponse } from '../Model/ReAdmission/ReAdmissionResponse';
 import { RestApi } from './RestApi';
 
 // Request
@@ -74,6 +75,10 @@ export interface SubmitExamPayload{
 export interface FeeAmountForSelectedMonthPayload {
   user_id: string;
   ids: number[];
+}
+
+export interface ReAdmissionPayload {
+  user_id: string;
 }
 
 
@@ -188,6 +193,11 @@ export const Api = {
 
   getFeeAmountForSelectedMonth: async (payload: FeeAmountForSelectedMonthPayload): Promise<FeeAmountForSelectedMonthResponse> => {
     const response = await RestApi.post('/fee-amount-for-selected-month', payload);
+    return response.data;
+  },
+
+  getReAdmissionFee: async (payload: ReAdmissionPayload): Promise<ReAdmissionApiResponse> => {
+    const response = await RestApi.post('/collect-re-admission-fee-api', payload);
     return response.data;
   },
 };

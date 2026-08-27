@@ -10,10 +10,17 @@ class CCAvenueModule: NSObject {
     private static let workingKey = "80EE0DCADBEE34DC409A6F550B92630E"
     private static let checkoutUrl = "https://secure.ccavenue.com/transaction/transaction.do"
 
+<<<<<<< HEAD
     private static let ccavenueRedirectUrl =
         "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
     private static let ccavenueCancelUrl =
         "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
+=======
+    // private static let ccavenueRedirectUrl =
+    //     "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
+    // private static let ccavenueCancelUrl =
+    //     "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
+>>>>>>> origin/nilanjan
 
     private var pendingResolve: RCTPromiseResolveBlock?
     private var pendingReject: RCTPromiseRejectBlock?
@@ -39,8 +46,13 @@ class CCAvenueModule: NSObject {
             ("finalPayAmt", amount),
             ("first_name", customerName),
             ("form_no", formNo),
+<<<<<<< HEAD
             ("redirect_url", ccavenueRedirectUrl),
             ("cancel_url", ccavenueCancelUrl),
+=======
+            // ("redirect_url", ccavenueRedirectUrl),
+            // ("cancel_url", ccavenueCancelUrl),
+>>>>>>> origin/nilanjan
             ("currency", "INR"),
             ("language", "EN"),
             ("amount", String(format: "%.2f", Double(amount) ?? 0.0)),

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,13 +7,24 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import AppHeader from '../component/AppHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../theme/colors';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
-import { paymentService } from '../services/payment/PaymentService';
-import type { PaymentResult } from '../services/payment/payment.types';
+import { CCAvenueService } from '../services/ccavenue/CCAvenueService';
+import type { CCAvenuePaymentResponse } from '../services/ccavenue/CCAvenueTypes';
+import { generateOrderId } from '../utils/orderId';
+import { Api } from '../services/Api';
+import StorageManager from '../services/StorageManager';
+import type { ReAdmissionFormDetails } from '../Model/ReAdmission/ReAdmissionFormDetails';
+import type { ReAdmissionStationaryApiItem } from '../Model/ReAdmission/ReAdmissionStationaryApiItem';
+import type { ReAdmissionStoppage } from '../Model/ReAdmission/ReAdmissionStoppage';
 
 type Props = {
   navigation: any;
@@ -44,103 +55,258 @@ type FeeCategory = {
   totalValue: string;
 };
 
-const ADMISSION_DETAILS: FeeDetailRow[] = [
-  { no: '01', route: 'ADMISSION FEE (ONE TIME) NEW STUDENT', fee: '0' },
-  { no: '02', route: 'DEVELOPMENT FEE (YEARLY)', fee: '12500' },
-  { no: '03', route: 'EXAM FEE (YEARLY)', fee: '2500' },
-  { no: '04', route: 'FESTIVAL CELEBRATION FEE (YEARLY)', fee: '0' },
-  { no: '05', route: 'GAMES SPORTS FEE (YEARLY)', fee: '0' },
-  { no: '06', route: 'AUDIO VISUAL LAB FEE (YEARLY)', fee: '0' },
-  { no: '07', route: 'LIBRARY FEE (YEARLY)', fee: '0' },
-  { no: '08', route: 'ELECTRICITY MAINTENANCE FEE (YEARLY)', fee: '0' },
-  { no: '09', route: 'COMPUTER FEE (YEARLY)', fee: '0' },
-  { no: '10', route: 'SECURITY DEPOSIT (REFUNDABLE) NEW STUDENT', fee: '0' },
-  { no: '11', route: 'TUITION FEE (MONTHLY)', fee: '2000' },
+const parseFee = (value: string | undefined | null): number => {
+  const num = Number(value);
+  return isNaN(num) ? 0 : num;
+};
+
+const formatCurrency = (amount: number): string => {
+  return amount.toLocaleString('en-IN');
+};
+
+const buildAdmissionDetails = (fd: ReAdmissionFormDetails): FeeDetailRow[] => [
+  { no: '01', route: 'ADMISSION FEE (ONE TIME) NEW STUDENT', fee: fd.admission_fee || '0' },
+  { no: '02', route: 'DEVELOPMENT FEE (YEARLY)', fee: fd.development_fee || '0' },
+  { no: '03', route: 'EXAM FEE (YEARLY)', fee: fd.exam_fee || '0' },
+  { no: '04', route: 'FESTIVAL CELEBRATION FEE (YEARLY)', fee: fd.festival_celebration_fee || '0' },
+  { no: '05', route: 'GAMES SPORTS FEE (YEARLY)', fee: fd.games_sports_fee || '0' },
+  { no: '06', route: 'AUDIO VISUAL LAB FEE (YEARLY)', fee: fd.audio_visual_lab_fee || '0' },
+  { no: '07', route: 'LIBRARY FEE (YEARLY)', fee: fd.library_fee || '0' },
+  { no: '08', route: 'ELECTRICITY MAINTENANCE FEE (YEARLY)', fee: fd.electricity_maintenance_fee || '0' },
+  { no: '09', route: 'COMPUTER FEE (YEARLY)', fee: fd.computer_fee || '0' },
+  { no: '10', route: 'SECURITY DEPOSIT (REFUNDABLE) NEW STUDENT', fee: fd.security_deposite || '0' },
+  { no: '11', route: 'TUITION FEE (MONTHLY)', fee: fd.tuition_fee || '0' },
 ];
 
-const STATIONARY_ITEMS: StationaryItem[] = [
-  { no: '01', name: 'SCHOOL DIARY', price: '35', qty: '3', total: '525' },
-  { no: '02', name: 'ID CARD', price: '35', qty: '3', total: '525' },
-  { no: '03', name: 'BENGALI SMALL COPY', price: '35', qty: '3', total: '525' },
-  { no: '04', name: 'MATH SMALL COPY', price: '35', qty: '3', total: '525' },
-  { no: '05', name: 'DRAWING COPY', price: '35', qty: '3', total: '525' },
-  { no: '06', name: 'SCIENCE SMALL COPY', price: '35', qty: '3', total: '525' },
-  { no: '07', name: 'BOOK COVER', price: '35', qty: '3', total: '525' },
-];
+const calculateAdmissionTotal = (fd: ReAdmissionFormDetails): number => {
+  return (
+    parseFee(fd.admission_fee) +
+    parseFee(fd.development_fee) +
+    parseFee(fd.exam_fee) +
+    parseFee(fd.festival_celebration_fee) +
+    parseFee(fd.games_sports_fee) +
+    parseFee(fd.audio_visual_lab_fee) +
+    parseFee(fd.library_fee) +
+    parseFee(fd.electricity_maintenance_fee) +
+    parseFee(fd.computer_fee) +
+    parseFee(fd.security_deposite) +
+    parseFee(fd.tuition_fee)
+  );
+};
 
-const BUS_DETAILS: FeeDetailRow[] = [
-  { no: '01', route: 'SALT LAKE TO HOWRHA', fee: '40000' },
-];
+const buildBusDetails = (
+  fd: ReAdmissionFormDetails,
+  sectionList: ReAdmissionStoppage[],
+): { details: FeeDetailRow[]; fare: number } => {
+  if (!fd || !fd.stoppage_name) {
+    return {
+      details: [{ no: '01', route: 'NO BUS SERVICE', fee: '0' }],
+      fare: 0,
+    };
+  }
 
-const feeCategories: FeeCategory[] = [
-  {
-    id: 'admission',
-    name: 'Admission Fee',
-    totalFees: '₹17000',
-    type: 'admission',
-    details: ADMISSION_DETAILS,
-    totalLabel: 'TOTAL FEE:',
-    totalValue: '₹ 17000',
-  },
-  {
-    id: 'stationary',
-    name: 'Stationary Fee',
-    totalFees: '₹1428',
-    type: 'stationary',
-    details: [],
-    items: STATIONARY_ITEMS,
-    totalLabel: 'STATIONARY TOTAL FEE :',
-    totalValue: '₹ 1428',
-  },
-  {
-    id: 'busServices',
-    name: 'Bus Services Fee',
-    totalFees: '₹7000',
-    type: 'bus',
-    details: BUS_DETAILS,
-    totalLabel: 'TOTAL FEE :',
-    totalValue: '₹ 40000',
-  },
-];
+  const selectedSection = sectionList?.find(
+    item => String(item?.stoppage_id) === String(fd.stoppage),
+  );
+
+  return {
+    details: [{
+      no: '01',
+      route: String(fd.stoppage_name),
+      fee: String(selectedSection?.stoppage_fare ?? '0'),
+    }],
+    fare: parseFee(selectedSection?.stoppage_fare),
+  };
+};
+
+const buildStationaryItems = (
+  apiItems: ReAdmissionStationaryApiItem[] | undefined | null,
+): StationaryItem[] => {
+  return (apiItems ?? []).map((item, index) => ({
+    no: String(index + 1).padStart(2, '0'),
+    name: item?.item_name ?? '',
+    price: String(item?.price ?? '0'),
+    qty: String(item?.qty ?? '0'),
+    total: String(
+      Number(item?.price ?? 0) * Number(item?.qty ?? 0),
+    ),
+  }));
+};
 
 const ReAdmission = ({ navigation }: Props) => {
-  const [expandedCategory, setExpandedCategory] = useState<
-    string | null
-  >(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [remark, setRemark] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [feeCategories, setFeeCategories] = useState<FeeCategory[]>([]);
+  const [summaryTotal, setSummaryTotal] = useState('0');
+  const [paymentAmount, setPaymentAmount] = useState('0');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [studentName, setStudentName] = useState('');
+  const [studentCode, setStudentCode] = useState('');
+  const [formNo, setFormNo] = useState('');
+
+  useEffect(() => {
+    fetchReAdmissionFee();
+  }, []);
+
+  const fetchReAdmissionFee = async () => {
+    try {
+      setLoading(true);
+      const userId = await StorageManager.getStudentId();
+      const response = await Api.getReAdmissionFee({ user_id: userId });
+
+      console.log(
+        'ReAdmission API Response:',
+        JSON.stringify(response, null, 2),
+      );
+
+      if (response && response.status === 200 && response.data?.form_details) {
+        const fd = response.data.form_details;
+        const stationaryTotal = parseFee(response.data.stationary_total_price);
+        const admissionTotal = calculateAdmissionTotal(fd);
+        const busResult = buildBusDetails(fd, response.data.section_list || []);
+        const busTotal = busResult.fare;
+        const total = admissionTotal + stationaryTotal + busTotal;
+
+        console.log(
+          'ReAdmission Form Details:',
+          JSON.stringify(fd, null, 2),
+        );
+
+        const categories: FeeCategory[] = [
+          {
+            id: 'admission',
+            name: 'Admission Fee',
+            totalFees: `\u20B9${formatCurrency(admissionTotal)}`,
+            type: 'admission',
+            details: buildAdmissionDetails(fd),
+            totalLabel: 'TOTAL FEE:',
+            totalValue: `\u20B9 ${formatCurrency(admissionTotal)}`,
+          },
+          {
+            id: 'stationary',
+            name: 'Stationary Fee',
+            totalFees: `\u20B9${formatCurrency(stationaryTotal)}`,
+            type: 'stationary',
+            details: [],
+            items: buildStationaryItems(response.data.stationary_item_list),
+            totalLabel: 'STATIONARY TOTAL FEE :',
+            totalValue: `\u20B9 ${formatCurrency(stationaryTotal)}`,
+          },
+          {
+            id: 'busServices',
+            name: 'Bus Services Fee',
+            totalFees: `\u20B9${formatCurrency(busTotal)}`,
+            type: 'bus',
+            details: busResult.details,
+            totalLabel: 'TOTAL FEE :',
+            totalValue: `\u20B9 ${formatCurrency(busTotal)}`,
+          },
+        ];
+
+        setFeeCategories(categories);
+        setSummaryTotal(formatCurrency(total));
+        setPaymentAmount(String(total));
+
+        if (fd.first_name) {
+          setStudentName(fd.first_name);
+        }
+        if (fd.student_id) {
+          setStudentCode(String(fd.student_id));
+        }
+        if (fd.form_no) {
+          setFormNo(String(fd.form_no));
+        }
+      } else {
+        Alert.alert('Error', response?.message || 'Failed to load fee details');
+      }
+    } catch (error: any) {
+      console.log(
+        'ReAdmission API Error:',
+        error?.response?.data || error?.message || error,
+      );
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message || 'Something went wrong',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleAccordion = (id: string) => {
     setExpandedCategory(prev => (prev === id ? null : id));
   };
 
-  const handleProceedToPay = async () => {
-    // Duplicate-payment protection: ignore taps while a payment is running.
+  const handleProceedToPay = () => {
+    if (processing) {
+      return;
+    }
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmPayment = async () => {
     if (processing) {
       return;
     }
 
+    setShowConfirmModal(false);
     setProcessing(true);
 
     try {
-      // The UI only talks to PaymentService.
-      const result: PaymentResult = await paymentService.startPayment({
-        amount: '42000.00',
+      const orderId = generateOrderId();
+      const amount = Number(paymentAmount).toFixed(2);
+
+      const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
+        orderId,
+        amount,
         currency: 'INR',
-        billingName: 'Student Name',
-        billingEmail: 'student@gmail.com',
-        billingPhone: '9876543210',
-        description: 'Re-Admission Fee Payment',
-        meta: remark ? { remark } : undefined,
+        customerName: studentName || 'Student',
+        studentCode: studentCode || undefined,
+        formNo: formNo || undefined,
+        merchantParam1: remark || undefined,
       });
 
-      // Success, failure and cancellation all land on the result screen.
-      navigation.replace('PaymentResult', { result });
-    } catch {
-      // Duplicate-payment / unexpected errors: stay on this screen.
       setProcessing(false);
+
+      if (response.orderStatus === 'Success') {
+        Alert.alert(
+          'Payment Successful',
+          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: \u20B9${response.amount}`,
+          [{ text: 'OK', onPress: () => navigation.goBack() }],
+        );
+      } else if (response.orderStatus === 'Aborted') {
+        Alert.alert('Payment Cancelled', 'You cancelled the payment.');
+      } else {
+        Alert.alert(
+          'Payment Failed',
+          `Status: ${response.orderStatus}\n${response.failureMessage || response.statusMessage || 'Unknown error'}`,
+        );
+      }
+    } catch (error: any) {
+      setProcessing(false);
+      Alert.alert('Payment Error', error?.message || 'Something went wrong');
     }
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <AppHeader
+          title="Re Admission"
+          showBack={true}
+          onMenuPress={() => navigation.goBack()}
+          onBellPress={() => console.log('Bell')}
+          onProfilePress={() => console.log('Profile')}
+          navigation={navigation}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.theme_color} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -161,7 +327,7 @@ const ReAdmission = ({ navigation }: Props) => {
         {/* Total Re-Admission Fee */}
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>TOTAL RE-ADMISSION FEE :</Text>
-          <Text style={styles.summaryAmount}>42,000.00</Text>
+          <Text style={styles.summaryAmount}>{summaryTotal}</Text>
         </View>
 
         {/* Fee Categories */}
@@ -232,11 +398,76 @@ const ReAdmission = ({ navigation }: Props) => {
             disabled={processing}
           >
             <Text style={styles.proceedButtonText}>
-              {processing ? 'PLEASE WAIT…' : 'PROCEED TO PAY'}
+              {processing ? 'PLEASE WAIT\u2026' : 'PROCEED TO PAY'}
             </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {showConfirmModal && (
+        <Pressable
+          style={styles.overlay}
+          onPress={() => setShowConfirmModal(false)}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            style={styles.keyboardAvoid}
+          >
+            <Pressable
+              style={styles.confirmCard}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <View style={styles.confirmHeader}>
+                <Text style={styles.confirmTitle}>Confirm Payment</Text>
+                <TouchableOpacity
+                  onPress={() => setShowConfirmModal(false)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Text style={styles.confirmCloseIcon}>✕</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.confirmSection}>
+                <Text style={styles.confirmLabel}>Payment Type</Text>
+                <Text style={styles.confirmValue}>Re-Admission Fee</Text>
+              </View>
+
+              <View style={styles.confirmSection}>
+                <Text style={styles.confirmLabel}>Total Amount</Text>
+                <Text style={styles.confirmTotalAmount}>
+                  {`₹${Number(paymentAmount).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`}
+                </Text>
+              </View>
+
+              <View style={styles.confirmNote}>
+                <Text style={styles.confirmNoteTitle}>Important Note</Text>
+                <Text style={styles.confirmNoteText}>
+                  Please ensure all details are correct before proceeding with the payment.
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.confirmPayButton}
+                activeOpacity={0.85}
+                onPress={handleConfirmPayment}
+              >
+                <Text style={styles.confirmPayButtonText}>CONFIRM AND PAY</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.confirmCancelButton}
+                activeOpacity={0.85}
+                onPress={() => setShowConfirmModal(false)}
+              >
+                <Text style={styles.confirmCancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </Pressable>
+          </KeyboardAvoidingView>
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 };
@@ -349,6 +580,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,
@@ -588,6 +824,124 @@ const styles = StyleSheet.create({
   },
   proceedButtonText: {
     color: Colors.white,
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.regular,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  keyboardAvoid: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  confirmCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    marginHorizontal: 20,
+    maxHeight: '85%',
+    width: '90%',
+    padding: 20,
+    shadowColor: '#000000',
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5,
+  },
+  confirmHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  confirmTitle: {
+    fontFamily: FontFamily.bold,
+    fontWeight: '700',
+    fontSize: FontSize.large,
+    color: Colors.textColorInpuHeader,
+  },
+  confirmCloseIcon: {
+    fontFamily: FontFamily.bold,
+    fontSize: FontSize.large,
+    color: Colors.text_light,
+    padding: 4,
+  },
+  confirmSection: {
+    marginBottom: 12,
+  },
+  confirmLabel: {
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.small,
+    color: Colors.textColorInpuHeader,
+    marginBottom: 4,
+  },
+  confirmValue: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.small,
+    color: Colors.text,
+  },
+  confirmTotalAmount: {
+    fontFamily: FontFamily.bold,
+    fontWeight: '700',
+    fontSize: FontSize.regular,
+    color: Colors.textColorInpuHeader,
+  },
+  confirmNote: {
+    backgroundColor: Colors.instruction_box,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    marginTop: 4,
+  },
+  confirmNoteTitle: {
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.small,
+    color: Colors.instruction_text,
+    marginBottom: 4,
+  },
+  confirmNoteText: {
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.very_small,
+    color: Colors.instruction_text,
+    lineHeight: 16,
+  },
+  confirmPayButton: {
+    height: 46,
+    backgroundColor: Colors.theme_color,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  confirmPayButtonText: {
+    color: Colors.white,
+    fontFamily: FontFamily.semiBold,
+    fontWeight: '600',
+    fontSize: FontSize.regular,
+  },
+  confirmCancelButton: {
+    height: 46,
+    backgroundColor: Colors.white,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.iconBackGrey,
+  },
+  confirmCancelButtonText: {
+    color: Colors.textColorInpuHeader,
     fontFamily: FontFamily.semiBold,
     fontWeight: '600',
     fontSize: FontSize.regular,

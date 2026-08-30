@@ -16,6 +16,8 @@ import { StudentExamAnswer } from '../Model/ExamDataset/LiveExamData'
 import { GenericResponse } from '../Model/GenericResponse/GenericResponse'
 import { ViewFeeStructureResponse } from '../Model/ViewFeeStructure/ViewFeeStructureResponse';
 import { ReAdmissionApiResponse } from '../Model/ReAdmission/ReAdmissionResponse';
+import { ForgotPasswordResponse } from '../Model/ForgetPassword/ForgotPasswordResponse';
+import { VerifyCodeResponse } from '../Model/ForgetPassword/VerifyCode'
 import { RestApi } from './RestApi';
 
 // Request
@@ -210,12 +212,13 @@ export const Api = {
     return response.data;
   },
 
-  forgetPasswordSendCode: async (payload: ForgetPasswordPayload) => {
+  forgetPasswordSendCode: async (payload: ForgetPasswordPayload) : Promise<ForgotPasswordResponse> => {
     const response = await RestApi.post('/forget-pwd-send-code', payload);
     return response.data;
   },
 
-  validateVerificationCode: async (payload: VerifyCodePayload) => {
+
+  validateVerificationCode: async (payload: VerifyCodePayload): Promise<VerifyCodeResponse> => {
     const response = await RestApi.post('/validate-verification-code', payload);
     return response.data;
   },

@@ -1,4 +1,6 @@
 import { AttendanceItem } from './AttendanceItem';
+import { ExtraClassItem } from './ExtraClassItem'
+
 
 export interface AttendanceData {
   name: string;
@@ -8,7 +10,9 @@ export interface AttendanceData {
   present: number;
   absent: number;
   holiday: number;
+  halfday: number;
   gender: string;
   attendance_percentage: number;
   AttendanceItem: AttendanceItem[];
+  ExtraClass: ExtraClassItem[];
 }

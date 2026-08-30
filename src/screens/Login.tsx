@@ -27,6 +27,11 @@ const { width } = Dimensions.get('window');
 type RootStackParamList = {
   StudentSelection: undefined;
   LandingStudent: undefined;
+  ForgotPassword: undefined;
+  ResetPassword: {
+    email: string;
+    userId: string;
+  };
 };
 
 type LoginProps = {
@@ -61,7 +66,7 @@ const Login = ({ navigation }: LoginProps) => {
   };
 
   const forgotPassClick = () => {
-    console.log('Forgot pass click');
+    navigation.navigate('ForgotPassword');
   };
 
   const callLoginApi = async () => {

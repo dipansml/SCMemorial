@@ -8,6 +8,8 @@ import { navigationRef } from './src/navigation/navigationRef';
 
 import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/Login';
+import ForgotPassword from './src/screens/ForgotPassword'
+import ResetPassword from './src/screens/ResetPassword';
 //import DashboardParents from './src/screens/DashboardParents';
 import StudentSelection from './src/screens/StudentSelection';
 import Attendance from './src/screens/Attendance';
@@ -42,6 +44,11 @@ enableScreens();
 export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
+  ForgotPassword: undefined;
+  ResetPassword: {
+    email: string;
+    userId: string;
+  };
   LandingParents: undefined;
   StudentSelection: undefined;
   ParentDrawer: undefined;
@@ -87,6 +94,8 @@ const App = () => {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+            <Stack.Screen name="ResetPassword" component={ResetPassword} />
             <Stack.Screen
               name="LandingParents"
               component={LandingParents}

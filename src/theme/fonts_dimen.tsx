@@ -36,6 +36,7 @@ export const FontFamily = {
 export const container ={
   container_padding: 16,
   attendance_stat: 50,
+  attendance_statNew: 40,
 };
 
 export const card ={

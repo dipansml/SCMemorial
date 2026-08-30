@@ -81,6 +81,15 @@ export interface ReAdmissionPayload {
   user_id: string;
 }
 
+export interface ForgetPasswordPayload {
+  email: string;
+}
+
+export interface VerifyCodePayload{
+  email: string;
+  verification_code: string
+}
+
 
 // API
 export const Api = {
@@ -198,6 +207,16 @@ export const Api = {
 
   getReAdmissionFee: async (payload: ReAdmissionPayload): Promise<ReAdmissionApiResponse> => {
     const response = await RestApi.post('/collect-re-admission-fee-api', payload);
+    return response.data;
+  },
+
+  forgetPasswordSendCode: async (payload: ForgetPasswordPayload) => {
+    const response = await RestApi.post('/forget-pwd-send-code', payload);
+    return response.data;
+  },
+
+  validateVerificationCode: async (payload: VerifyCodePayload) => {
+    const response = await RestApi.post('/validate-verification-code', payload);
     return response.data;
   },
 };

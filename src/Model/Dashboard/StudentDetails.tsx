@@ -18,4 +18,5 @@ export interface StudentDetails {
   mother_mobile: string;
   email: string;
   bus_no: string;
+  aadhaar_no: string;
 }

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { Api } from '../services/Api';
+import StorageManager from '../services/StorageManager';
 import AppHeader from '../component/AppHeader';
 import PaymentOptionCard from '../component/PaymentOptionCard';
 import { openParentDrawer } from '../navigation/navigationRef';
@@ -41,10 +43,66 @@ const PAYMENT_OPTIONS: PaymentOption[] = [
   },
 ];
 
+const parseFee = (value: string | undefined | null): number => {
+  const num = Number(value);
+  return isNaN(num) ? 0 : num;
+};
+
+const calculateReAdmissionTotal = (apiData: any): number => {
+  const fd = apiData?.form_details;
+  if (!fd) {
+    return 0;
+  }
+  const admissionTotal =
+    parseFee(fd.admission_fee) +
+    parseFee(fd.development_fee) +
+    parseFee(fd.exam_fee) +
+    parseFee(fd.festival_celebration_fee) +
+    parseFee(fd.games_sports_fee) +
+    parseFee(fd.audio_visual_lab_fee) +
+    parseFee(fd.library_fee) +
+    parseFee(fd.electricity_maintenance_fee) +
+    parseFee(fd.computer_fee) +
+    parseFee(fd.security_deposite) +
+    parseFee(fd.tuition_fee);
+  const stationaryTotal = parseFee(apiData?.stationary_total_price);
+  const busTotal = parseFee(fd.bus_services);
+  return admissionTotal + stationaryTotal + busTotal;
+};
+
 const Fees = ({ navigation }: FeesProps) => {
   const [selectedKey, setSelectedKey] = useState(
     PAYMENT_OPTIONS[0].key,
   );
+  const [reAdmissionDone, setReAdmissionDone] = useState(false);
+  const [reAdmissionTotal, setReAdmissionTotal] = useState<string>(
+    PAYMENT_OPTIONS[0].subtitle,
+  );
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const userId = await StorageManager.getStudentId();
+        const response = await Api.getReAdmissionFee({ user_id: userId });
+        const formDetails = response?.data?.form_details as
+          | { ad_payment_status?: string }
+          | undefined;
+        const apiData = response?.data;
+        const done = formDetails?.ad_payment_status === '1';
+        setReAdmissionDone(done);
+        setSelectedKey(done ? 'monthly' : 'readmission');
+        setReAdmissionTotal(
+          `Total Amount: ₹${calculateReAdmissionTotal(apiData).toLocaleString('en-IN')}`,
+        );
+      } catch (error) {
+        console.log('Re Admission Status Fetch Error:', error);
+      }
+    })();
+  }, []);
+
+  const visibleOptions = reAdmissionDone
+    ? PAYMENT_OPTIONS.filter(option => option.key === 'monthly')
+    : PAYMENT_OPTIONS.filter(option => option.key === 'readmission');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -57,11 +115,15 @@ const Fees = ({ navigation }: FeesProps) => {
       />
 
       <View style={styles.frame}>
-        {PAYMENT_OPTIONS.map(option => (
+        {visibleOptions.map(option => (
           <PaymentOptionCard
             key={option.key}
             title={option.title}
-            subtitle={option.subtitle}
+            subtitle={
+              option.key === 'readmission'
+                ? reAdmissionTotal
+                : option.subtitle
+            }
             icon={option.icon}
             selected={selectedKey === option.key}
             onPress={() => setSelectedKey(option.key)}

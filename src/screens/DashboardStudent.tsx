@@ -209,7 +209,7 @@ const DashboardStudent = ({ navigation }: DashboardStudentProps) => {
                 <Text style={styles.label}>Aadhaar Card</Text>
 
                 <Text style={styles.value}>
-                  {dashboardData?.studentdetails?.father_aadhaar_no?.trim() ||
+                  {dashboardData?.studentdetails?.aadhaar_no?.trim() ||
                     '-'}
                 </Text>
               </View>

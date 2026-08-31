@@ -59,15 +59,34 @@ const PayAcademicFeesModal = ({
   const [payeeName, setPayeeName] = useState(initialPayeeName);
   const [paying, setPaying] = useState(false);
 
+  const computeCashAmount = (
+    total: number,
+    tFine: string,
+    bFine: string,
+    adv: string,
+    due: string,
+  ): string => {
+    const nTotal = Number(total) || 0;
+    const nFine = Number(tFine) || 0;
+    const nBusFine = Number(bFine) || 0;
+    const nAdv = Number(adv) || 0;
+    const nDue = Number(due) || 0;
+    return String(nTotal + nFine + nBusFine + nAdv - nDue);
+  };
+
   useEffect(() => {
     if (visible && feeAmountData?.data) {
-      setTuitionFine(safeStr(feeAmountData.data.tuition_fine));
-      setBusFine(safeStr(feeAmountData.data.bus_fine));
-      setAdvancedAmount(safeStr(feeAmountData.data.adv_amount));
-      setDueAmount(safeStr(feeAmountData.data.due_amount));
-      setCashAmount(safeStr(feeAmountData.data.totalCalamount));
+      const tFine = safeStr(feeAmountData.data.tuition_fine);
+      const bFine = safeStr(feeAmountData.data.bus_fine);
+      const adv = safeStr(feeAmountData.data.adv_amount);
+      const due = safeStr(feeAmountData.data.due_amount);
+      setTuitionFine(tFine);
+      setBusFine(bFine);
+      setAdvancedAmount(adv);
+      setDueAmount(due);
+      setCashAmount(computeCashAmount(totalAmount, tFine, bFine, adv, due));
     }
-  }, [visible, feeAmountData]);
+  }, [visible, feeAmountData, totalAmount]);
 
   if (!visible) { return null; }
 
@@ -77,7 +96,14 @@ const PayAcademicFeesModal = ({
 
     try {
       const orderId = generateOrderId();
-      const amount = totalAmount.toFixed(2);
+      const finalCashAmount = computeCashAmount(
+        totalAmount,
+        tuitionFine,
+        busFine,
+        advancedAmount,
+        dueAmount,
+      );
+      const amount = Number(finalCashAmount).toFixed(2);
 
       const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
         orderId,
@@ -91,7 +117,7 @@ const PayAcademicFeesModal = ({
       if (response.orderStatus === 'Success') {
         Alert.alert(
           'Payment Successful',
-          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: ₹${response.amount}`,
+          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: ₹${amount}`,
           [{ text: 'OK', onPress: () => {
             onProceedToPay({
               tuitionFine,

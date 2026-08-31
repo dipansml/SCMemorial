@@ -78,12 +78,12 @@ const menuItems: MenuItem[] = [
     route: 'Library',
     icon: require('../assets/images/icons/book.png'),
   },
-  {
-    key: 'OnlineExam',
-    label: 'Online Exam',
-    route: 'OnlineExam',
-    icon: require('../assets/images/icons/academic.png'),
-  },
+  // {
+  //   key: 'OnlineExam',
+  //   label: 'Online Exam',
+  //   route: 'OnlineExam',
+  //   icon: require('../assets/images/icons/academic.png'),
+  // },
 ];
 
 const StudentDrawer = () => {

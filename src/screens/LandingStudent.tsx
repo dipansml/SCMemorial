@@ -11,12 +11,13 @@ import Colors from '../theme/colors';
 import { FontFamily } from '../theme/fonts_dimen';
 import DashboardStudent from './DashboardStudent';
 import Fees from './Fees';
+import OnlineExam from './OnlineExam';
 
 type LandingStudentList = {
   DashboardStudent: undefined;
-  Academics: undefined;
+  OnlineExam: undefined;
   Fees: undefined;
-  //Settings: undefined;
+  Settings: undefined;
 };
 
 const Tab = createBottomTabNavigator<LandingStudentList>();
@@ -42,7 +43,7 @@ const LandingStudent = () => {
 
           if (route.name === 'DashboardStudent') {
             icon = require('../assets/images/icons/dashboard.png');
-          } else if (route.name === 'Academics') {
+          } else if (route.name === 'OnlineExam') {
             icon = require('../assets/images/icons/academic.png');
           } else if (route.name === 'Fees') {
             icon = require('../assets/images/icons/fees.png');
@@ -77,7 +78,7 @@ const LandingStudent = () => {
       })}
     >
       <Tab.Screen name="DashboardStudent" component={DashboardStudent} options={{tabBarLabel : 'Dashboard'}}/>
-      <Tab.Screen name="Academics" component={Academics} />
+      <Tab.Screen name="OnlineExam" component={OnlineExam} options={{tabBarLabel : 'Online Exam'}}/>
       {/* <Tab.Screen name="Messages" component={Messages} /> */}
       <Tab.Screen name="Fees" component={Fees} />
       {/* <Tab.Screen name="Settings" component={Settings}/> */}

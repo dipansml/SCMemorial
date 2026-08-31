@@ -16,6 +16,9 @@ import { StudentExamAnswer } from '../Model/ExamDataset/LiveExamData'
 import { GenericResponse } from '../Model/GenericResponse/GenericResponse'
 import { ViewFeeStructureResponse } from '../Model/ViewFeeStructure/ViewFeeStructureResponse';
 import { ReAdmissionApiResponse } from '../Model/ReAdmission/ReAdmissionResponse';
+import { ForgotPasswordResponse } from '../Model/ForgetPassword/ForgotPasswordResponse';
+import { VerifyCodeResponse } from '../Model/ForgetPassword/VerifyCode'
+import { ResetPasswordResponse } from '../Model/ResetPassword/ResetPasswordResponse'
 import { RestApi } from './RestApi';
 
 // Request
@@ -79,6 +82,21 @@ export interface FeeAmountForSelectedMonthPayload {
 
 export interface ReAdmissionPayload {
   user_id: string;
+}
+
+export interface ForgetPasswordPayload {
+  email: string;
+}
+
+export interface VerifyCodePayload{
+  email: string;
+  verification_code: string
+}
+
+export interface ResetPasswordPayload{
+  user_id: string;
+  password: string;
+  confirm_password: string
 }
 
 
@@ -198,6 +216,22 @@ export const Api = {
 
   getReAdmissionFee: async (payload: ReAdmissionPayload): Promise<ReAdmissionApiResponse> => {
     const response = await RestApi.post('/collect-re-admission-fee-api', payload);
+    return response.data;
+  },
+
+  forgetPasswordSendCode: async (payload: ForgetPasswordPayload) : Promise<ForgotPasswordResponse> => {
+    const response = await RestApi.post('/forget-pwd-send-code', payload);
+    return response.data;
+  },
+
+
+  validateVerificationCode: async (payload: VerifyCodePayload): Promise<VerifyCodeResponse> => {
+    const response = await RestApi.post('/validate-verification-code', payload);
+    return response.data;
+  },
+
+  resetPassword: async (payload: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
+    const response = await RestApi.post('/reset-new-password', payload);
     return response.data;
   },
 };

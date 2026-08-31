@@ -1,150 +1,113 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
     "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
- 
+
 <plist version="1.0">
 <dict>
- 
+
     <!-- App Configuration -->
-<key>CADisableMinimumFrameDurationOnPhone</key>
-<true/>
- 
+    <key>CADisableMinimumFrameDurationOnPhone</key>
+    <true/>
+
     <key>CFBundleDevelopmentRegion</key>
-<string>en</string>
- 
+    <string>en</string>
+
     <key>CFBundleDisplayName</key>
-<string>SCMemorial</string>
- 
+    <string>SCMemorial</string>
+
     <key>CFBundleExecutable</key>
-<string>$(EXECUTABLE_NAME)</string>
- 
+    <string>$(EXECUTABLE_NAME)</string>
+
     <key>CFBundleIdentifier</key>
-<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
- 
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
     <key>CFBundleInfoDictionaryVersion</key>
-<string>6.0</string>
- 
+    <string>6.0</string>
+
     <key>CFBundleName</key>
-<string>$(PRODUCT_NAME)</string>
- 
+    <string>$(PRODUCT_NAME)</string>
+
     <key>CFBundlePackageType</key>
-<string>APPL</string>
- 
+    <string>APPL</string>
+
     <key>CFBundleShortVersionString</key>
-<string>$(MARKETING_VERSION)</string>
- 
+    <string>$(MARKETING_VERSION)</string>
+
     <key>CFBundleSignature</key>
-<string>????</string>
- 
+    <string>????</string>
+
     <key>CFBundleVersion</key>
-<string>$(CURRENT_PROJECT_VERSION)</string>
- 
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+
     <key>LSRequiresIPhoneOS</key>
-<true/>
- 
-    <!-- ========================================== -->
-<!-- NETWORK / APP TRANSPORT SECURITY -->
-<!-- ========================================== -->
- 
-    <!--
-        Your API currently uses HTTP:
-http://182.73.216.93/scms.beas.in/api
- 
-        This allows HTTP requests on iOS.
-        For production, HTTPS is strongly recommended.
-    -->
-<key>NSAppTransportSecurity</key>
-<dict>
-<key>NSAllowsArbitraryLoads</key>
-<true/>
-</dict>
- 
-    <!-- ========================================== -->
-<!-- LOCATION -->
-<!-- ========================================== -->
- 
+    <true/>
+
+    <!-- NETWORK / APP TRANSPORT SECURITY -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
+    <!-- LOCATION -->
     <key>NSLocationWhenInUseUsageDescription</key>
-<string>SCMemorial uses your location to provide location-based services.</string>
- 
-    <!-- ========================================== -->
-<!-- REACT NATIVE -->
-<!-- ========================================== -->
- 
+    <string>SCMemorial uses your location to provide location-based services.</string>
+
+    <!-- REACT NATIVE -->
     <key>RCTNewArchEnabled</key>
-<true/>
- 
-    <!-- ========================================== -->
-<!-- LAUNCH SCREEN -->
-<!-- ========================================== -->
- 
+    <true/>
+
+    <!-- LAUNCH SCREEN -->
     <key>UILaunchStoryboardName</key>
-<string>LaunchScreen</string>
- 
-    <!-- ========================================== -->
-<!-- DEVICE CAPABILITIES -->
-<!-- ========================================== -->
- 
+    <string>LaunchScreen</string>
+
+    <!-- DEVICE CAPABILITIES -->
     <key>UIRequiredDeviceCapabilities</key>
-<array>
-<string>arm64</string>
-</array>
- 
-    <!-- ========================================== -->
-<!-- SUPPORTED ORIENTATIONS -->
-<!-- ========================================== -->
- 
+    <array>
+        <string>arm64</string>
+    </array>
+
+    <!-- SUPPORTED ORIENTATIONS -->
     <key>UISupportedInterfaceOrientations</key>
-<array>
-<string>UIInterfaceOrientationPortrait</string>
-</array>
- 
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+
     <key>UISupportedInterfaceOrientations~ipad</key>
-<array>
-<string>UIInterfaceOrientationLandscapeLeft</string>
-<string>UIInterfaceOrientationLandscapeRight</string>
-<string>UIInterfaceOrientationPortrait</string>
-<string>UIInterfaceOrientationPortraitUpsideDown</string>
-</array>
- 
-    <!-- ========================================== -->
-<!-- STATUS BAR -->
-<!-- ========================================== -->
- 
+    <array>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+    </array>
+
+    <!-- STATUS BAR -->
     <key>UIViewControllerBasedStatusBarAppearance</key>
-<false/>
- 
-    <!-- ========================================== -->
-<!-- CUSTOM FONTS -->
-<!-- ========================================== -->
- 
+    <false/>
+
+    <!-- CUSTOM FONTS -->
     <key>UIAppFonts</key>
-<array>
-<string>semibold.ttf</string>
-<string>medium.ttf</string>
-<string>regular.ttf</string>
-<string>Roboto-Bold.ttf</string>
-</array>
- 
-    <!-- ========================================== -->
-<!-- URL SCHEME / RAZORPAY -->
-<!-- ========================================== -->
- 
+    <array>
+        <string>semibold.ttf</string>
+        <string>medium.ttf</string>
+        <string>regular.ttf</string>
+        <string>Roboto-Bold.ttf</string>
+    </array>
+
+    <!-- URL SCHEME / RAZORPAY -->
     <key>CFBundleURLTypes</key>
-<array>
-<dict>
-<key>CFBundleTypeRole</key>
-<string>Editor</string>
- 
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
             <key>CFBundleURLName</key>
-<string>razorpay</string>
- 
+            <string>razorpay</string>
             <key>CFBundleURLSchemes</key>
-<array>
-<string>rzp_test_SmSTwiKHdNaqc8</string>
-</array>
-</dict>
-</array>
- 
+            <array>
+                <string>rzp_test_SmSTwiKHdNaqc8</string>
+            </array>
+        </dict>
+    </array>
+
 </dict>
 </plist>

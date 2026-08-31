@@ -218,7 +218,7 @@ const EventDetail = ({ navigation, route }: Props) => {
                 onPress={() => setJoinModalVisible(true)}
             >
                 <Text style={CommonStyles.buttonText}>
-                     Join Now
+                     Register Now
                 </Text>
           </TouchableOpacity>
         )}

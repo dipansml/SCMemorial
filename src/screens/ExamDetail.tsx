@@ -231,7 +231,7 @@ const ExamDetail = ({ navigation, route }: Props ) => {
                 onPress={() => {
                   setShowInstruction(false);
 
-                  navigation.navigate('StartExam', {
+                  navigation.replace('StartExam', {
                     examDetail: examDetail,
                   });
                 }}>

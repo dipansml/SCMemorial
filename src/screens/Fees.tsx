@@ -82,7 +82,7 @@ const Fees = ({ navigation }: FeesProps) => {
                }
             >
                 <Text style={CommonStyles.buttonText}>
-                     Join Now
+                     Pay Now
                 </Text>
           </TouchableOpacity>
 

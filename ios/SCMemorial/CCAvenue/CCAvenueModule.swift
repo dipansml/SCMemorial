@@ -10,6 +10,10 @@ class CCAvenueModule: NSObject {
     private static let workingKey = "80EE0DCADBEE34DC409A6F550B92630E"
     private static let checkoutUrl = "https://secure.ccavenue.com/transaction/transaction.do"
 
+    private static let ccavenueRedirectUrl =
+        "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
+    private static let ccavenueCancelUrl =
+        "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
     // private static let ccavenueRedirectUrl =
     //     "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
     // private static let ccavenueCancelUrl =
@@ -39,6 +43,8 @@ class CCAvenueModule: NSObject {
             ("finalPayAmt", amount),
             ("first_name", customerName),
             ("form_no", formNo),
+            ("redirect_url", ccavenueRedirectUrl),
+            ("cancel_url", ccavenueCancelUrl),
             // ("redirect_url", ccavenueRedirectUrl),
             // ("cancel_url", ccavenueCancelUrl),
             ("currency", "INR"),

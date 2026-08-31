@@ -35,6 +35,7 @@ const Colors = {
   present: '#DCFCE7',
   absent: '#FEE2E2',
   holiday: '#FEF3C7',
+  halfday: '#b8d4f3',
   border_color: '#7393B326',
   menu_tint: '#3F5F7C',
   drawerItemActive: '#DBEAFE',

@@ -1,9 +1,5 @@
 PODS:
-<<<<<<< HEAD
-  - AsyncStorage (3.0.2):
-=======
   - AsyncStorage (3.1.1):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1436,11 +1432,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-<<<<<<< HEAD
-  - react-native-safe-area-context (5.7.0):
-=======
   - react-native-safe-area-context (5.9.1):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1452,13 +1444,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-<<<<<<< HEAD
-    - react-native-safe-area-context/common (= 5.7.0)
-    - react-native-safe-area-context/fabric (= 5.7.0)
-=======
     - react-native-safe-area-context/common (= 5.9.1)
     - react-native-safe-area-context/fabric (= 5.9.1)
->>>>>>> origin/nilanjan
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1469,11 +1456,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-<<<<<<< HEAD
-  - react-native-safe-area-context/common (5.7.0):
-=======
   - react-native-safe-area-context/common (5.9.1):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1495,11 +1478,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-<<<<<<< HEAD
-  - react-native-safe-area-context/fabric (5.7.0):
-=======
   - react-native-safe-area-context/fabric (5.9.1):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1522,8 +1501,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-<<<<<<< HEAD
-=======
   - react-native-webview (14.0.1):
     - hermes-engine
     - RCTRequired
@@ -1546,7 +1523,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
->>>>>>> origin/nilanjan
   - React-NativeModulesApple (0.85.0):
     - hermes-engine
     - React-callinvoker
@@ -1932,11 +1908,7 @@ PODS:
     - React-utils (= 0.85.0)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.85.0)
-<<<<<<< HEAD
-  - RNGestureHandler (2.31.2):
-=======
   - RNGestureHandler (2.32.0):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1958,11 +1930,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-<<<<<<< HEAD
-  - RNReanimated (4.3.0):
-=======
   - RNReanimated (4.3.2):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1984,19 +1952,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-<<<<<<< HEAD
-    - RNReanimated/apple (= 4.3.0)
-    - RNReanimated/common (= 4.3.0)
-    - RNWorklets
-    - Yoga
-  - RNReanimated/apple (4.3.0):
-=======
     - RNReanimated/apple (= 4.3.2)
     - RNReanimated/common (= 4.3.2)
     - RNWorklets
     - Yoga
   - RNReanimated/apple (4.3.2):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2020,11 +1980,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-<<<<<<< HEAD
-  - RNReanimated/common (4.3.0):
-=======
   - RNReanimated/common (4.3.2):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2048,11 +2004,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-<<<<<<< HEAD
-  - RNScreens (4.24.0):
-=======
   - RNScreens (4.27.0):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2074,15 +2026,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-<<<<<<< HEAD
-    - RNScreens/common (= 4.24.0)
-    - Yoga
-  - RNScreens/common (4.24.0):
-=======
     - RNScreens/common (= 4.27.0)
     - Yoga
   - RNScreens/common (4.27.0):
->>>>>>> origin/nilanjan
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2267,10 +2213,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-razorpay (from `../node_modules/react-native-razorpay`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
-<<<<<<< HEAD
-=======
   - react-native-webview (from `../node_modules/react-native-webview`)
->>>>>>> origin/nilanjan
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-networking (from `../node_modules/react-native/ReactCommon/react/networking`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
@@ -2403,11 +2346,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-razorpay"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
-<<<<<<< HEAD
-=======
   react-native-webview:
     :path: "../node_modules/react-native-webview"
->>>>>>> origin/nilanjan
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -2490,15 +2430,9 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-<<<<<<< HEAD
-  AsyncStorage: 3159283852d8bfabb4653cf17f1a1fef2a8a0eb6
-  FBLazyVector: c00c20551d40126351a6783c47ce75f5b374851b
-  hermes-engine: cb9783d2e11508044849d9ab13c18aff21c59adb
-=======
   AsyncStorage: dba9d05b9aa34413760ea5a74f63a7e7f9fddf73
   FBLazyVector: c00c20551d40126351a6783c47ce75f5b374851b
   hermes-engine: c2ccbf528e0f401275433879a16e33303d4392ca
->>>>>>> origin/nilanjan
   razorpay-core-pod: 6da5fb4ed280279d665507fdb50e213d793a5fe2
   razorpay-pod: 4385cf844aa29389313b741e20c72fe668970d49
   RCTDeprecation: 3bb167081b134461cfeb875ff7ae1945f8635257
@@ -2509,11 +2443,7 @@ SPEC CHECKSUMS:
   React: 1b1536b9099195944034e65b1830f463caaa8390
   React-callinvoker: 6dff6d17d1d6cc8fdf85468a649bafed473c65f5
   React-Core: 39ee05b5798296f433dd3c3624c57a187c1510e3
-<<<<<<< HEAD
-  React-Core-prebuilt: c4b06ef05689ca0ebbb9ae85a4cacd5b1330ac6f
-=======
   React-Core-prebuilt: 3d8ada355cfd0a6a1b1a8822b8668e87eb5c7306
->>>>>>> origin/nilanjan
   React-CoreModules: e78bfd2617075bc0e50c689df4a29232bd72ad82
   React-cxxreact: 3fe21801d46097cf74c3dff6953677bebc4a3c2a
   React-debug: e1f00fcd2cef58a2897471a6d76a4ef5f5f90c74
@@ -2543,12 +2473,8 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: fefb6931840ba0949954e07d67caa503c7e0879d
   react-native-image-picker: 2146157d5d37a34c2063d1d2ed01081b56d0b87b
   react-native-razorpay: 04b35abf85449cca5e4dd9b74959ff7e9c8359c1
-<<<<<<< HEAD
-  react-native-safe-area-context: a2325922b8594ddd27f98fb13437aec126be2502
-=======
   react-native-safe-area-context: d3dcfc863b5b99a529b5ef257375f06046b3f751
   react-native-webview: 8a30fed037effd3086456f1fbc46623fae72b5c0
->>>>>>> origin/nilanjan
   React-NativeModulesApple: 203fb2f050c7949cb500df1ac8bf7c09e8030fca
   React-networking: 368beb4a9537676c58fa72e7816cd969503fce69
   React-oscompat: 5361d0fa7905ba1c3b3c5e7c464d6be9d2d85f4b
@@ -2582,25 +2508,14 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 706b65371b90b5cc797b6639e8979f2e5cecd6da
   ReactCodegen: ab01ebfffac5cda9140204eb872ed97c15df225f
   ReactCommon: 47ef95b0920948a0b54d7439f7452501eeeac071
-<<<<<<< HEAD
-  ReactNativeDependencies: 2bcdf2bf8fdd6a8a63db9c1814c27ef9b0ea6f73
-  RNGestureHandler: acf7db8499c11193d9b4b6b1cc1439ff4f01a693
-  RNReanimated: f135e23c1949b766bec8fa6f0fe43103839dd749
-  RNScreens: 63cc2156368ac1a8239e9131103c2fef901fc381
-=======
   ReactNativeDependencies: 66ef509b3cc5ac6c489c5ab62a666f6d40a0aab3
   RNGestureHandler: e6db458032096afb64c83dad48f3ae52d3cff12d
   RNReanimated: 16ea158b4335b8744dd435c59d134661345792b3
   RNScreens: 39f914a099f9cbe0ec2c33d0dfd01ba56a8ca104
->>>>>>> origin/nilanjan
   RNSVG: a37350c7bc37452fd2b209efa0806f1de0f847ae
   RNWorklets: 32b9ca9e0588b838ce3202a9ea3971f553c9011c
   Yoga: e83c3121d079541e69f3c5c623faaaf933fb5812
 
 PODFILE CHECKSUM: c3e02833a72999301a5435c4aebc01f5f7b9d910
 
-<<<<<<< HEAD
 COCOAPODS: 1.16.2
-=======
-COCOAPODS: 1.15.2
->>>>>>> origin/nilanjan

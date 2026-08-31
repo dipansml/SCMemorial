@@ -1,8 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import {
   View,
@@ -34,15 +30,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackHandler } from 'react-native';
 
-import {
-  useFocusEffect,
-} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { RootStackParamList } from '../../App';
 
-import {
-  NativeStackNavigationProp,
-} from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
@@ -54,34 +46,27 @@ type DashboardStudentProps = {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
-const DashboardStudent = ({
-  navigation,
-}: DashboardStudentProps) => {
+const DashboardStudent = ({ navigation }: DashboardStudentProps) => {
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null,
+  );
 
-  const [dashboardData, setDashboardData] =
-    useState<DashboardData | null>(null);
-
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
-
       const onBackPress = () => {
         BackHandler.exitApp();
         return true;
       };
 
-      const subscription =
-        BackHandler.addEventListener(
-          'hardwareBackPress',
-          onBackPress
-        );
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      );
 
-      return () =>
-        subscription.remove();
-
-    }, [])
+      return () => subscription.remove();
+    }, []),
   );
 
   useEffect(() => {
@@ -89,88 +74,50 @@ const DashboardStudent = ({
   }, []);
 
   const loadDashboard = async () => {
-
     try {
-
       setLoading(true);
 
-      const response =
-        await Api.getDashboard({
-          user_id:
-            await StorageManager.getStudentId(),
-        });
+      const response = await Api.getDashboard({
+        user_id: await StorageManager.getStudentId(),
+      });
 
-      console.log(
-        'Dashboard Response:',
-        response
-      );
+      console.log('Dashboard Response:', response);
 
-      if (
-        response &&
-        response.status === 200 &&
-        response.data
-      ) {
-
+      if (response && response.status === 200 && response.data) {
         setDashboardData(response.data);
-
       } else {
-
-        Alert.alert(
-          'Error',
-          response?.message ||
-            'Failed to load dashboard'
-        );
+        Alert.alert('Error', response?.message || 'Failed to load dashboard');
       }
-
     } catch (error: any) {
-
-      console.log(
-        'Dashboard Error:',
-        error?.response?.data ||
-          error.message
-      );
+      console.log('Dashboard Error:', error?.response?.data || error.message);
 
       Alert.alert(
         'Error',
-        error?.response?.data?.message ||
-          'Something went wrong'
+        error?.response?.data?.message || 'Something went wrong',
       );
-
     } finally {
-
       setLoading(false);
     }
   };
 
   // ✅ Chart Data
   const chartData =
-    dashboardData?.performance_overview?.map(
-      item => ({
-        subject: item.subject,
-        halfYearly: Number(
-          item.halfYearly
-        ),
-        annual: Number(item.annual),
-      })
-    ) || [];
+    dashboardData?.performance_overview?.map(item => ({
+      subject: item.subject,
+      halfYearly: Number(item.halfYearly),
+      annual: Number(item.annual),
+    })) || [];
 
   // ✅ First Library Book
-  const firstBook =
-    dashboardData?.books?.[0];
+  const firstBook = dashboardData?.books?.[0];
 
   return (
-    <SafeAreaView
-      style={styles.container}
-      edges={['top']}
-    >
-
+    <SafeAreaView style={styles.container} edges={['top']}>
       <FullScreenLoader visible={loading} />
       <AppHeader
         title="Dashboard"
         onMenuPress={openParentDrawer}
-        onBellPress={() =>
-          console.log('Bell')
-        }
+        onBellPress={() => console.log('Bell')}
         navigation={navigation}
       />
 
@@ -178,19 +125,14 @@ const DashboardStudent = ({
         <View style={{ flex: 1 }}>
           <ScrollView
             contentContainerStyle={{
-              padding:
-                container.container_padding,
+              padding: container.container_padding,
             }}
           >
-
             {/* ✅ Profile Card */}
             <View style={styles.card}>
-
               <Image
                 source={
-                  dashboardData
-                    ?.studentdetails
-                    ?.gender === 'Female'
+                  dashboardData?.studentdetails?.gender === 'Female'
                     ? require('../assets/images/student2.png')
                     : require('../assets/images/student1.png')
                 }
@@ -198,71 +140,102 @@ const DashboardStudent = ({
               />
 
               <Text style={styles.name}>
-                {
-                  dashboardData
-                    ?.studentdetails
-                    ?.name
-                }
+                {dashboardData?.studentdetails?.name}
               </Text>
 
               <Text style={styles.id}>
                 ID:
-                {
-                  dashboardData
-                    ?.studentdetails
-                    ?.code
-                }
+                {dashboardData?.studentdetails?.code}
               </Text>
 
               <View style={styles.infoBox}>
-                <Text style={styles.label}>
-                  Class
-                </Text>
+                <Text style={styles.label}>Class</Text>
 
                 <Text style={styles.value}>
-                  {
-                    dashboardData
-                      ?.studentdetails
-                      ?.class_name
-                  }
+                  {dashboardData?.studentdetails?.class_name}
                 </Text>
               </View>
 
               <View style={styles.infoBox}>
-                <Text style={styles.label}>
-                  Section
-                </Text>
+                <Text style={styles.label}>Section</Text>
 
                 <Text style={styles.value}>
-                  {
-                    dashboardData
-                      ?.studentdetails
-                      ?.section_name
-                  }
+                  {dashboardData?.studentdetails?.section_name}
                 </Text>
               </View>
 
               <View style={styles.infoBox}>
-                <Text style={styles.label}>
-                  Roll No.
-                </Text>
+                <Text style={styles.label}>Roll No.</Text>
 
                 <Text style={styles.value}>
-                  {
-                    dashboardData
-                      ?.studentdetails
-                      ?.roll_number
-                  }
+                  {dashboardData?.studentdetails?.roll_number?.trim() || '-'}
                 </Text>
               </View>
+
+              <View style={styles.infoBox}>
+                <Text style={styles.label}>Father Name</Text>
+
+                <Text style={styles.value}>
+                  {dashboardData?.studentdetails?.father_name?.trim() || '-'}
+                </Text>
+              </View>
+
+              <View style={styles.infoBox}>
+                <Text style={styles.label}>Mother Name</Text>
+
+                <Text style={styles.value}>
+                  {dashboardData?.studentdetails?.mother_name?.trim() || '-'}
+                </Text>
+              </View>
+
+              <View style={styles.infoBox}>
+                <Text style={styles.label}>Address</Text>
+
+                <Text style={styles.value}>
+                  {dashboardData?.studentdetails?.permanent_address?.trim() ||
+                    '-'}
+                </Text>
+              </View>
+
+              <View style={styles.infoBox}>
+                <Text style={styles.label}>Email</Text>
+
+                <Text style={styles.value}>
+                  {dashboardData?.studentdetails?.email?.trim() || '-'}
+                </Text>
+              </View>
+
+              <View style={styles.infoBox}>
+                <Text style={styles.label}>Aadhaar Card</Text>
+
+                <Text style={styles.value}>
+                  {dashboardData?.studentdetails?.father_aadhaar_no?.trim() ||
+                    '-'}
+                </Text>
+              </View>
+
+              <View style={styles.infoBox}>
+                <Text style={styles.label}>Contact No</Text>
+
+                <Text style={styles.value}>
+                  {dashboardData?.studentdetails?.father_mobile?.trim() || '-'}
+                </Text>
+              </View>
+
+              {dashboardData?.studentdetails?.bus_no?.trim() && (
+                <View style={styles.infoBox}>
+                  <Text style={styles.label}>Bus No</Text>
+
+                  <Text style={styles.value}>
+                    {dashboardData?.studentdetails?.bus_no?.trim() || '-'}
+                  </Text>
+                </View>
+              )}
             </View>
 
             {/* ✅ Academic Overview */}
             <View style={styles.cardGray}>
-
-              <Text style={styles.sectionTitle}>
-                Academic Overview
-              </Text>
+              <Text style={styles.sectionTitle}>Academic Overview</Text>
 
               <View style={styles.row}>
                 <View style={styles.iconBox}>
@@ -274,20 +247,10 @@ const DashboardStudent = ({
                 </View>
 
                 <View>
-                  <Text
-                    style={styles.subLabel}
-                  >
-                    Class Teacher
-                  </Text>
+                  <Text style={styles.subLabel}>Class Teacher</Text>
 
-                  <Text
-                    style={styles.subValue}
-                  >
-                    {
-                      dashboardData
-                        ?.studentdetails
-                        ?.teacher_name
-                    }
+                  <Text style={styles.subValue}>
+                    {dashboardData?.studentdetails?.teacher_name}
                   </Text>
                 </View>
               </View>
@@ -302,17 +265,10 @@ const DashboardStudent = ({
                 </View>
 
                 <View>
-                  <Text
-                    style={styles.subLabel}
-                  >
-                    School
-                  </Text>
+                  <Text style={styles.subLabel}>School</Text>
 
-                  <Text
-                    style={styles.subValue}
-                  >
-                    Satish Chandra
-                    Memorial School
+                  <Text style={styles.subValue}>
+                    Satish Chandra Memorial School
                   </Text>
                 </View>
               </View>
@@ -327,20 +283,10 @@ const DashboardStudent = ({
                 </View>
 
                 <View>
-                  <Text
-                    style={styles.subLabel}
-                  >
-                    Admission Date
-                  </Text>
+                  <Text style={styles.subLabel}>Admission Date</Text>
 
-                  <Text
-                    style={styles.subValue}
-                  >
-                    {
-                      dashboardData
-                        ?.studentdetails
-                        ?.admissiondate
-                    }
+                  <Text style={styles.subValue}>
+                    {dashboardData?.studentdetails?.admissiondate}
                   </Text>
                 </View>
               </View>
@@ -348,119 +294,63 @@ const DashboardStudent = ({
 
             {/* ✅ Performance */}
             <View style={styles.card}>
+              <Text style={styles.sectionTitleLarge}>Performance Overview</Text>
 
-              <Text
-                style={
-                  styles.sectionTitleLarge
-                }
-              >
-                Performance Overview
-              </Text>
+              <Text style={styles.subLabelRegular}>Last updated recently</Text>
 
-              <Text
-                style={
-                  styles.subLabelRegular
-                }
-              >
-                Last updated recently
-              </Text>
-
-              <GroupedBarChart
-                data={chartData}
-              />
+              <GroupedBarChart data={chartData} />
             </View>
 
             {/* ✅ Library */}
             <View style={styles.cardGray}>
-
-              <Text style={styles.sectionTitle}>
-                Library Records
-              </Text>
+              <Text style={styles.sectionTitle}>Library Records</Text>
 
               {firstBook && (
+                <View style={styles.cardSmallRadius}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() =>
+                      navigation.navigate('Library', { isback: true })
+                    }
+                  >
+                    <View style={styles.rowLibrary}>
+                      <View style={styles.iconBoxGrey}>
+                        <Image
+                          source={require('../assets/images/icons/book.png')}
+                          style={styles.iconLarge}
+                          resizeMode="contain"
+                        />
+                      </View>
 
-                <View
-                  style={
-                    styles.cardSmallRadius
-                  }
-                >
-                   <TouchableOpacity
-                      style={styles.button}
-                      onPress={() =>
-                      navigation.navigate(
-                      'Library', { isback: true })}>
                       <View
-                        style={
-                          styles.rowLibrary
-                        }
+                        style={{
+                          flex: 1,
+                        }}
                       >
+                        <Text style={styles.subValue}>{firstBook.title}</Text>
+
+                        <Text style={styles.subLabel}>
+                          Author: {firstBook.author}
+                        </Text>
 
                         <View
-                          style={
-                            styles.iconBoxGrey
-                          }
-                        >
-                          <Image
-                            source={require('../assets/images/icons/book.png')}
-                            style={
-                              styles.iconLarge
-                            }
-                            resizeMode="contain"
-                          />
-                        </View>
-
-                        <View
-                          style={{
-                            flex: 1,
-                          }}
-                        >
-                          <Text
-                            style={
-                              styles.subValue
-                            }
-                          >
-                            {firstBook.title}
-                          </Text>
-
-                          <Text
-                            style={
-                              styles.subLabel
-                            }
-                          >
-                            Author:{' '}
+                          style={[
+                            styles.badgeGrey,
                             {
-                              firstBook.author
-                            }
+                              marginTop: 10,
+                            },
+                          ]}
+                        >
+                          <Text style={styles.badgeTextBlue}>
+                            Due: {firstBook.dueDate}
                           </Text>
-
-                          <View
-                            style={[
-                              styles.badgeGrey,
-                              {
-                                marginTop: 10,
-                              },
-                            ]}
-                          >
-                            <Text
-                              style={
-                                styles.badgeTextBlue
-                              }
-                            >
-                              Due:
-                              {' '}
-                              {
-                                firstBook.dueDate
-                              }
-                            </Text>
-                          </View>
-
                         </View>
                       </View>
+                    </View>
                   </TouchableOpacity>
                 </View>
               )}
             </View>
-
           </ScrollView>
         </View>
       </View>
@@ -498,10 +388,10 @@ const styles = StyleSheet.create({
   },
 
   imageRadius: {
-  borderRadius: card.border_radius_card,
-},
+    borderRadius: card.border_radius_card,
+  },
 
- imageStyle: {
+  imageStyle: {
     borderRadius: card.border_radius_card,
   },
 
@@ -512,7 +402,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 3,
   },
-
 
   cardGray: {
     backgroundColor: Colors.card_background_grey,
@@ -545,22 +434,31 @@ const styles = StyleSheet.create({
 
   infoBox: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     backgroundColor: Colors.text_box_back,
     padding: 12,
     borderRadius: iconBox.border_radius_card,
     marginBottom: 8,
+    width: '100%',
   },
 
   label: {
+    width: 100,
+    flexShrink: 0,
     color: Colors.text,
     fontFamily: FontFamily.regular,
     fontSize: FontSize.regular,
   },
 
   value: {
+    flex: 1,
+    minWidth: 0,
+    flexShrink: 1,
+    marginLeft: 15,
+    textAlign: 'right',
     fontFamily: FontFamily.semiBold,
     fontSize: FontSize.regular,
+    lineHeight: 20,
   },
 
   sectionTitle: {
@@ -609,32 +507,32 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     tintColor: Colors.theme_color,
-},
+  },
 
-iconLarge: {
+  iconLarge: {
     width: 40,
     height: 40,
     tintColor: Colors.menu_tint,
-},
+  },
 
-iconSmallWhite: {
+  iconSmallWhite: {
     width: 12,
     height: 12,
     tintColor: Colors.white,
-},
-sectionTitleLarge: {
+  },
+  sectionTitleLarge: {
     fontSize: FontSize.large,
     fontFamily: FontFamily.bold,
     marginBottom: 6,
   },
-   bgImage: {
+  bgImage: {
     position: 'absolute',
     width: '100%',
     height: 140,
   },
 
   title: {
-    color:  Colors.white,
+    color: Colors.white,
     fontSize: FontSize.small,
     fontFamily: FontFamily.semiBold,
     marginBottom: 8,

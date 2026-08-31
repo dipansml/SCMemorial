@@ -34,23 +34,32 @@ const PaymentListComponent = ({ paymentList }: Props) => {
     }
   };
 
+  const downloadReceipt = async (receiptUrl: string) => {
+    console.log('Opening receipt URL:', receiptUrl);
+
+    if (!receiptUrl) {
+      Alert.alert('Error', 'Receipt URL is not available');
+      return;
+    }
+
+    try {
+      const supported = await Linking.canOpenURL(receiptUrl);
+
+      console.log('Can open URL:', supported);
+
+      if (supported) {
+        await Linking.openURL(receiptUrl);
+      } else {
+        Alert.alert('Error', 'Unable to open receipt');
+      }
+    } catch (error) {
+      console.log('Download receipt error:', error);
+      Alert.alert('Error', 'Something went wrong while opening receipt');
+    }
+  };
+
   const renderItem = ({ item }: any) => {
     const statusStyle = getStatusStyle(item.status);
-
-    const downloadReceipt = async (receiptUrl: string) => {
-      try {
-        const supported = await Linking.canOpenURL(receiptUrl);
-
-        if (supported) {
-          await Linking.openURL(receiptUrl);
-        } else {
-          Alert.alert('Error', 'Unable to open receipt');
-        }
-      } catch (error) {
-        console.log('Download error:', error);
-        Alert.alert('Error', 'Something went wrong');
-      }
-    };
 
     return (
       <View style={styles.card}>
@@ -86,12 +95,34 @@ const PaymentListComponent = ({ paymentList }: Props) => {
 
         {/* Action Button */}
         {item.status === 'Success' && (
-          <TouchableOpacity style={[CommonStyles.buttonGray, { marginTop: 12 }, { marginBottom: 0 }]} onPress={() => downloadReceipt(item.download_url)}>
-                <Image
-                    source={require('../assets/images/icons/download.png')}
-                    style={[CommonStyles.buttonIcon, { tintColor: Colors.textColorInpuHeader }]}
-                    resizeMode="contain"/>              
-                <Text style={CommonStyles.buttonTextDark}>Download Receipt</Text>
+          <TouchableOpacity
+            style={[
+              CommonStyles.buttonGray,
+              {
+                marginTop: 12,
+                marginBottom: 0,
+              },
+            ]}
+            onPress={() => {
+              console.log('Payment ID:', item.id);
+              console.log('Transaction ID:', item.txnid);
+              console.log('Receipt URL:', item.download_url);
+
+              downloadReceipt(item.download_url);
+            }}>
+            
+            <Image
+              source={require('../assets/images/icons/download.png')}
+              style={[
+                CommonStyles.buttonIcon,
+                {tintColor: Colors.textColorInpuHeader},
+              ]}
+              resizeMode="contain"
+            />
+
+            <Text style={CommonStyles.buttonTextDark}>
+              Download Receipt
+            </Text>
           </TouchableOpacity>
         )}
 

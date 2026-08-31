@@ -330,7 +330,7 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
       >
         {/* Total Re-Admission Fee */}
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>TOTAL RE-ADMISSION FEE :</Text>
+          <Text style={styles.summaryLabel}>TOTAL MONTHLY FEE :</Text>
           <Text style={styles.summaryAmount}>
             {totalSelectedFee.toLocaleString('en-IN')}.00
           </Text>

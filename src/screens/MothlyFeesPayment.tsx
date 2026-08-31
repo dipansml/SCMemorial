@@ -49,6 +49,33 @@ const safeFee = (v: string | null): string => {
   return v;
 };
 
+function calculateApplicableMonthlyTotal(item: FeeStructureItem): number {
+    const sessionCharges = Number(safeFee(item.development_fee))
+      + Number(safeFee(item.exam_fee))
+      + Number(safeFee(item.festival_celebration_fee))
+      + Number(safeFee(item.games_sports_fee))
+      + Number(safeFee(item.audio_visual_lab_fee))
+      + Number(safeFee(item.library_fee))
+      + Number(safeFee(item.electricity_maintenance_fee))
+      + Number(safeFee(item.computer_fee));
+
+    const admissionFee = Number(safeFee(item.admission_fee));
+    const hasAdmissionFee = admissionFee > 0;
+
+    let total = 0;
+    if (hasAdmissionFee) {
+      total += Number(safeFee(item.admission_fee));
+      total += sessionCharges;
+      total += Number(safeFee(item.security_deposite));
+    }
+    total += Number(safeFee(item.tuition_fee));
+    total += Number(safeFee(item.fine));
+    total += Number(safeFee(item.bus_services));
+    total += Number(safeFee(item.bus_fee_fine));
+
+    return total;
+}
+
 function mapFeeStructureToDetails(item: FeeStructureItem): FeeDetailRow[] {
     const sessionCharges = Number(safeFee(item.development_fee))
       + Number(safeFee(item.exam_fee))
@@ -58,16 +85,31 @@ function mapFeeStructureToDetails(item: FeeStructureItem): FeeDetailRow[] {
       + Number(safeFee(item.library_fee))
       + Number(safeFee(item.electricity_maintenance_fee))
       + Number(safeFee(item.computer_fee));
-    return [
-      { no: '01', route: 'ADMISSION FEE', fee: safeFee(item.admission_fee) },
-      { no: '02', route: 'SESSION CHARGES', fee: String(sessionCharges) },
-    { no: '03', route: 'SECURITY DEPOSIT', fee: safeFee(item.security_deposite) },
-    { no: '04', route: 'TUITION FEE (MONTHLY)', fee: safeFee(item.tuition_fee) },
-    { no: '05', route: 'TUITION FINE AMOUNT', fee: safeFee(item.fine) },
-    { no: '06', route: 'BUS SERVICES', fee: safeFee(item.bus_services) },
-    { no: '07', route: 'BUS FINE AMOUNT', fee: safeFee(item.bus_fee_fine) },
-    { no: '08', route: 'TOTAL AMOUNT', fee: safeFee(item.total_amount_show) },
-  ];
+
+    const admissionFee = Number(safeFee(item.admission_fee));
+    const hasAdmissionFee = admissionFee > 0;
+
+    const rows: FeeDetailRow[] = [];
+
+    if (hasAdmissionFee) {
+      rows.push({ no: '', route: 'ADMISSION FEE', fee: safeFee(item.admission_fee) });
+      rows.push({ no: '', route: 'SESSION CHARGES', fee: String(sessionCharges) });
+      rows.push({ no: '', route: 'SECURITY DEPOSIT', fee: safeFee(item.security_deposite) });
+    }
+
+    rows.push({ no: '', route: 'TUITION FEE (MONTHLY)', fee: safeFee(item.tuition_fee) });
+    rows.push({ no: '', route: 'TUITION FINE AMOUNT', fee: safeFee(item.fine) });
+    rows.push({ no: '', route: 'BUS SERVICES', fee: safeFee(item.bus_services) });
+    rows.push({ no: '', route: 'BUS FINE AMOUNT', fee: safeFee(item.bus_fee_fine) });
+
+    const totalAmount = calculateApplicableMonthlyTotal(item);
+
+    rows.push({ no: '', route: 'TOTAL AMOUNT', fee: String(totalAmount) });
+
+    return rows.map((row, index) => ({
+      ...row,
+      no: String(index + 1).padStart(2, '0'),
+    }));
 }
 
 const MothlyFeesPayment = ({ navigation }: Props) => {
@@ -175,12 +217,13 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
           const mappedMonths: MonthData[] = fee_structure.map(
             (item: FeeStructureItem) => {
               const isPaid = item.ad_payment_status === '1';
+              const applicableTotal = calculateApplicableMonthlyTotal(item);
               return {
                 id: item.month_name?.toLowerCase() || '',
                 apiId: item.id || '',
                 name: item.month_name,
-                totalFees: `₹${item.total_amount_show}`,
-                totalAmount: safeFee(item.total_amount_show),
+                totalFees: `₹${applicableTotal}`,
+                totalAmount: String(applicableTotal),
                 checked: !isPaid,
                 paid: isPaid,
                 details: mapFeeStructureToDetails(item),

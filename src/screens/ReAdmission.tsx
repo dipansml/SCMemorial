@@ -105,17 +105,15 @@ const buildBusDetails = (
     };
   }
 
-  const selectedSection = sectionList?.find(
-    item => String(item?.stoppage_id) === String(fd.stoppage),
-  );
+  const fareValue = fd.bus_services || '0';
 
   return {
     details: [{
       no: '01',
       route: String(fd.stoppage_name),
-      fee: String(selectedSection?.stoppage_fare ?? '0'),
+      fee: fareValue,
     }],
-    fare: parseFee(selectedSection?.stoppage_fare),
+    fare: parseFee(fareValue),
   };
 };
 

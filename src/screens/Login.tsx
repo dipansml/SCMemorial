@@ -222,7 +222,7 @@ const Login = ({ navigation }: LoginProps) => {
             </ImageBackground>
             <View style={styles.container}>
               <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.title_normal}>
+              {/* <Text style={styles.title_normal}>
                 Please select your account type to continue.
               </Text>
               <View style={styles.toggleContainer}>
@@ -294,7 +294,7 @@ const Login = ({ navigation }: LoginProps) => {
                     </Text>
                   </View>
                 </TouchableOpacity>
-              </View>
+              </View> */}
               <Text style={styles.input_header}>
                 {selected === 'parent' ? 'Parent ID' : 'Student ID'}
               </Text>

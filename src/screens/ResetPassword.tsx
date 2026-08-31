@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,12 +14,13 @@ import {
   Alert,
 } from 'react-native';
 
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import Colors from '../theme/colors';
-import {FontSize, FontFamily} from '../theme/fonts_dimen';
-import {Api} from '../services/Api';
+import { FontSize, FontFamily } from '../theme/fonts_dimen';
+import { Api } from '../services/Api';
+import { encode as base64Encode } from 'base-64';
 
 type RootStackParamList = {
   Login: undefined;
@@ -31,26 +32,17 @@ type RootStackParamList = {
   };
 };
 
-type Props = NativeStackScreenProps<
-  RootStackParamList,
-  'ResetPassword'
->;
+type Props = NativeStackScreenProps<RootStackParamList, 'ResetPassword'>;
 
-const ResetPassword = ({
-  navigation,
-  route,
-}: Props) => {
-  const {email, userId} = route.params;
+const ResetPassword = ({ navigation, route }: Props) => {
+  const { email, userId } = route.params;
 
   const [password, setPassword] = useState('');
-  const [verifyPassword, setVerifyPassword] =
-    useState('');
+  const [verifyPassword, setVerifyPassword] = useState('');
 
-  const [showPassword, setShowPassword] =
-    useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [showVerifyPassword, setShowVerifyPassword] =
-    useState(false);
+  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -70,13 +62,11 @@ const ResetPassword = ({
     } = {};
 
     if (!password.trim()) {
-      newErrors.password =
-        'Please enter new password';
+      newErrors.password = 'Please enter new password';
     }
 
     if (!verifyPassword.trim()) {
-      newErrors.verifyPassword =
-        'Please verify your password';
+      newErrors.verifyPassword = 'Please verify your password';
     }
 
     if (
@@ -84,8 +74,7 @@ const ResetPassword = ({
       verifyPassword.trim() &&
       password !== verifyPassword
     ) {
-      newErrors.verifyPassword =
-        'Passwords do not match';
+      newErrors.verifyPassword = 'Passwords do not match';
     }
 
     setErrors(newErrors);
@@ -109,56 +98,55 @@ const ResetPassword = ({
     setLoading(true);
 
     try {
-      /*
-       * Add your actual reset password API here.
-       *
-       * Example:
-       *
-       * const res = await Api.resetPassword({
-       *   user_id: userId,
-       *   email: email,
-       *   password: password.trim(),
-       *   confirm_password: verifyPassword.trim(),
-       * });
-       */
+      const encryptedPassword = base64Encode(password.trim());
 
+      const encryptedConfirmPassword = base64Encode(verifyPassword.trim());
       console.log('Reset Password Data:', {
         userId,
         email,
-        password,
+        encryptedPassword,
+        encryptedConfirmPassword,
       });
 
-      Alert.alert(
-        'Password Updated',
-        'Your password has been changed successfully.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: 'Login',
-                  },
-                ],
-              });
+      const res = await Api.resetPassword({
+        user_id: userId,
+        password: password.trim(),
+        confirm_password: verifyPassword.trim(),
+      });
+
+      console.log('Reset Password Response:', res);
+
+      if (res && res.status === 200) {
+        Alert.alert(
+          'Password Updated',
+          res.message,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'Login',
+                    },
+                  ],
+                });
+              },
             },
-          },
-        ],
-      );
+          ],
+        );
+      } else {
+         Alert.alert(
+          'Error',
+          res.message ||
+            'Something went wrong. Please try again.',
+        );
+      }
     } catch (error: any) {
       console.log(
         'Reset Password Error:',
-        error?.response?.data ||
-          error?.message,
-      );
-
-      Alert.alert(
-        'Error',
-        error?.response?.data?.message ||
-          error?.message ||
-          'Something went wrong. Please try again.',
+        error?.response?.data || error?.message,
       );
     } finally {
       setLoading(false);
@@ -167,37 +155,25 @@ const ResetPassword = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-
       {/* ==========================================
           MAIN SCREEN
       ========================================== */}
 
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
-        behavior={
-          Platform.OS === 'ios'
-            ? 'padding'
-            : 'height'
-        }
-        keyboardVerticalOffset={
-          Platform.OS === 'ios' ? 80 : 0
-        }>
-
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      >
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={
-            styles.scrollContent
-          }
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="none"
           nestedScrollEnabled={true}
-          automaticallyAdjustKeyboardInsets={
-            false
-          }>
-
+          automaticallyAdjustKeyboardInsets={false}
+        >
           <View style={styles.content}>
-
             {/* ==================================
                 TOP IMAGE
             ================================== */}
@@ -205,14 +181,13 @@ const ResetPassword = ({
             <ImageBackground
               source={require('../assets/images/login_top.png')}
               style={styles.curve}
-              resizeMode="cover">
-
+              resizeMode="cover"
+            >
               <Image
                 source={require('../assets/images/logo.png')}
                 style={styles.logo}
                 resizeMode="contain"
               />
-
             </ImageBackground>
 
             {/* ==================================
@@ -220,31 +195,24 @@ const ResetPassword = ({
             ================================== */}
 
             <View style={styles.container}>
-
-              <Text style={styles.title}>
-                Set New Password
-              </Text>
+              <Text style={styles.title}>Set New Password</Text>
 
               <Text style={styles.titleNormal}>
-                Create a new password for your
-                account.
+                Create a new password for your account.
               </Text>
 
               {/* =================================
                   NEW PASSWORD
               ================================= */}
 
-              <Text style={styles.inputHeader}>
-                New Password
-              </Text>
+              <Text style={styles.inputHeader}>New Password</Text>
 
               <View
                 style={[
                   styles.inputWrapper,
-                  errors.password &&
-                    styles.errorInput,
-                ]}>
-
+                  errors.password && styles.errorInput,
+                ]}
+              >
                 <Image
                   source={require('../assets/images/ic_password.png')}
                   style={styles.inputIcon}
@@ -254,12 +222,8 @@ const ResetPassword = ({
                 <TextInput
                   style={styles.input}
                   placeholder="Enter new password"
-                  placeholderTextColor={
-                    Colors.text_hint
-                  }
-                  secureTextEntry={
-                    !showPassword
-                  }
+                  placeholderTextColor={Colors.text_hint}
+                  secureTextEntry={!showPassword}
                   value={password}
                   onChangeText={text => {
                     setPassword(text);
@@ -278,14 +242,10 @@ const ResetPassword = ({
 
                 <TouchableOpacity
                   style={styles.eyeIcon}
-                  onPress={() =>
-                    setShowPassword(
-                      previous => !previous,
-                    )
-                  }
+                  onPress={() => setShowPassword(previous => !previous)}
                   disabled={loading}
-                  activeOpacity={0.7}>
-
+                  activeOpacity={0.7}
+                >
                   <Image
                     source={
                       showPassword
@@ -295,37 +255,27 @@ const ResetPassword = ({
                     style={styles.eyeImage}
                     resizeMode="contain"
                   />
-
                 </TouchableOpacity>
-
               </View>
 
-              <View
-                style={styles.errorContainer}>
-
+              <View style={styles.errorContainer}>
                 {errors.password ? (
-                  <Text style={styles.errorText}>
-                    {errors.password}
-                  </Text>
+                  <Text style={styles.errorText}>{errors.password}</Text>
                 ) : null}
-
               </View>
 
               {/* =================================
                   VERIFY PASSWORD
               ================================= */}
 
-              <Text style={styles.inputHeader}>
-                Verify Password
-              </Text>
+              <Text style={styles.inputHeader}>Verify Password</Text>
 
               <View
                 style={[
                   styles.inputWrapper,
-                  errors.verifyPassword &&
-                    styles.errorInput,
-                ]}>
-
+                  errors.verifyPassword && styles.errorInput,
+                ]}
+              >
                 <Image
                   source={require('../assets/images/ic_password.png')}
                   style={styles.inputIcon}
@@ -335,23 +285,16 @@ const ResetPassword = ({
                 <TextInput
                   style={styles.input}
                   placeholder="Re-enter password"
-                  placeholderTextColor={
-                    Colors.text_hint
-                  }
-                  secureTextEntry={
-                    !showVerifyPassword
-                  }
+                  placeholderTextColor={Colors.text_hint}
+                  secureTextEntry={!showVerifyPassword}
                   value={verifyPassword}
                   onChangeText={text => {
                     setVerifyPassword(text);
 
-                    if (
-                      errors.verifyPassword
-                    ) {
+                    if (errors.verifyPassword) {
                       setErrors(previous => ({
                         ...previous,
-                        verifyPassword:
-                          undefined,
+                        verifyPassword: undefined,
                       }));
                     }
                   }}
@@ -362,14 +305,10 @@ const ResetPassword = ({
 
                 <TouchableOpacity
                   style={styles.eyeIcon}
-                  onPress={() =>
-                    setShowVerifyPassword(
-                      previous => !previous,
-                    )
-                  }
+                  onPress={() => setShowVerifyPassword(previous => !previous)}
                   disabled={loading}
-                  activeOpacity={0.7}>
-
+                  activeOpacity={0.7}
+                >
                   <Image
                     source={
                       showVerifyPassword
@@ -379,22 +318,13 @@ const ResetPassword = ({
                     style={styles.eyeImage}
                     resizeMode="contain"
                   />
-
                 </TouchableOpacity>
-
               </View>
 
-              <View
-                style={styles.errorContainer}>
-
+              <View style={styles.errorContainer}>
                 {errors.verifyPassword ? (
-                  <Text style={styles.errorText}>
-                    {
-                      errors.verifyPassword
-                    }
-                  </Text>
+                  <Text style={styles.errorText}>{errors.verifyPassword}</Text>
                 ) : null}
-
               </View>
 
               {/* =================================
@@ -402,19 +332,12 @@ const ResetPassword = ({
               ================================= */}
 
               <TouchableOpacity
-                style={[
-                  styles.button,
-                  loading &&
-                    styles.buttonDisabled,
-                ]}
+                style={[styles.button, loading && styles.buttonDisabled]}
                 onPress={handleResetPassword}
                 disabled={loading}
-                activeOpacity={0.8}>
-
-                <Text style={styles.buttonText}>
-                  Set Password
-                </Text>
-
+                activeOpacity={0.8}
+              >
+                <Text style={styles.buttonText}>Set Password</Text>
               </TouchableOpacity>
 
               {/* =================================
@@ -423,24 +346,14 @@ const ResetPassword = ({
 
               <TouchableOpacity
                 style={styles.backButton}
-                onPress={() =>
-                  navigation.goBack()
-                }
+                onPress={() => navigation.goBack()}
                 disabled={loading}
-                activeOpacity={0.7}>
-
-                <Text
-                  style={
-                    styles.backButtonText
-                  }>
-                  Back
-                </Text>
-
+                activeOpacity={0.7}
+              >
+                <Text style={styles.backButtonText}>Back</Text>
               </TouchableOpacity>
-
             </View>
           </View>
-
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -452,28 +365,14 @@ const ResetPassword = ({
       ========================================== */}
 
       {loading && (
-        <View
-          style={styles.loaderOverlay}
-          pointerEvents="auto">
+        <View style={styles.loaderOverlay} pointerEvents="auto">
+          <View style={styles.loaderCenter}>
+            <ActivityIndicator size="large" color="#007AFF" />
 
-          <View
-            style={styles.loaderCenter}>
-
-            <ActivityIndicator
-              size="large"
-              color="#007AFF"
-            />
-
-            <Text
-              style={styles.loaderText}>
-              Loading...
-            </Text>
-
+            <Text style={styles.loaderText}>Loading...</Text>
           </View>
-
         </View>
       )}
-
     </SafeAreaView>
   );
 };
@@ -487,8 +386,7 @@ export default ResetPassword;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor:
-      Colors.background_login,
+    backgroundColor: Colors.background_login,
   },
 
   keyboardAvoidingView: {
@@ -529,8 +427,7 @@ const styles = StyleSheet.create({
   ============================================== */
 
   container: {
-    backgroundColor:
-      Colors.background_login,
+    backgroundColor: Colors.background_login,
     paddingHorizontal: 20,
     paddingTop: 5,
     paddingBottom: 30,
@@ -577,10 +474,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor:
-      Colors.inputBorder,
-    backgroundColor:
-      Colors.inputBackground,
+    borderColor: Colors.inputBorder,
+    backgroundColor: Colors.inputBackground,
     borderRadius: 16,
     paddingHorizontal: 10,
   },
@@ -592,8 +487,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     fontSize: FontSize.small,
     fontFamily: FontFamily.regular,
-    color:
-      Colors.textColorInpuHeader,
+    color: Colors.textColorInpuHeader,
   },
 
   inputIcon: {
@@ -647,8 +541,7 @@ const styles = StyleSheet.create({
   button: {
     height: 40,
     width: '100%',
-    backgroundColor:
-      Colors.button_color,
+    backgroundColor: Colors.button_color,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
@@ -699,8 +592,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
 
-    backgroundColor:
-      'rgba(0, 0, 0, 0.35)',
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
 
     justifyContent: 'center',
     alignItems: 'center',

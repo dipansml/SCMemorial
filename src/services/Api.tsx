@@ -18,6 +18,7 @@ import { ViewFeeStructureResponse } from '../Model/ViewFeeStructure/ViewFeeStruc
 import { ReAdmissionApiResponse } from '../Model/ReAdmission/ReAdmissionResponse';
 import { ForgotPasswordResponse } from '../Model/ForgetPassword/ForgotPasswordResponse';
 import { VerifyCodeResponse } from '../Model/ForgetPassword/VerifyCode'
+import { ResetPasswordResponse } from '../Model/ResetPassword/ResetPasswordResponse'
 import { RestApi } from './RestApi';
 
 // Request
@@ -90,6 +91,12 @@ export interface ForgetPasswordPayload {
 export interface VerifyCodePayload{
   email: string;
   verification_code: string
+}
+
+export interface ResetPasswordPayload{
+  user_id: string;
+  password: string;
+  confirm_password: string
 }
 
 
@@ -220,6 +227,11 @@ export const Api = {
 
   validateVerificationCode: async (payload: VerifyCodePayload): Promise<VerifyCodeResponse> => {
     const response = await RestApi.post('/validate-verification-code', payload);
+    return response.data;
+  },
+
+  resetPassword: async (payload: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
+    const response = await RestApi.post('/reset-new-password', payload);
     return response.data;
   },
 };

@@ -46,6 +46,7 @@ const Colors = {
   instruction_box : '#F9F1E2',
   instruction_text : '#6A4300',
   red: '#EA2932',
+  black: '#000000',
   tab_icon_back: '#E3ECFE',
   button_text_inactive: '#1E1C1D80',
   loaderBackground: '#00000040',

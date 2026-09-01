@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -49,6 +49,64 @@ const Login = ({ navigation }: LoginProps) => {
   }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const studentIdRef = useRef('');
+
+ const handleStudentIdChange = (text: string) => {
+    // Detect backspace
+    const isDeleting = text.length < studentIdRef.current.length;
+
+    // Special case:
+    // 26- -> 2
+    if (isDeleting && studentIdRef.current.endsWith('-')) {
+      const previousNumbers = studentIdRef.current.replace(/\D/g, '');
+
+      // Remove the 2nd digit
+      const newNumbers = previousNumbers.slice(0, 1);
+
+      setStudentId(newNumbers);
+      studentIdRef.current = newNumbers;
+
+      setErrors({
+        ...errors,
+        studentId: undefined,
+      });
+
+      return;
+    }
+
+    // Remove non-numeric characters
+    const numbers = text.replace(/\D/g, '').slice(0, 6);
+
+    let formatted = numbers;
+
+    if (numbers.length >= 2) {
+      formatted = `${numbers.slice(0, 2)}-${numbers.slice(2)}`;
+    }
+
+    setStudentId(formatted);
+    studentIdRef.current = formatted;
+
+    setErrors({
+      ...errors,
+      studentId: undefined,
+    });
+  };
+
+  const handleStudentIdKeyPress = ({
+    nativeEvent,
+  }: {
+    nativeEvent: {key: string};
+  }) => {
+    if (nativeEvent.key !== 'Backspace') {
+      return;
+    }
+
+    // Special case:
+    // 26- -> 2
+    if (studentId.length === 3 && studentId.endsWith('-')) {
+      setStudentId(studentId.substring(0, 1));
+    }
+  };
 
   const validateLogin = () => {
     const newErrors: { studentId?: string; password?: string } = {};
@@ -304,6 +362,7 @@ const Login = ({ navigation }: LoginProps) => {
                     source={require('../assets/images/student_id.png')}
                     style={styles.inputIcon}
                   />
+                  
                   <TextInput
                     style={[
                       styles.input,
@@ -312,10 +371,9 @@ const Login = ({ navigation }: LoginProps) => {
                     placeholder="Enter your ID"
                     placeholderTextColor={Colors.text_hint}
                     value={studentId}
-                    onChangeText={t => {
-                      setStudentId(t);
-                      setErrors({ ...errors, studentId: undefined });
-                    }}
+                    keyboardType="number-pad"
+                    maxLength={7}
+                    onChangeText={handleStudentIdChange}
                   />
                 </View>
                 {errors.studentId && (
@@ -334,6 +392,7 @@ const Login = ({ navigation }: LoginProps) => {
                     placeholder="******"
                     secureTextEntry={!showPassword}
                     value={password}
+                    autoCapitalize="none"
                     onChangeText={t => {
                       setPassword(t);
                       if (errors.password) {

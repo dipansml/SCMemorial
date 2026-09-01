@@ -24,6 +24,12 @@ const Attendance = ({ navigation }: { navigation: any }) => {
     null,
   );
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const fallbackImage =
+    attendanceData?.gender === 'Female'
+      ? require('../assets/images/student2.png')
+      : require('../assets/images/student1.png');
   useEffect(() => {
     loadAttendance(new Date().toISOString());
   }, []);
@@ -42,6 +48,7 @@ const Attendance = ({ navigation }: { navigation: any }) => {
           name: response.data.name,
           class: response.data.class,
           roll: response.data.roll,
+          image: response.data.image,
           academic_year: response.data.academic_year,
           present: response.data.present,
           absent: response.data.absent,
@@ -97,13 +104,14 @@ const Attendance = ({ navigation }: { navigation: any }) => {
           {/* ===================================================== PROFILE CARD ===================================================== */}{' '}
           <View style={styles.profileCard}>
             {' '}
-            <Image
+           <Image
               source={
-                attendanceData?.gender === 'Female'
-                  ? require('../assets/images/student2.png')
-                  : require('../assets/images/student1.png')
+                attendanceData?.image && !imageError
+                  ? {uri: attendanceData.image}
+                  : fallbackImage
               }
               style={styles.avatar}
+              onError={() => setImageError(true)}
             />{' '}
             <View style={styles.profileInfo}>
               {' '}
@@ -131,9 +139,9 @@ const Attendance = ({ navigation }: { navigation: any }) => {
             {/* ================= LEFT ================= */}{' '}
             <View style={styles.leftSection}>
               {' '}
-              <View style={styles.attendanceCard}>
+             <View style={styles.attendanceCard}>
                 <Image
-                  source={require('../assets/images/graph.png')}
+                  source={require('../assets/images/icons/attendance_class_icon.png')}
                   style={styles.graph}
                 />
 
@@ -144,6 +152,13 @@ const Attendance = ({ navigation }: { navigation: any }) => {
                 <Text style={styles.attendanceValue}>
                   {attendanceData?.attendance_percentage || 0}%
                 </Text>
+
+                {/* Bottom-right image */}
+                <Image
+                  source={require('../assets/images/round-icon-clip_full.png')}
+                  style={styles.bottomRightImage}
+                  resizeMode="contain"
+                />
               </View>
             </View>{' '}
             {/* ================= RIGHT ================= */}{' '}
@@ -253,6 +268,8 @@ export default Attendance;
       width: 80,
       height: 80,
       borderRadius: card.border_radius_profile,
+      borderWidth: 1,
+      borderColor: Colors.black,
       marginRight: 12,
     },
     profileInfo: { flex: 1 },
@@ -296,13 +313,22 @@ export default Attendance;
         borderRadius: 30,
         overflow: 'hidden',
       },
-    attendanceCard: {
-      width: '100%',
-      height: '100%',
-      justifyContent: 'center',
-      padding: 16,
-      backgroundColor: Colors.theme_color,
-    },
+   attendanceCard: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        padding: 16,
+        backgroundColor: Colors.theme_color,
+        position: 'relative',
+      },
+
+      bottomRightImage: {
+        position: 'absolute',
+        right: -50,
+        bottom: -50,
+        width: 200,
+        height: 140,
+      },
     attendanceImage: { borderRadius: 40 },
     /* ============================================================ LEFT CARD CONTENT ============================================================ */ graph:
       { width: 40, height: 40, marginBottom: 18 },

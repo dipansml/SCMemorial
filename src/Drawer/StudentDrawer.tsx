@@ -42,12 +42,12 @@ const menuItems: MenuItem[] = [
     route: 'Attendance',
     icon: require('../assets/images/icons/attendance.png'),
   },
-  // {
-  //   key: 'Fees',
-  //   label: 'Fees Overview',
-  //   route: 'Fees',
-  //   icon: require('../assets/images/icons/fees_overview.png'),
-  // },
+  {
+    key: 'Fees',
+    label: 'Fees Overview',
+    route: 'Fees',
+    icon: require('../assets/images/icons/fees_overview.png'),
+  },
   {
     key: 'PaymentHistory',
     label: 'Payment History',
@@ -78,12 +78,12 @@ const menuItems: MenuItem[] = [
     route: 'Library',
     icon: require('../assets/images/icons/book.png'),
   },
-  // {
-  //   key: 'OnlineExam',
-  //   label: 'Online Exam',
-  //   route: 'OnlineExam',
-  //   icon: require('../assets/images/icons/academic.png'),
-  // },
+  {
+    key: 'OnlineExam',
+    label: 'Online Exam',
+    route: 'OnlineExam',
+    icon: require('../assets/images/icons/academic.png'),
+  },
 ];
 
 const StudentDrawer = () => {

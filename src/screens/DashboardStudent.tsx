@@ -52,6 +52,11 @@ const DashboardStudent = ({ navigation }: DashboardStudentProps) => {
   );
 
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const fallbackImage =
+      dashboardData?.studentdetails?.gender === 'Female'
+        ? require('../assets/images/student2.png')
+        : require('../assets/images/student1.png');
 
   useFocusEffect(
     useCallback(() => {
@@ -132,11 +137,12 @@ const DashboardStudent = ({ navigation }: DashboardStudentProps) => {
             <View style={styles.card}>
               <Image
                 source={
-                  dashboardData?.studentdetails?.gender === 'Female'
-                    ? require('../assets/images/student2.png')
-                    : require('../assets/images/student1.png')
+                  dashboardData?.studentdetails?.image && !imageError
+                    ? {uri: dashboardData?.studentdetails?.image}
+                    : fallbackImage
                 }
                 style={styles.avatar}
+                onError={() => setImageError(true)}
               />
 
               <Text style={styles.name}>
@@ -417,6 +423,8 @@ const styles = StyleSheet.create({
     borderRadius: card.border_radius_card,
     alignSelf: 'center',
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: Colors.black,
   },
 
   name: {

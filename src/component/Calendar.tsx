@@ -49,7 +49,7 @@ const getStatusColor = (status: StatusType): string => {
       return Colors.present;
     case 'Absent':
       return Colors.absent;
-    case 'Holi Day':
+    case 'Holiday':
       return Colors.holiday;
     case 'Half Day':
       return Colors.halfday;  

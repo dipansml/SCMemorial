@@ -22,10 +22,19 @@ import StorageManager from '../services/StorageManager';
 
 type DrawerNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+type DrawerRoute =
+  | 'LandingStudent'
+  | 'Attendance'
+  | 'Fees'
+  | 'PaymentHistory'
+  | 'Events'
+  | 'Library'
+  | 'OnlineExam';
+
 type MenuItem = {
   key: string;
   label: string;
-  route: keyof RootStackParamList;
+  route: DrawerRoute;
   icon: any;
 };
 
@@ -278,7 +287,7 @@ const styles = StyleSheet.create({
   drawer: {
     backgroundColor: Colors.white,
     flexDirection: 'column',
-    marginTop: Header.paddingTop,
+    marginTop: 0,
 
     ...Platform.select({
       android: {

@@ -22,11 +22,21 @@ import StorageManager from '../services/StorageManager';
 
 type DrawerNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+type DrawerRoute =
+  | 'LandingParents'
+  | 'Attendance'
+  | 'Fees'
+  | 'PaymentHistory'
+  | 'Events'
+  | 'Notice'
+  | 'Homework'
+  | 'Library'
+  | 'Messages';
 
 type MenuItem = {
   key: string;
   label: string;
-  route: keyof RootStackParamList;
+  route: DrawerRoute;
   icon: any;
 };
 
@@ -93,9 +103,8 @@ const ParentDrawer = () => {
   const insets = useSafeAreaInsets();
 
   const drawerWidth = Math.min(360, Math.max(280, Math.round(width * 0.72)));
-  const footerBottomInset = Platform.OS === 'android'
-    ? Math.max(insets.bottom, 16)
-    : insets.bottom;
+  const footerBottomInset =
+    Platform.OS === 'android' ? Math.max(insets.bottom, 16) : insets.bottom;
 
   // ✅ Get current active screen behind drawer
   const state = navigation.getState();
@@ -104,10 +113,10 @@ const ParentDrawer = () => {
   const currentRoute =
     state.routes[state.routes.length - 2]?.name || 'LandingParents';
 
-    const handleLogout = async () => {
-      await StorageManager.clearLoginData();
-      navigation.replace('Login')
-    };
+  const handleLogout = async () => {
+    await StorageManager.clearLoginData();
+    navigation.replace('Login');
+  };
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -119,85 +128,70 @@ const ParentDrawer = () => {
       <View style={styles.backdrop}>
         {/* Drawer */}
         <View style={[styles.drawer, { width: drawerWidth }]}>
-
-            {/* Header */}
-            <View style={styles.schoolHeader}>
-              <Image
-                source={require('../assets/images/title_logo.png')}
-                style={styles.schoolLogo}
-              />
-            </View>
-
-            {/* Menu - Only this section scrolls */}
-            <ScrollView
-              style={styles.menuScroll}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.menuContent}
-            >
-              {menuItems.map((item) => {
-                const isActive = currentRoute === item.route;
-
-                return (
-                  <TouchableOpacity
-                    key={item.key}
-                    activeOpacity={0.75}
-                    style={[
-                      styles.menuItem,
-                      isActive && styles.menuItemActive,
-                    ]}
-                    onPress={() => {
-                      navigation.replace(item.route);
-                    }}
-                  >
-                    <View style={styles.menuIconWrap}>
-                      <Image
-                        source={item.icon}
-                        style={[
-                          styles.menuIcon,
-                          isActive && styles.menuIconActive,
-                        ]}
-                      />
-                    </View>
-
-                    <Text
-                      style={[
-                        styles.menuLabel,
-                        isActive && styles.menuLabelActive,
-                      ]}
-                    >
-                      {item.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-
-            {/* Logout - Always at bottom */}
-            <View style={styles.logoutSection}>
-              <View style={styles.devider} />
-
-              <Pressable
-                style={styles.signOutContainer}
-                onPress={handleLogout}
-              >
-                <Image
-                  source={require('../assets/images/icons/logout.png')}
-                  style={styles.signOutIcon}
-                />
-
-                <Text style={styles.signOutText}>
-                  Sign Out
-                </Text>
-              </Pressable>
-            </View>
-
+          {/* Header */}
+          <View style={styles.schoolHeader}>
+            <Image
+              source={require('../assets/images/title_logo.png')}
+              style={styles.schoolLogo}
+            />
           </View>
-        <Pressable
-          style={styles.overlay}
-          onPress={() => navigation.goBack()}
-        />
 
-      
+          {/* Menu - Only this section scrolls */}
+          <ScrollView
+            style={styles.menuScroll}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.menuContent}
+          >
+            {menuItems.map(item => {
+              const isActive = currentRoute === item.route;
+
+              return (
+                <TouchableOpacity
+                  key={item.key}
+                  activeOpacity={0.75}
+                  style={[styles.menuItem, isActive && styles.menuItemActive]}
+                  onPress={() => {
+                    navigation.replace(item.route);
+                  }}
+                >
+                  <View style={styles.menuIconWrap}>
+                    <Image
+                      source={item.icon}
+                      style={[
+                        styles.menuIcon,
+                        isActive && styles.menuIconActive,
+                      ]}
+                    />
+                  </View>
+
+                  <Text
+                    style={[
+                      styles.menuLabel,
+                      isActive && styles.menuLabelActive,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+
+          {/* Logout - Always at bottom */}
+          <View style={styles.logoutSection}>
+            <View style={styles.devider} />
+
+            <Pressable style={styles.signOutContainer} onPress={handleLogout}>
+              <Image
+                source={require('../assets/images/icons/logout.png')}
+                style={styles.signOutIcon}
+              />
+
+              <Text style={styles.signOutText}>Sign Out</Text>
+            </Pressable>
+          </View>
+        </View>
+        <Pressable style={styles.overlay} onPress={() => navigation.goBack()} />
       </View>
     </SafeAreaView>
   );
@@ -217,9 +211,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.35)',
   },
 
-
   schoolLogo: {
-    flex:2,
+    flex: 2,
     resizeMode: 'contain',
   },
 
@@ -266,7 +259,7 @@ const styles = StyleSheet.create({
     tintColor: Colors.menu_tint,
   },
 
-   menuIconActive: {
+  menuIconActive: {
     width: Menu.menuSize,
     height: Menu.menuSize,
     resizeMode: 'contain',
@@ -293,74 +286,74 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-drawer: {
-  backgroundColor: Colors.white,
-  flexDirection: 'column',
-  marginTop: Header.paddingTop,
+  drawer: {
+    backgroundColor: Colors.white,
+    flexDirection: 'column',
+    marginTop: 0,
 
-  ...Platform.select({
-    android: {
-      elevation: 8,
-    },
-    ios: {
-      shadowColor: '#000',
-      shadowOpacity: 0.18,
-      shadowRadius: 12,
-      shadowOffset: { width: 2, height: 0 },
-    },
-  }),
-},
+    ...Platform.select({
+      android: {
+        elevation: 8,
+      },
+      ios: {
+        shadowColor: '#000',
+        shadowOpacity: 0.18,
+        shadowRadius: 12,
+        shadowOffset: { width: 2, height: 0 },
+      },
+    }),
+  },
 
-schoolHeader: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  height: '15%',
-  backgroundColor: Colors.theme_color,
-  padding: 14,
-  marginBottom: 10,
-},
+  schoolHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: '15%',
+    backgroundColor: Colors.theme_color,
+    padding: 14,
+    marginBottom: 10,
+  },
 
-menuScroll: {
-  flex: 1,
-},
+  menuScroll: {
+    flex: 1,
+  },
 
-menuContent: {
-  paddingBottom: 10,
-  paddingHorizontal: 10,
-},
+  menuContent: {
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+  },
 
-logoutSection: {
-  width: '100%',
-  backgroundColor: Colors.white,
-},
+  logoutSection: {
+    width: '100%',
+    backgroundColor: Colors.white,
+  },
 
-devider: {
-  borderTopWidth: 1,
-  borderTopColor: Colors.border_color,
-},
+  devider: {
+    borderTopWidth: 1,
+    borderTopColor: Colors.border_color,
+  },
 
-signOutContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  paddingHorizontal: 20,
-  height: 55,
-  backgroundColor: Colors.background,
+  signOutContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    height: 55,
+    backgroundColor: Colors.background,
 
-  // Android safe-area space
-  paddingBottom: Platform.OS === 'android' ? 5 : 0,
-},
+    // Android safe-area space
+    paddingBottom: Platform.OS === 'android' ? 5 : 0,
+  },
 
-signOutIcon: {
-  width: 18,
-  height: 18,
-  marginRight: 10,
-  resizeMode: 'contain',
-  tintColor: Colors.menu_tint,
-},
+  signOutIcon: {
+    width: 18,
+    height: 18,
+    marginRight: 10,
+    resizeMode: 'contain',
+    tintColor: Colors.menu_tint,
+  },
 
-signOutText: {
-  color: Colors.textColorInpuHeader,
-  fontFamily: FontFamily.regular,
-  fontSize: FontSize.regular,
-},  
+  signOutText: {
+    color: Colors.textColorInpuHeader,
+    fontFamily: FontFamily.regular,
+    fontSize: FontSize.regular,
+  },
 });

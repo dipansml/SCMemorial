@@ -47,6 +47,7 @@ class CCAvenueCheckoutActivity : Activity() {
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
     private var orderId = ""
+    private var hasCompleted = false
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,6 +84,10 @@ class CCAvenueCheckoutActivity : Activity() {
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                if (hasCompleted) {
+                    view?.stopLoading()
+                    return
+                }
                 super.onPageStarted(view, url, favicon)
                 if (BuildConfig.DEBUG && !url.isNullOrEmpty()) {
                     Log.d(TAG, "===== CCAVENUE NAVIGATION - ANDROID =====")
@@ -104,6 +109,16 @@ class CCAvenueCheckoutActivity : Activity() {
             java.net.URLEncoder.encode(encryptedData, "UTF-8")
         }&access_code=$accessCode"
         webView.postUrl(checkoutUrl, postData.toByteArray())
+    }
+
+    private fun completeCheckout(resultCode: Int, resultIntent: Intent) {
+        if (hasCompleted) {
+            return
+        }
+        hasCompleted = true
+        runOnUiThread { webView.stopLoading() }
+        setResult(resultCode, resultIntent)
+        finish()
     }
 
     inner class CCAvenueJsInterface {
@@ -152,16 +167,14 @@ class CCAvenueCheckoutActivity : Activity() {
                     putExtra(RESULT_CARD_NAME, response["card_name"] ?: "")
                     putExtra(RESULT_STATUS_CODE, response["status_code"] ?: "")
                 }
-                setResult(RESULT_OK, resultIntent)
-                finish()
+                completeCheckout(RESULT_OK, resultIntent)
             } catch (e: Exception) {
                 val resultIntent = Intent().apply {
                     putExtra(RESULT_ORDER_ID, orderId)
                     putExtra(RESULT_ORDER_STATUS, "Error")
                     putExtra(RESULT_STATUS_MESSAGE, "Failed to parse response: ${e.message}")
                 }
-                setResult(RESULT_OK, resultIntent)
-                finish()
+                completeCheckout(RESULT_OK, resultIntent)
             }
         }
 
@@ -201,8 +214,7 @@ class CCAvenueCheckoutActivity : Activity() {
                 putExtra(RESULT_ORDER_STATUS, "Aborted")
                 putExtra(RESULT_STATUS_MESSAGE, "Payment was cancelled by user")
             }
-            setResult(RESULT_CANCELED, resultIntent)
-            finish()
+            completeCheckout(RESULT_CANCELED, resultIntent)
         }
     }
 }

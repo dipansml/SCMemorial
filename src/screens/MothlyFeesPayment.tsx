@@ -194,16 +194,41 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
     setExpandedMonth(prev => (prev === id ? null : id));
   };
 
+  const unpaidMonthIds = months.filter(m => !m.paid).map(m => m.id);
+
+  const orderedSelectedMonths = months
+    .filter(m => selectedMonths.includes(m.id))
+    .map(m => m.id);
+
+  const isSelectableMonth = (id: string) => {
+    const idx = unpaidMonthIds.indexOf(id);
+    if (idx === -1) {
+      return false;
+    }
+    if (idx === 0) {
+      return true;
+    }
+    return selectedMonths.includes(unpaidMonthIds[idx - 1]);
+  };
+
   const toggleMonthSelection = (id: string) => {
     const month = months.find(m => m.id === id);
-    if (month?.paid) {
+    if (!month || month.paid) {
       return;
     }
-    setSelectedMonths(prev =>
-      prev.includes(id)
-        ? prev.filter(monthId => monthId !== id)
-        : [...prev, id],
-    );
+
+    if (selectedMonths.includes(id)) {
+      const lastSelectedId =
+        orderedSelectedMonths[orderedSelectedMonths.length - 1];
+      if (lastSelectedId === id) {
+        setSelectedMonths(prev => prev.filter(monthId => monthId !== id));
+      }
+      return;
+    }
+
+    if (isSelectableMonth(id)) {
+      setSelectedMonths(prev => [...prev, id]);
+    }
   };
 
   const totalSelectedFee = selectedMonths.reduce((sum, monthId) => {

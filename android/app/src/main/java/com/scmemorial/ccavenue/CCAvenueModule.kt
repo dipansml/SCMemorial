@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.scmemorial.BuildConfig
 
 class CCAvenueModule(reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext), ActivityEventListener {
@@ -74,6 +75,24 @@ class CCAvenueModule(reactContext: ReactApplicationContext) :
         for ((key, value) in params) {
             sb.append(key).append('=').append(phpUrlEncode(value)).append('&')
         }
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "===== CCAVENUE REQUEST - ANDROID =====")
+            Log.d(TAG, "order_id        = $orderId")
+            Log.d(TAG, "student_code    = $studentCode")
+            Log.d(TAG, "finalPayAmt     = $amount")
+            Log.d(TAG, "first_name      = $customerName")
+            Log.d(TAG, "form_no         = $formNo")
+            Log.d(TAG, "amount          = ${String.format("%.2f", amount.toDoubleOrNull() ?: 0.0)}")
+            Log.d(TAG, "merchant_id     = $MERCHANT_ID")
+            Log.d(TAG, "merchant_param1 = $merchantParam1")
+            Log.d(TAG, "merchant_param2 = $merchantParam2")
+            Log.d(TAG, "merchant_param3 = $merchantParam3")
+            Log.d(TAG, "merchant_param4 = $merchantParam4")
+            Log.d(TAG, "merchant_param5 = $merchantParam5")
+            Log.d(TAG, "======================================")
+        }
+
         return sb.toString()
     }
 
@@ -131,6 +150,15 @@ class CCAvenueModule(reactContext: ReactApplicationContext) :
             result.putString("currency", "INR")
             result.putString("statusMessage", data?.getStringExtra(CCAvenueCheckoutActivity.RESULT_STATUS_MESSAGE) ?: "Cancelled")
             result.putString("failureMessage", "")
+            result.putString("billingName", "")
+            result.putString("responseCode", "")
+            result.putString("merchantParam1", "")
+            result.putString("merchantParam2", "")
+            result.putString("merchantParam3", "")
+            result.putString("merchantParam4", "")
+            result.putString("merchantParam5", "")
+            result.putString("cardName", "")
+            result.putString("statusCode", "")
             promise?.resolve(result)
             return
         }
@@ -152,6 +180,15 @@ class CCAvenueModule(reactContext: ReactApplicationContext) :
         result.putString("responseCode", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_RESPONSE_CODE) ?: "")
         result.putString("statusMessage", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_STATUS_MESSAGE) ?: "")
         result.putString("failureMessage", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_FAILURE_MESSAGE) ?: "")
+        result.putString("billingName", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_BILLING_NAME) ?: "")
+        result.putString("responseCode", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_RESPONSE_CODE) ?: "")
+        result.putString("merchantParam1", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_MERCHANT_PARAM1) ?: "")
+        result.putString("merchantParam2", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_MERCHANT_PARAM2) ?: "")
+        result.putString("merchantParam3", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_MERCHANT_PARAM3) ?: "")
+        result.putString("merchantParam4", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_MERCHANT_PARAM4) ?: "")
+        result.putString("merchantParam5", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_MERCHANT_PARAM5) ?: "")
+        result.putString("cardName", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_CARD_NAME) ?: "")
+        result.putString("statusCode", data.getStringExtra(CCAvenueCheckoutActivity.RESULT_STATUS_CODE) ?: "")
         promise?.resolve(result)
     }
 

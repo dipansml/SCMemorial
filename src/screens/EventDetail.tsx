@@ -73,8 +73,11 @@ const EventDetail = ({ navigation, route }: Props) => {
         amount,
         currency: 'INR',
         customerName: userName || 'Student',
-        merchantParam1: event?.event_name || undefined,
-        merchantParam2: remarks || undefined,
+        merchantParam1: '',
+        merchantParam2: '',
+        merchantParam3: amount,
+        merchantParam4: '',
+        merchantParam5: userName || 'Student',
       });
 
       setProcessing(false);
@@ -86,7 +89,7 @@ const EventDetail = ({ navigation, route }: Props) => {
           [{ text: 'OK', onPress: () => navigation.goBack() }],
         );
       } else if (response.orderStatus === 'Aborted') {
-        Alert.alert('Payment Cancelled', 'You cancelled the payment.');
+        await CCAvenueService.postAbortedResponseToPhp(response);
       } else {
         Alert.alert(
           'Payment Failed',

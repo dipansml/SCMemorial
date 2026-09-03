@@ -15,7 +15,10 @@ import Colors from '../theme/colors';
 import { FontFamily, FontSize } from '../theme/fonts_dimen';
 import type { FeeAmountForSelectedMonthResponse } from '../Model/FeeAmountForSelectedMonth/FeeAmountForSelectedMonthResponse';
 import { CCAvenueService } from '../services/ccavenue/CCAvenueService';
-import type { CCAvenuePaymentResponse } from '../services/ccavenue/CCAvenueTypes';
+import type {
+  CCAvenueMerchantMeta,
+  CCAvenuePaymentResponse,
+} from '../services/ccavenue/CCAvenueTypes';
 import { generateOrderId } from '../utils/orderId';
 
 export type PaymentFormData = {
@@ -33,6 +36,7 @@ type Props = {
   selectedMonthNames: string[];
   initialPayeeName?: string;
   feeAmountData: FeeAmountForSelectedMonthResponse | null;
+  merchantMeta?: CCAvenueMerchantMeta;
   onClose: () => void;
   onProceedToPay: (data: PaymentFormData) => void;
 };
@@ -48,6 +52,7 @@ const PayAcademicFeesModal = ({
   selectedMonthNames,
   initialPayeeName = '',
   feeAmountData,
+  merchantMeta,
   onClose,
   onProceedToPay,
 }: Props) => {
@@ -104,15 +109,40 @@ const PayAcademicFeesModal = ({
         dueAmount,
       );
       const amount = Number(finalCashAmount).toFixed(2);
+      const customerName = payeeName.trim() || merchantMeta?.customerName || 'Student';
+
+      const merchantParam2 = merchantMeta
+        ? [
+            merchantMeta.payeeUserId || '',
+            merchantMeta.sessionYearId || '',
+            merchantMeta.selId || '',
+            merchantMeta.loginUserId || '',
+          ].join('#')
+        : '';
 
       const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
         orderId,
         amount,
         currency: 'INR',
-        customerName: payeeName || 'Student',
+        customerName,
+        studentCode: merchantMeta?.studentCode || undefined,
+        formNo: merchantMeta?.formNo || undefined,
+        merchantParam1: '',
+        merchantParam2,
+        merchantParam3: amount,
+        merchantParam4: merchantMeta?.studentCode || undefined,
+        merchantParam5: customerName,
       });
 
+      console.log('===== CCAvenue Native Result =====');
+      console.log(response);
+
       setPaying(false);
+
+      if (response.orderStatus === 'Aborted') {
+        await CCAvenueService.postAbortedResponseToPhp(response);
+        return;
+      }
 
       if (response.orderStatus === 'Success') {
         Alert.alert(
@@ -129,8 +159,6 @@ const PayAcademicFeesModal = ({
             });
           }}],
         );
-      } else if (response.orderStatus === 'Aborted') {
-        Alert.alert('Payment Cancelled', 'You cancelled the payment.');
       } else {
         Alert.alert(
           'Payment Failed',

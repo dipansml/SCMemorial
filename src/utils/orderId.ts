@@ -1,11 +1,26 @@
 export function generateOrderId(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
-  const h = String(now.getHours()).padStart(2, '0');
-  const mi = String(now.getMinutes()).padStart(2, '0');
-  const s = String(now.getSeconds()).padStart(2, '0');
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `CCA_${y}${m}${d}_${h}${mi}${s}_${rand}`;
+  const hexChars = '0123456789abcdef';
+
+  let randomHex = '';
+  const bytes = new Uint8Array(10);
+  const cryptoObj: any = (globalThis as any).crypto;
+  try {
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+      cryptoObj.getRandomValues(bytes);
+      for (let i = 0; i < bytes.length; i++) {
+        randomHex += hexChars[bytes[i] % 16];
+      }
+    }
+  } catch {
+    randomHex = '';
+  }
+
+  if (randomHex.length < 10) {
+    randomHex = '';
+    for (let i = 0; i < 10; i++) {
+      randomHex += hexChars[Math.floor(Math.random() * 16)];
+    }
+  }
+
+  return `ord-${randomHex}`;
 }

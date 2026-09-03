@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
@@ -74,7 +75,9 @@ const Fees = ({ navigation }: FeesProps) => {
   const [selectedKey, setSelectedKey] = useState(
     PAYMENT_OPTIONS[0].key,
   );
-  const [reAdmissionDone, setReAdmissionDone] = useState(false);
+  const [reAdmissionDone, setReAdmissionDone] = useState<
+    boolean | null
+  >(null);
   const [reAdmissionTotal, setReAdmissionTotal] = useState<string>(
     PAYMENT_OPTIONS[0].subtitle,
   );
@@ -96,9 +99,27 @@ const Fees = ({ navigation }: FeesProps) => {
         );
       } catch (error) {
         console.log('Re Admission Status Fetch Error:', error);
+        setReAdmissionDone(false);
       }
     })();
   }, []);
+
+  if (reAdmissionDone === null) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <AppHeader
+          title="Fees Overview"
+          onMenuPress={openParentDrawer}
+          onBellPress={() => console.log('Bell')}
+          onProfilePress={() => console.log('Profile')}
+          navigation={navigation}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.theme_color} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const visibleOptions = reAdmissionDone
     ? PAYMENT_OPTIONS.filter(option => option.key === 'monthly')
@@ -168,6 +189,11 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     paddingHorizontal: 16,
     marginTop: 14,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   nextButton: {
     width: 339,

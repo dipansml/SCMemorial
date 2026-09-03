@@ -4,26 +4,37 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.http.SslError
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.webkit.ConsoleMessage
 import android.webkit.JavascriptInterface
 import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import com.scmemorial.BuildConfig
+import java.net.URLDecoder
 
 class CCAvenueCheckoutActivity : Activity() {
 
     companion object {
         private const val TAG = "CCAvenueCheckoutActivity"
+        private const val FLOW = "ANDROID_CCAVENUE"
+        private const val CALLBACK_MARKER = "ccavenue-response-handler-fee-api"
+        private const val FALLBACK_DELAY_MS = 3000L
+
         const val EXTRA_ORDER_ID = "order_id"
         const val EXTRA_ENCRYPTED_DATA = "encrypted_data"
         const val EXTRA_ACCESS_CODE = "access_code"
         const val EXTRA_CHECKOUT_URL = "checkout_url"
+        const val EXTRA_WORKING_KEY = "working_key"
+
         const val RESULT_ORDER_ID = "result_order_id"
         const val RESULT_TRACKING_ID = "result_tracking_id"
         const val RESULT_BANK_REF_NO = "result_bank_ref_no"
@@ -46,8 +57,22 @@ class CCAvenueCheckoutActivity : Activity() {
 
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val completionLock = Any()
     private var orderId = ""
-    private var hasCompleted = false
+    private var workingKey = ""
+    @Volatile private var hasCompleted = false
+    @Volatile private var capturedResponse: Map<String, String>? = null
+
+    private val fallbackRunnable = Runnable {
+        if (hasCompleted) return@Runnable
+        capturedResponse?.let {
+            completeWithRealResponse(it)
+            return@Runnable
+        }
+        Log.d(TAG, "$FLOW: fallback cancellation used")
+        completeCheckout(Activity.RESULT_CANCELED, buildFallbackIntent())
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,165 +81,320 @@ class CCAvenueCheckoutActivity : Activity() {
         orderId = intent.getStringExtra(EXTRA_ORDER_ID) ?: ""
         val encryptedData = intent.getStringExtra(EXTRA_ENCRYPTED_DATA) ?: ""
         val accessCode = intent.getStringExtra(EXTRA_ACCESS_CODE) ?: ""
+        workingKey = intent.getStringExtra(EXTRA_WORKING_KEY) ?: ""
         val checkoutUrl = intent.getStringExtra(EXTRA_CHECKOUT_URL)
             ?: "https://secure.ccavenue.com/transaction/transaction.do"
 
         val layout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-
         progressBar = ProgressBar(this).apply { visibility = View.GONE }
         layout.addView(progressBar)
 
         webView = WebView(this).apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
-            settings.allowFileAccess = true
+            settings.allowFileAccess = false
+            settings.allowContentAccess = false
             settings.loadWithOverviewMode = true
             settings.useWideViewPort = true
             settings.setSupportZoom(true)
             settings.builtInZoomControls = true
             settings.displayZoomControls = false
-            isVerticalScrollBarEnabled = true
-            isHorizontalScrollBarEnabled = false
-            addJavascriptInterface(CCAvenueJsInterface(), "CCAVENUE")
+            addJavascriptInterface(CcaVenueJsBridge(), "CCAVENUE")
         }
         layout.addView(webView, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            0,
+            1f,
         ))
         setContentView(layout)
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                if (hasCompleted) {
-                    view?.stopLoading()
-                    return
+                if (url != null && isCallbackUrl(url)) {
+                    Log.d(TAG, "$FLOW: callback URL detected")
                 }
                 super.onPageStarted(view, url, favicon)
-                if (BuildConfig.DEBUG && !url.isNullOrEmpty()) {
-                    Log.d(TAG, "===== CCAVENUE NAVIGATION - ANDROID =====")
-                    Log.d(TAG, "URL = $url")
-                    Log.d(TAG, "========================================")
-                }
                 progressBar.visibility = View.VISIBLE
+                view?.let { injectCallbackCapture(it) }
             }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 progressBar.visibility = View.GONE
+                view?.let { injectCallbackCapture(it) }
             }
-            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
-                handler?.proceed()
+
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?,
+            ): Boolean {
+                val callbackUrl = request?.url?.toString()
+                if (request?.isForMainFrame == true && callbackUrl != null && isCallbackUrl(callbackUrl)) {
+                    Log.d(TAG, "$FLOW: callback URL detected")
+                    val encResp = extractEncResp(callbackUrl)
+                    if (!encResp.isNullOrEmpty()) {
+                        Log.d(TAG, "$FLOW: encResp field detected")
+                        decryptAndCapture(encResp)
+                        return true
+                    }
+                }
+                return super.shouldOverrideUrlLoading(view, request)
+            }
+
+            override fun onReceivedSslError(
+                view: WebView?,
+                handler: SslErrorHandler?,
+                error: android.net.http.SslError?,
+            ) {
+                handler?.cancel()
+            }
+        }
+
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onConsoleMessage(message: ConsoleMessage?): Boolean {
+                val text = message?.message()
+                if (text != null && text.startsWith("$FLOW:")) {
+                    Log.d(TAG, text)
+                }
+                return true
             }
         }
 
         val postData = "command=initiateTransaction&encRequest=${
             java.net.URLEncoder.encode(encryptedData, "UTF-8")
         }&access_code=$accessCode"
-        webView.postUrl(checkoutUrl, postData.toByteArray())
+        Log.d(TAG, "$FLOW: loading checkout URL")
+        webView.postUrl(checkoutUrl, postData.toByteArray(Charsets.UTF_8))
+    }
+
+    private fun injectCallbackCapture(view: WebView) {
+        val script = """
+            (function() {
+              if (window.__SCM_CCAVENUE_CAPTURE__) return;
+              window.__SCM_CCAVENUE_CAPTURE__ = true;
+              var callbackMarker = "$CALLBACK_MARKER";
+
+              function isCallbackForm(form) {
+                try {
+                  return !!form && String(form.action || form.getAttribute('action') || '').indexOf(callbackMarker) !== -1;
+                } catch (e) { return false; }
+              }
+
+              function sendValue(value) {
+                if (value && window.CCAVENUE && window.CCAVENUE.processEncResp) {
+                  window.CCAVENUE.processEncResp(String(value));
+                  return true;
+                }
+                return false;
+              }
+
+              function inspectForm(form) {
+                try {
+                  if (!isCallbackForm(form)) return false;
+                  var input = form.elements && form.elements.namedItem('encResp');
+                  var value = input && input.value !== undefined ? input.value : '';
+                  if (value) {
+                    return sendValue(value);
+                  }
+                } catch (e) {}
+                return false;
+              }
+
+              function inspectDocument() {
+                try {
+                  var forms = document.forms || [];
+                  for (var i = 0; i < forms.length; i++) inspectForm(forms[i]);
+                  if (String(location.href).indexOf(callbackMarker) !== -1) {
+                    var input = document.querySelector('input[name="encResp"]');
+                    if (input) sendValue(input.value || '');
+                  }
+                } catch (e) {}
+              }
+
+              var originalSubmit = HTMLFormElement.prototype.submit;
+              HTMLFormElement.prototype.submit = function() {
+                if (inspectForm(this)) return;
+                return originalSubmit.apply(this, arguments);
+              };
+
+              if (HTMLFormElement.prototype.requestSubmit) {
+                var originalRequestSubmit = HTMLFormElement.prototype.requestSubmit;
+                HTMLFormElement.prototype.requestSubmit = function() {
+                  if (inspectForm(this)) return;
+                  return originalRequestSubmit.apply(this, arguments);
+                };
+              }
+
+              document.addEventListener('submit', function(event) {
+                if (inspectForm(event.target)) {
+                  event.preventDefault();
+                  event.stopImmediatePropagation();
+                }
+              }, true);
+
+              var originalAppendChild = Node.prototype.appendChild;
+              Node.prototype.appendChild = function(child) {
+                var result = originalAppendChild.call(this, child);
+                inspectDocument();
+                return result;
+              };
+              var originalInsertBefore = Node.prototype.insertBefore;
+              Node.prototype.insertBefore = function(newNode, referenceNode) {
+                var result = originalInsertBefore.call(this, newNode, referenceNode);
+                inspectDocument();
+                return result;
+              };
+
+              if (window.MutationObserver && document.documentElement) {
+                new MutationObserver(inspectDocument).observe(document.documentElement, {
+                  childList: true, subtree: true, attributes: true, attributeFilter: ['action', 'name', 'value']
+                });
+              }
+              inspectDocument();
+            })();
+        """.trimIndent()
+        view.evaluateJavascript(script, null)
+    }
+
+    private fun isCallbackUrl(url: String): Boolean = url.contains(CALLBACK_MARKER)
+
+    private fun extractEncResp(urlString: String): String? {
+        val uri = Uri.parse(urlString)
+        uri.getQueryParameter("encResp")?.takeIf { it.isNotEmpty() }?.let { return it }
+        return urlEncodedValue(uri.fragment.orEmpty(), "encResp")
+    }
+
+    private fun urlEncodedValue(body: String, key: String): String? {
+        body.split('&').forEach { pair ->
+            val parts = pair.split('=', limit = 2)
+            if (parts.size == 2 && parts[0].trim() == key) {
+                return decode(parts[1])
+            }
+        }
+        return null
+    }
+
+    private fun decryptAndCapture(encResp: String) {
+        if (hasCompleted || workingKey.isEmpty()) return
+        val decrypted = try {
+            CCAvenueCrypto.decrypt(encResp, workingKey)
+        } catch (_: Exception) {
+            ""
+        }
+        if (decrypted.isEmpty()) {
+            Log.d(TAG, "$FLOW: decrypt failed")
+            return
+        }
+        Log.d(TAG, "$FLOW: decrypt successful")
+        val response = parseResponse(decrypted).toMutableMap()
+        if (response.isEmpty()) {
+            Log.d(TAG, "$FLOW: response parsed but empty")
+            return
+        }
+        if (response["order_id"].isNullOrEmpty()) response["order_id"] = orderId
+        Log.d(TAG, "$FLOW: response parsed")
+        completeWithRealResponse(response)
+    }
+
+    private fun parseResponse(raw: String): Map<String, String> {
+        val result = linkedMapOf<String, String>()
+        raw.trim().split('&').forEach { pair ->
+            val parts = pair.split('=', limit = 2)
+            if (parts.size == 2) {
+                val key = decode(parts[0]).trim()
+                if (key.isNotEmpty()) result[key] = decode(parts[1])
+            }
+        }
+        return result
+    }
+
+    private fun decode(value: String): String = try {
+        URLDecoder.decode(value.replace('+', ' '), "UTF-8")
+    } catch (_: Exception) {
+        value
+    }
+
+    private fun completeWithRealResponse(response: Map<String, String>) {
+        synchronized(completionLock) {
+            if (hasCompleted) return
+            capturedResponse = response.toMap()
+        }
+        Log.d(TAG, "$FLOW: real CCAvenue response captured")
+        completeCheckout(Activity.RESULT_OK, buildResultIntent(response))
     }
 
     private fun completeCheckout(resultCode: Int, resultIntent: Intent) {
-        if (hasCompleted) {
-            return
+        synchronized(completionLock) {
+            if (hasCompleted) return
+            hasCompleted = true
         }
-        hasCompleted = true
-        runOnUiThread { webView.stopLoading() }
-        setResult(resultCode, resultIntent)
-        finish()
+        mainHandler.removeCallbacks(fallbackRunnable)
+        runOnUiThread {
+            if (::webView.isInitialized) webView.stopLoading()
+            setResult(resultCode, resultIntent)
+            finish()
+        }
     }
 
-    inner class CCAvenueJsInterface {
-        @JavascriptInterface
-        fun processHTML(html: String) {
-            try {
-                val response = parseResponse(html)
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "===== CCAVENUE RESPONSE - ANDROID =====")
-                    Log.d(TAG, "order_id        = ${response["order_id"] ?: orderId}")
-                    val respKeys = listOf(
-                        "tracking_id", "bank_ref_no", "order_status", "failure_message",
-                        "payment_mode", "card_name", "status_code", "status_message",
-                        "currency", "amount", "billing_name", "merchant_param1",
-                        "merchant_param2", "merchant_param3", "merchant_param4",
-                        "merchant_param5", "vault", "offer_type", "offer_code",
-                        "discount_value", "mer_amount", "eci_value", "retry",
-                        "response_code", "billing_notes", "trans_date", "bin_country",
-                        "auth_ref_num"
-                    )
-                    for (key in respKeys) {
-                        val value = response[key]
-                        if (!value.isNullOrEmpty()) {
-                            Log.d(TAG, "$key = $value")
-                        }
-                    }
-                    Log.d(TAG, "=======================================")
-                }
-                val resultIntent = Intent().apply {
-                    putExtra(RESULT_ORDER_ID, response["order_id"] ?: orderId)
-                    putExtra(RESULT_TRACKING_ID, response["tracking_id"] ?: "")
-                    putExtra(RESULT_BANK_REF_NO, response["bank_ref_no"] ?: "")
-                    putExtra(RESULT_ORDER_STATUS, response["order_status"] ?: "")
-                    putExtra(RESULT_PAYMENT_MODE, response["payment_mode"] ?: "")
-                    putExtra(RESULT_AMOUNT, response["amount"] ?: "")
-                    putExtra(RESULT_CURRENCY, response["currency"] ?: "")
-                    putExtra(RESULT_BILLING_NAME, response["billing_name"] ?: "")
-                    putExtra(RESULT_RESPONSE_CODE, response["response_code"] ?: "")
-                    putExtra(RESULT_STATUS_MESSAGE, response["status_message"] ?: "")
-                    putExtra(RESULT_FAILURE_MESSAGE, response["failure_message"] ?: "")
-                    putExtra(RESULT_MERCHANT_PARAM1, response["merchant_param1"] ?: "")
-                    putExtra(RESULT_MERCHANT_PARAM2, response["merchant_param2"] ?: "")
-                    putExtra(RESULT_MERCHANT_PARAM3, response["merchant_param3"] ?: "")
-                    putExtra(RESULT_MERCHANT_PARAM4, response["merchant_param4"] ?: "")
-                    putExtra(RESULT_MERCHANT_PARAM5, response["merchant_param5"] ?: "")
-                    putExtra(RESULT_CARD_NAME, response["card_name"] ?: "")
-                    putExtra(RESULT_STATUS_CODE, response["status_code"] ?: "")
-                }
-                completeCheckout(RESULT_OK, resultIntent)
-            } catch (e: Exception) {
-                val resultIntent = Intent().apply {
-                    putExtra(RESULT_ORDER_ID, orderId)
-                    putExtra(RESULT_ORDER_STATUS, "Error")
-                    putExtra(RESULT_STATUS_MESSAGE, "Failed to parse response: ${e.message}")
-                }
-                completeCheckout(RESULT_OK, resultIntent)
-            }
-        }
+    private fun buildResultIntent(response: Map<String, String>): Intent = Intent().apply {
+        putExtra(RESULT_ORDER_ID, response["order_id"] ?: orderId)
+        putExtra(RESULT_TRACKING_ID, response["tracking_id"] ?: "")
+        putExtra(RESULT_BANK_REF_NO, response["bank_ref_no"] ?: "")
+        putExtra(RESULT_ORDER_STATUS, response["order_status"] ?: "")
+        putExtra(RESULT_PAYMENT_MODE, response["payment_mode"] ?: "")
+        putExtra(RESULT_AMOUNT, response["amount"] ?: "")
+        putExtra(RESULT_CURRENCY, response["currency"] ?: "")
+        putExtra(RESULT_BILLING_NAME, response["billing_name"] ?: "")
+        putExtra(RESULT_RESPONSE_CODE, response["response_code"] ?: "")
+        putExtra(RESULT_STATUS_MESSAGE, response["status_message"] ?: "")
+        putExtra(RESULT_FAILURE_MESSAGE, response["failure_message"] ?: "")
+        putExtra(RESULT_MERCHANT_PARAM1, response["merchant_param1"] ?: "")
+        putExtra(RESULT_MERCHANT_PARAM2, response["merchant_param2"] ?: "")
+        putExtra(RESULT_MERCHANT_PARAM3, response["merchant_param3"] ?: "")
+        putExtra(RESULT_MERCHANT_PARAM4, response["merchant_param4"] ?: "")
+        putExtra(RESULT_MERCHANT_PARAM5, response["merchant_param5"] ?: "")
+        putExtra(RESULT_CARD_NAME, response["card_name"] ?: "")
+        putExtra(RESULT_STATUS_CODE, response["status_code"] ?: "")
+    }
 
-        private fun parseResponse(html: String): Map<String, String> {
-            val result = mutableMapOf<String, String>()
-            try {
-                val jsonStart = html.indexOf("{")
-                val jsonEnd = html.lastIndexOf("}") + 1
-                if (jsonStart >= 0 && jsonEnd > jsonStart) {
-                    val jsonString = html.substring(jsonStart, jsonEnd)
-                    val pairs = jsonString.removeSurrounding("{", "}").split(",")
-                    for (pair in pairs) {
-                        val colonIndex = pair.indexOf(":")
-                        if (colonIndex > 0) {
-                            val key = pair.substring(0, colonIndex).trim().removeSurrounding("\"")
-                            val value = pair.substring(colonIndex + 1).trim().removeSurrounding("\"")
-                            result[key] = value
-                        }
-                    }
-                }
-            } catch (_: Exception) {
-                val keyValues = html.split("&")
-                for (kv in keyValues) {
-                    val parts = kv.split("=", limit = 2)
-                    if (parts.size == 2) result[parts[0].trim()] = parts[1].trim()
-                }
-            }
-            return result
+    private fun buildFallbackIntent(): Intent = buildResultIntent(
+        mapOf(
+            "order_id" to orderId,
+            "order_status" to "Aborted",
+            "status_message" to "Payment was cancelled by user",
+            "currency" to "INR",
+        ),
+    )
+
+    private fun scheduleFallback() {
+        mainHandler.removeCallbacks(fallbackRunnable)
+        mainHandler.postDelayed(fallbackRunnable, FALLBACK_DELAY_MS)
+    }
+
+    inner class CcaVenueJsBridge {
+        @JavascriptInterface
+        fun processEncResp(encResp: String) {
+            if (encResp.isEmpty() || hasCompleted) return
+            Log.d(TAG, "$FLOW: encResp received from JavaScript")
+            decryptAndCapture(encResp)
         }
     }
 
     @Deprecated("Use OnBackPressedCallback")
     override fun onBackPressed() {
-        if (webView.canGoBack()) webView.goBack() else {
-            val resultIntent = Intent().apply {
-                putExtra(RESULT_ORDER_ID, orderId)
-                putExtra(RESULT_ORDER_STATUS, "Aborted")
-                putExtra(RESULT_STATUS_MESSAGE, "Payment was cancelled by user")
-            }
-            completeCheckout(RESULT_CANCELED, resultIntent)
+        if (hasCompleted) return
+        capturedResponse?.let {
+            completeWithRealResponse(it)
+            return
         }
+        Log.d(TAG, "$FLOW: back pressed; waiting for callback")
+        if (::webView.isInitialized && webView.canGoBack()) webView.goBack()
+        scheduleFallback()
+    }
+
+    override fun onDestroy() {
+        mainHandler.removeCallbacks(fallbackRunnable)
+        if (::webView.isInitialized) webView.removeJavascriptInterface("CCAVENUE")
+        super.onDestroy()
     }
 }

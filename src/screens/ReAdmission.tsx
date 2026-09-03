@@ -143,6 +143,7 @@ const ReAdmission = ({ navigation }: Props) => {
   const [studentName, setStudentName] = useState('');
   const [studentCode, setStudentCode] = useState('');
   const [formNo, setFormNo] = useState('');
+  const [formDetails, setFormDetails] = useState<ReAdmissionFormDetails | null>(null);
 
   useEffect(() => {
     fetchReAdmissionFee();
@@ -206,12 +207,13 @@ const ReAdmission = ({ navigation }: Props) => {
         setFeeCategories(categories);
         setSummaryTotal(formatCurrency(total));
         setPaymentAmount(String(total));
+        setFormDetails(fd);
 
         if (fd.first_name) {
           setStudentName(fd.first_name);
         }
-        if (fd.student_id) {
-          setStudentCode(String(fd.student_id));
+        if (fd.student_code) {
+          setStudentCode(String(fd.student_code));
         }
         if (fd.form_no) {
           setFormNo(String(fd.form_no));
@@ -255,6 +257,15 @@ const ReAdmission = ({ navigation }: Props) => {
     try {
       const orderId = generateOrderId();
       const amount = Number(paymentAmount).toFixed(2);
+      const payeeUserId = await StorageManager.getStudentId();
+      const user = await StorageManager.getUser();
+
+      const merchantParam2 = [
+        payeeUserId,
+        formDetails?.session_year_id || user?.session_year_id || '',
+        formDetails?.month_id || '',
+        user?.user_id || '',
+      ].join('#');
 
       const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
         orderId,
@@ -263,7 +274,11 @@ const ReAdmission = ({ navigation }: Props) => {
         customerName: studentName || 'Student',
         studentCode: studentCode || undefined,
         formNo: formNo || undefined,
-        merchantParam1: remark || undefined,
+        merchantParam1: '',
+        merchantParam2,
+        merchantParam3: amount,
+        merchantParam4: studentCode || undefined,
+        merchantParam5: studentName || 'Student',
       });
 
       setProcessing(false);
@@ -275,7 +290,7 @@ const ReAdmission = ({ navigation }: Props) => {
           [{ text: 'OK', onPress: () => navigation.goBack() }],
         );
       } else if (response.orderStatus === 'Aborted') {
-        Alert.alert('Payment Cancelled', 'You cancelled the payment.');
+        await CCAvenueService.postAbortedResponseToPhp(response);
       } else {
         Alert.alert(
           'Payment Failed',

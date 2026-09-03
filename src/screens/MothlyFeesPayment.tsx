@@ -17,8 +17,7 @@ import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
 import FullScreenLoader from '../view/FullScreenLoader';
 import PayAcademicFeesModal from '../component/PayAcademicFeesModal';
-import { paymentService } from '../services/payment/PaymentService';
-import type { PaymentResult } from '../services/payment/payment.types';
+import type { CCAvenueMerchantMeta } from '../services/ccavenue/CCAvenueTypes';
 import type { FeeStructureItem } from '../Model/ViewFeeStructure/FeeStructureItem';
 import type { FeeAmountForSelectedMonthResponse } from '../Model/FeeAmountForSelectedMonth/FeeAmountForSelectedMonthResponse';
 import type { PaymentFormData } from '../component/PayAcademicFeesModal';
@@ -42,6 +41,9 @@ type MonthData = {
   checked: boolean;
   paid: boolean;
   details: FeeDetailRow[];
+  sessionYearId: string;
+  studentCode: string;
+  formNo: string;
 };
 
 const safeFee = (v: string | null): string => {
@@ -120,84 +122,16 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
   const [months, setMonths] = useState<MonthData[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [feeAmountLoading, setFeeAmountLoading] = useState(false);
   const [feeAmountData, setFeeAmountData] = useState<FeeAmountForSelectedMonthResponse | null>(null);
+  const [merchantMeta, setMerchantMeta] = useState<CCAvenueMerchantMeta | undefined>(undefined);
 
-  const buildPaymentRequest = async (formData: PaymentFormData) => {
-    const userId = await StorageManager.getStudentId();
-    const user = await StorageManager.getUser();
-
-    const amount = totalSelectedFee.toFixed(2);
-    const selectedMonthsStr = selectedMonthNames.join(', ');
-
-    return {
-      amount,
-      currency: 'INR',
-      billingName: formData.payeeName || user?.name || 'Student',
-      billingEmail: user?.email || 'student@example.com',
-      billingPhone: '9876543210',
-      description: `Academic Fees Payment - ${selectedMonthsStr}`,
-      meta: {
-        remark,
-        selectedMonths: selectedMonthsStr,
-        tuitionFine: formData.tuitionFine,
-        busFine: formData.busFine,
-        advancedAmount: formData.advancedAmount,
-        dueAmount: formData.dueAmount,
-        cashAmount: formData.cashAmount,
-      },
-      directResultScreen: 'PaymentResult',
-      directResultParams: {
-        parentScreen: 'MothlyFeePayment',
-        successScreen: 'Fees',
-        retryPaymentRequest: {
-          amount,
-          currency: 'INR',
-          billingName: formData.payeeName || user?.name || 'Student',
-          billingEmail: user?.email || 'student@example.com',
-          billingPhone: '9876543210',
-          description: `Academic Fees Payment - ${selectedMonthsStr}`,
-          meta: {
-            remark,
-            selectedMonths: selectedMonthsStr,
-            tuitionFine: formData.tuitionFine,
-            busFine: formData.busFine,
-            advancedAmount: formData.advancedAmount,
-            dueAmount: formData.dueAmount,
-            cashAmount: formData.cashAmount,
-          },
-          directResultScreen: 'PaymentResult',
-          directResultParams: {
-            parentScreen: 'MothlyFeePayment',
-            successScreen: 'Fees',
-          },
-        },
-      },
-    };
-  };
-
-  const handleProceedToPay = async (formData: PaymentFormData) => {
+  const handleProceedToPay = (_formData: PaymentFormData) => {
     if (processing) {
       return;
     }
     setProcessing(true);
     setShowPaymentModal(false);
-
-    try {
-      const paymentRequest = await buildPaymentRequest(formData);
-      const result: PaymentResult = await paymentService.startPayment(paymentRequest);
-      setProcessing(false);
-      navigation.navigate('PaymentResult', {
-        result,
-        parentScreen: 'MothlyFeePayment',
-        successScreen: 'Fees',
-        retryPaymentRequest: paymentRequest,
-      });
-    } catch (error) {
-      console.log('Academic Fees Payment Error:', error);
-      setProcessing(false);
-      setShowPaymentModal(true);
-    }
+    navigation.navigate('Fees');
   };
 
   useEffect(() => {
@@ -227,6 +161,9 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
                 checked: !isPaid,
                 paid: isPaid,
                 details: mapFeeStructureToDetails(item),
+                sessionYearId: item.session_year_id || '',
+                studentCode: item.student_code || '',
+                formNo: item.form_no || '',
               };
             },
           );
@@ -257,16 +194,41 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
     setExpandedMonth(prev => (prev === id ? null : id));
   };
 
+  const unpaidMonthIds = months.filter(m => !m.paid).map(m => m.id);
+
+  const orderedSelectedMonths = months
+    .filter(m => selectedMonths.includes(m.id))
+    .map(m => m.id);
+
+  const isSelectableMonth = (id: string) => {
+    const idx = unpaidMonthIds.indexOf(id);
+    if (idx === -1) {
+      return false;
+    }
+    if (idx === 0) {
+      return true;
+    }
+    return selectedMonths.includes(unpaidMonthIds[idx - 1]);
+  };
+
   const toggleMonthSelection = (id: string) => {
     const month = months.find(m => m.id === id);
-    if (month?.paid) {
+    if (!month || month.paid) {
       return;
     }
-    setSelectedMonths(prev =>
-      prev.includes(id)
-        ? prev.filter(monthId => monthId !== id)
-        : [...prev, id],
-    );
+
+    if (selectedMonths.includes(id)) {
+      const lastSelectedId =
+        orderedSelectedMonths[orderedSelectedMonths.length - 1];
+      if (lastSelectedId === id) {
+        setSelectedMonths(prev => prev.filter(monthId => monthId !== id));
+      }
+      return;
+    }
+
+    if (isSelectableMonth(id)) {
+      setSelectedMonths(prev => [...prev, id]);
+    }
   };
 
   const totalSelectedFee = selectedMonths.reduce((sum, monthId) => {
@@ -292,8 +254,27 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
       .map(id => Number(id));
 
     try {
-      setFeeAmountLoading(true);
       const userId = await StorageManager.getStudentId();
+      const user = await StorageManager.getUser();
+      const firstMonth = selectedMonths
+        .map(id => months.find(m => m.id === id))
+        .find(m => m !== undefined);
+
+      const monthIds = selectedMonths
+        .map(id => months.find(m => m.id === id)?.apiId)
+        .filter(id => id !== undefined && id !== '')
+        .join(',');
+
+      setMerchantMeta({
+        customerName: user?.name || '',
+        studentCode: firstMonth?.studentCode || '',
+        formNo: firstMonth?.formNo || '',
+        payeeUserId: userId,
+        sessionYearId: firstMonth?.sessionYearId || user?.session_year_id || '',
+        selId: monthIds,
+        loginUserId: user?.user_id || '',
+      });
+
       const response = await Api.getFeeAmountForSelectedMonth({
         user_id: userId,
         ids: selectedIds,
@@ -306,7 +287,6 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
       );
       setFeeAmountData(null);
     } finally {
-      setFeeAmountLoading(false);
       setShowPaymentModal(true);
     }
   };
@@ -438,6 +418,7 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
         selectedMonthNames={selectedMonthNames}
         initialPayeeName=""
         feeAmountData={feeAmountData}
+        merchantMeta={merchantMeta}
         onClose={() => setShowPaymentModal(false)}
         onProceedToPay={handleProceedToPay}
       />

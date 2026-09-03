@@ -14,10 +14,6 @@ class CCAvenueModule: NSObject {
         "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
     private static let ccavenueCancelUrl =
         "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
-    // private static let ccavenueRedirectUrl =
-    //     "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
-    // private static let ccavenueCancelUrl =
-    //     "http://182.73.216.93/scms.beas.in/api/ccavenue-response-handler-fee-api"
 
     private var pendingResolve: RCTPromiseResolveBlock?
     private var pendingReject: RCTPromiseRejectBlock?
@@ -45,8 +41,6 @@ class CCAvenueModule: NSObject {
             ("form_no", formNo),
             ("redirect_url", ccavenueRedirectUrl),
             ("cancel_url", ccavenueCancelUrl),
-            // ("redirect_url", ccavenueRedirectUrl),
-            // ("cancel_url", ccavenueCancelUrl),
             ("currency", "INR"),
             ("language", "EN"),
             ("amount", String(format: "%.2f", Double(amount) ?? 0.0)),
@@ -61,6 +55,28 @@ class CCAvenueModule: NSObject {
         for (key, value) in params {
             sb += "\(key)=\(phpUrlEncode(value))&"
         }
+
+        #if DEBUG
+        print("===== CCAVENUE REQUEST - IOS =====")
+        print("order_id        = \(orderId)")
+        print("student_code    = \(studentCode)")
+        print("finalPayAmt     = \(amount)")
+        print("first_name      = \(customerName)")
+        print("form_no         = \(formNo)")
+        print("redirect_url    = \(ccavenueRedirectUrl)")
+        print("cancel_url      = \(ccavenueCancelUrl)")
+        print("currency        = INR")
+        print("language        = EN")
+        print("amount          = \(String(format: "%.2f", Double(amount) ?? 0.0))")
+        print("merchant_id     = \(merchantId)")
+        print("merchant_param1 = \(merchantParam1)")
+        print("merchant_param2 = \(merchantParam2)")
+        print("merchant_param3 = \(merchantParam3)")
+        print("merchant_param4 = \(merchantParam4)")
+        print("merchant_param5 = \(merchantParam5)")
+        print("==================================")
+        #endif
+
         return sb
     }
 
@@ -108,11 +124,9 @@ class CCAvenueModule: NSObject {
             checkoutVC.encryptedData = encryptedData
             checkoutVC.accessCode = Self.accessCode
             checkoutVC.checkoutUrl = Self.checkoutUrl
+            checkoutVC.workingKey = Self.workingKey
             checkoutVC.completionHandler = { [weak self] response in
                 self?.handlePaymentResult(response)
-            }
-            checkoutVC.cancelHandler = { [weak self] in
-                self?.handleCancellation(orderId: orderId)
             }
 
             let navController = UINavigationController(rootViewController: checkoutVC)
@@ -137,18 +151,15 @@ class CCAvenueModule: NSObject {
             "currency": response["currency"] ?? "",
             "responseCode": response["response_code"] ?? "",
             "statusMessage": response["status_message"] ?? "",
-            "failureMessage": response["failure_message"] ?? ""
-        ]
-        pendingResolve?(result)
-        pendingResolve = nil
-        pendingReject = nil
-    }
-
-    private func handleCancellation(orderId: String) {
-        let result: [String: Any] = [
-            "orderId": orderId, "trackingId": "", "bankRefNo": "",
-            "orderStatus": "Aborted", "paymentMode": "", "amount": "", "currency": "INR",
-            "responseCode": "", "statusMessage": "Payment was cancelled by user", "failureMessage": ""
+            "failureMessage": response["failure_message"] ?? "",
+            "billingName": response["billing_name"] ?? "",
+            "merchantParam1": response["merchant_param1"] ?? "",
+            "merchantParam2": response["merchant_param2"] ?? "",
+            "merchantParam3": response["merchant_param3"] ?? "",
+            "merchantParam4": response["merchant_param4"] ?? "",
+            "merchantParam5": response["merchant_param5"] ?? "",
+            "cardName": response["card_name"] ?? "",
+            "statusCode": response["status_code"] ?? ""
         ]
         pendingResolve?(result)
         pendingResolve = nil

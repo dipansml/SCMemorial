@@ -16,4 +16,12 @@ export interface ReAdmissionFormDetails {
   stoppage_name: string;
   allow_readmission: string;
   allow_transport: string;
+  student_code?: string;
+  student_id?: string;
+  first_name?: string;
+  form_no?: string;
+  id?: string;
+  fees_id?: string;
+  month_id?: string;
+  session_year_id?: string;
 }

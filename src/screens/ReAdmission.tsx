@@ -269,6 +269,20 @@ const ReAdmission = ({ navigation }: Props) => {
         user?.user_id || '',
       ].join('#');
 
+      const ccavenueRequestPayload = {
+        user_id: payeeUserId,
+        payment_amount: paymentAmount,
+        session_pay_mnth_id: formDetails?.month_id ? [formDetails.month_id] : [],
+      };
+      const ccavenueRequestResponse = await Api.ccavenueRequestReadmission(ccavenueRequestPayload);
+      console.log('ccavenue-request-readmission response:', JSON.stringify(ccavenueRequestResponse));
+
+      if (!ccavenueRequestResponse) {
+        setProcessing(false);
+        Alert.alert('Error', 'CC Avenue request failed. No response received.');
+        return;
+      }
+
       const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
         orderId,
         amount,

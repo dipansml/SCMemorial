@@ -224,6 +224,11 @@ export const Api = {
     return response;
   },
 
+  ccavenueRequestReadmission: async (payload: any): Promise<any> => {
+    const response = await RestApi.post('/ccavenue-request-readmission-api', payload);
+    return response;
+  },
+
   forgetPasswordSendCode: async (payload: ForgetPasswordPayload) : Promise<ForgotPasswordResponse> => {
     const response = await RestApi.post('/forget-pwd-send-code', payload);
     return response.data;

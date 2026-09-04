@@ -263,9 +263,9 @@ const ReAdmission = ({ navigation }: Props) => {
       const user = await StorageManager.getUser();
 
       const merchantParam2 = [
-        payeeUserId,
-        formDetails?.session_year_id || user?.session_year_id || '',
-        formDetails?.month_id || '',
+        formDetails?.student_id || '',
+        formDetails?.session_year_id || '',
+        formDetails?.id || '',
         user?.user_id || '',
       ].join('#');
 
@@ -290,7 +290,10 @@ const ReAdmission = ({ navigation }: Props) => {
         customerName: studentName || 'Student',
         studentCode: studentCode || undefined,
         formNo: formNo || undefined,
-        merchantParam1: '',
+        merchantParam1:
+          ccavenueRequestResponse?.data?.data?.merchant_param1 != null
+            ? String(ccavenueRequestResponse?.data?.data?.merchant_param1)
+            : '',
         merchantParam2,
         merchantParam3: amount,
         merchantParam4: studentCode || undefined,

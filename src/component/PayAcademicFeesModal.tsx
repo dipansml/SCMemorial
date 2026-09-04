@@ -42,7 +42,9 @@ type Props = {
 };
 
 const safeStr = (v: number | null | undefined): string => {
-  if (v === null || v === undefined) { return '0'; }
+  if (v === null || v === undefined) {
+    return '0';
+  }
   return String(v);
 };
 
@@ -93,10 +95,14 @@ const PayAcademicFeesModal = ({
     }
   }, [visible, feeAmountData, totalAmount]);
 
-  if (!visible) { return null; }
+  if (!visible) {
+    return null;
+  }
 
   const handleProceed = async () => {
-    if (paying) { return; }
+    if (paying) {
+      return;
+    }
     setPaying(true);
 
     try {
@@ -110,7 +116,8 @@ const PayAcademicFeesModal = ({
       );
       const amount = Number(finalCashAmount).toFixed(2);
       //const amount = "1.00";
-      const customerName = payeeName.trim() || merchantMeta?.customerName || 'Student';
+      const customerName =
+        payeeName.trim() || merchantMeta?.customerName || 'Student';
 
       const merchantParam2 = merchantMeta
         ? [
@@ -121,19 +128,20 @@ const PayAcademicFeesModal = ({
           ].join('#')
         : '';
 
-      const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
-        orderId,
-        amount,
-        currency: 'INR',
-        customerName,
-        studentCode: merchantMeta?.studentCode || undefined,
-        formNo: merchantMeta?.formNo || undefined,
-        merchantParam1: '',
-        merchantParam2,
-        merchantParam3: amount,
-        merchantParam4: merchantMeta?.studentCode || undefined,
-        merchantParam5: customerName,
-      });
+      const response: CCAvenuePaymentResponse =
+        await CCAvenueService.startPayment({
+          orderId,
+          amount,
+          currency: 'INR',
+          customerName,
+          studentCode: merchantMeta?.studentCode || undefined,
+          formNo: merchantMeta?.formNo || undefined,
+          merchantParam1: '',
+          merchantParam2,
+          merchantParam3: amount,
+          merchantParam4: merchantMeta?.studentCode || undefined,
+          merchantParam5: customerName,
+        });
 
       console.log('===== CCAvenue Native Result =====');
       console.log(response);
@@ -151,7 +159,9 @@ const PayAcademicFeesModal = ({
       } else {
         Alert.alert(
           'Payment Failed',
-          `Status: ${response.orderStatus}\n${response.failureMessage || response.statusMessage || 'Unknown error'}`,
+          `Status: ${response.orderStatus}\n${
+            response.failureMessage || response.statusMessage || 'Unknown error'
+          }`,
         );
       }
     } catch (error: any) {
@@ -161,20 +171,32 @@ const PayAcademicFeesModal = ({
   };
 
   return (
-    <Pressable style={styles.overlay} onPress={onClose}>
+    <View style={styles.overlay} pointerEvents="box-none">
+      <Pressable
+        style={StyleSheet.absoluteFillObject}
+        onPress={onClose}
+        accessibilityRole="button"
+      />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoid}
       >
-        <Pressable style={styles.card} onPress={(e) => e.stopPropagation()}>
+        <View style={styles.card}>
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+            scrollEventThrottle={16}
           >
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Pay Academic Fees</Text>
-              <TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <TouchableOpacity
+                onPress={onClose}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
                 <Text style={styles.closeIcon}>✕</Text>
               </TouchableOpacity>
             </View>
@@ -196,7 +218,9 @@ const PayAcademicFeesModal = ({
             {/* Total Amount */}
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>Total Amount</Text>
-              <Text style={styles.totalAmountValue}>₹{totalAmount.toLocaleString('en-IN')}.00</Text>
+              <Text style={styles.totalAmountValue}>
+                ₹{totalAmount.toLocaleString('en-IN')}.00
+              </Text>
             </View>
 
             {/* Tuition Fine Amount */}
@@ -206,10 +230,9 @@ const PayAcademicFeesModal = ({
                 style={styles.fieldInput}
                 placeholder="0"
                 placeholderTextColor={Colors.text_light}
-                keyboardType="numeric"
                 value={tuitionFine}
-                onChangeText={setTuitionFine}
                 editable={false}
+                pointerEvents="none"
               />
             </View>
 
@@ -220,10 +243,9 @@ const PayAcademicFeesModal = ({
                 style={styles.fieldInput}
                 placeholder="0"
                 placeholderTextColor={Colors.text_light}
-                keyboardType="numeric"
                 value={busFine}
-                onChangeText={setBusFine}
                 editable={false}
+                pointerEvents="none"
               />
             </View>
 
@@ -234,10 +256,9 @@ const PayAcademicFeesModal = ({
                 style={styles.fieldInput}
                 placeholder="0"
                 placeholderTextColor={Colors.text_light}
-                keyboardType="numeric"
                 value={advancedAmount}
-                onChangeText={setAdvancedAmount}
                 editable={false}
+                pointerEvents="none"
               />
             </View>
 
@@ -248,10 +269,9 @@ const PayAcademicFeesModal = ({
                 style={styles.fieldInput}
                 placeholder="0"
                 placeholderTextColor={Colors.text_light}
-                keyboardType="numeric"
                 value={dueAmount}
-                onChangeText={setDueAmount}
                 editable={false}
+                pointerEvents="none"
               />
             </View>
 
@@ -262,10 +282,9 @@ const PayAcademicFeesModal = ({
                 style={styles.fieldInput}
                 placeholder="0"
                 placeholderTextColor={Colors.text_light}
-                keyboardType="numeric"
                 value={cashAmount}
-                onChangeText={setCashAmount}
                 editable={false}
+                pointerEvents="none"
               />
             </View>
 
@@ -279,6 +298,7 @@ const PayAcademicFeesModal = ({
                 value={payeeName}
                 onChangeText={setPayeeName}
                 editable={false}
+                pointerEvents="none"
               />
             </View>
 
@@ -286,7 +306,8 @@ const PayAcademicFeesModal = ({
             <View style={styles.noteContainer}>
               <Text style={styles.noteTitle}>Important Note</Text>
               <Text style={styles.noteText}>
-                Please ensure all details are correct before proceeding with the payment.
+                Please ensure all details are correct before proceeding with the
+                payment.
               </Text>
             </View>
 
@@ -310,9 +331,9 @@ const PayAcademicFeesModal = ({
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </ScrollView>
-        </Pressable>
+        </View>
       </KeyboardAvoidingView>
-    </Pressable>
+    </View>
   );
 };
 
@@ -335,6 +356,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    paddingVertical: 20,
   },
   card: {
     backgroundColor: Colors.white,
@@ -350,6 +372,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    paddingBottom: 24,
   },
   header: {
     flexDirection: 'row',

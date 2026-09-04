@@ -108,7 +108,8 @@ const PayAcademicFeesModal = ({
         advancedAmount,
         dueAmount,
       );
-      const amount = Number(finalCashAmount).toFixed(2);
+      //const amount = Number(finalCashAmount).toFixed(2);
+      const amount = "1.00";
       const customerName = payeeName.trim() || merchantMeta?.customerName || 'Student';
 
       const merchantParam2 = merchantMeta
@@ -145,20 +146,8 @@ const PayAcademicFeesModal = ({
       }
 
       if (response.orderStatus === 'Success') {
-        Alert.alert(
-          'Payment Successful',
-          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: ₹${amount}`,
-          [{ text: 'OK', onPress: () => {
-            onProceedToPay({
-              tuitionFine,
-              busFine,
-              advancedAmount,
-              dueAmount,
-              cashAmount,
-              payeeName,
-            });
-          }}],
-        );
+        await CCAvenueService.postAbortedResponseToPhp(response);
+        return;
       } else {
         Alert.alert(
           'Payment Failed',

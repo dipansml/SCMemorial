@@ -19,6 +19,7 @@ import { ReAdmissionApiResponse } from '../Model/ReAdmission/ReAdmissionResponse
 import { ForgotPasswordResponse } from '../Model/ForgetPassword/ForgotPasswordResponse';
 import { VerifyCodeResponse } from '../Model/ForgetPassword/VerifyCode'
 import { ResetPasswordResponse } from '../Model/ResetPassword/ResetPasswordResponse'
+import { PaymentInitiateResponse } from '../Model/PaymentEvent/PaymentInitiateResponse'
 import { RestApi } from './RestApi';
 
 // Request
@@ -97,6 +98,12 @@ export interface ResetPasswordPayload{
   user_id: string;
   password: string;
   confirm_password: string
+}
+
+export interface InitiatePaymentEventPayload{
+  user_id: string;
+  remarks: string;
+  event_id: string
 }
 
 
@@ -237,6 +244,11 @@ export const Api = {
 
   resetPassword: async (payload: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
     const response = await RestApi.post('/reset-new-password', payload);
+    return response.data;
+  },
+
+  initiatePaymentForEvent: async (payload: InitiatePaymentEventPayload): Promise<PaymentInitiateResponse> => {
+    const response = await RestApi.post('/ccavenue-request-event-api', payload);
     return response.data;
   },
 };

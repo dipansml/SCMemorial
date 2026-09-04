@@ -27,6 +27,10 @@ import { CCAvenueService } from '../services/ccavenue/CCAvenueService';
 import type { CCAvenuePaymentResponse } from '../services/ccavenue/CCAvenueTypes';
 import { generateOrderId } from '../utils/orderId';
 import StorageManager from '../services/StorageManager';
+import { Api} from '../services/Api';
+import { PaymentData } from '../Model/PaymentEvent/PaymentInitiateResponse';
+import FullScreenLoader from '../view/FullScreenLoader';
+
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
@@ -38,6 +42,10 @@ const EventDetail = ({ navigation, route }: Props) => {
   const [remarksError, setRemarksError] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [userName, setUserName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [initiatePaymentData, setInitiatePaymentData] = useState<PaymentData | null>(
+      null,
+    );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -92,20 +100,48 @@ const EventDetail = ({ navigation, route }: Props) => {
       } else if (response.orderStatus === 'Aborted') {
         await CCAvenueService.postAbortedResponseToPhp(response);
       } else {
-        Alert.alert(
-          'Payment Failed',
-          `Status: ${response.orderStatus}\n${response.failureMessage || response.statusMessage || 'Unknown error'}`,
-        );
+        // Alert.alert(
+        //   'Payment Failed',
+        //   `Status: ${response.orderStatus}\n${response.failureMessage || response.statusMessage || 'Unknown error'}`,
+        // );
       }
     } catch (error: any) {
       setProcessing(false);
       Alert.alert('Payment Error', error?.message || 'Something went wrong');
     }
   };
+
+
+  const initiatePaymentForEvent = async (remarks : string) => {
+    try {
+      setLoading(true);
+      const response = await Api.initiatePaymentForEvent({
+        user_id: await StorageManager.getStudentId(),
+        remarks: remarks,
+        event_id: event.id,
+      });
+      console.log('Attendance Response:', response);
+      if (response && response.status === 200 && response.data) {
+        setInitiatePaymentData(response.data);
+        handleProceedToPay();
+      } else {
+        Alert.alert('Error', response?.message || 'Failed to load attendance');
+      }
+    } catch (error: any) {
+      console.log('Attendance Error:', error?.response?.data || error?.message);
+      Alert.alert(
+        'Error',
+        error?.response?.data?.message || 'Something went wrong',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
     
 
   return (
     <SafeAreaView style={styles.container}>
+      <FullScreenLoader visible={loading} />{' '}
       <AppHeader
         title="Event Details"
         showBack= {true}
@@ -298,7 +334,8 @@ const EventDetail = ({ navigation, route }: Props) => {
 
                       setRemarksError('');
                       setJoinModalVisible(false);
-                      handleProceedToPay();
+                      initiatePaymentForEvent(remarks);
+                      setRemarks('');
                     }}
                   >
                     <Text style={styles.submitButtonText}>

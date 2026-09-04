@@ -256,16 +256,32 @@ const ReAdmission = ({ navigation }: Props) => {
 
     try {
       const orderId = generateOrderId();
-      const amount = Number(paymentAmount).toFixed(2);
+      // TEST: fixed ₹1.00 amount for Re-Admission CCAvenue testing. Revert to the original line below.
+      // const amount = Number(paymentAmount).toFixed(2);
+      const amount = '1.00';
       const payeeUserId = await StorageManager.getStudentId();
       const user = await StorageManager.getUser();
 
       const merchantParam2 = [
-        payeeUserId,
-        formDetails?.session_year_id || user?.session_year_id || '',
-        formDetails?.month_id || '',
+        formDetails?.student_id || '',
+        formDetails?.session_year_id || '',
+        formDetails?.id || '',
         user?.user_id || '',
       ].join('#');
+
+      const ccavenueRequestPayload = {
+        user_id: payeeUserId,
+        payment_amount: paymentAmount,
+        session_pay_mnth_id: formDetails?.month_id ? [formDetails.month_id] : [],
+      };
+      const ccavenueRequestResponse = await Api.ccavenueRequestReadmission(ccavenueRequestPayload);
+      console.log('ccavenue-request-readmission response:', JSON.stringify(ccavenueRequestResponse));
+
+      if (!ccavenueRequestResponse) {
+        setProcessing(false);
+        Alert.alert('Error', 'CC Avenue request failed. No response received.');
+        return;
+      }
 
       const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
         orderId,
@@ -274,7 +290,10 @@ const ReAdmission = ({ navigation }: Props) => {
         customerName: studentName || 'Student',
         studentCode: studentCode || undefined,
         formNo: formNo || undefined,
-        merchantParam1: '',
+        merchantParam1:
+          ccavenueRequestResponse?.data?.data?.merchant_param1 != null
+            ? String(ccavenueRequestResponse?.data?.data?.merchant_param1)
+            : '',
         merchantParam2,
         merchantParam3: amount,
         merchantParam4: studentCode || undefined,
@@ -284,11 +303,7 @@ const ReAdmission = ({ navigation }: Props) => {
       setProcessing(false);
 
       if (response.orderStatus === 'Success') {
-        Alert.alert(
-          'Payment Successful',
-          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: \u20B9${response.amount}`,
-          [{ text: 'OK', onPress: () => navigation.goBack() }],
-        );
+        await CCAvenueService.postAbortedResponseToPhp(response);
       } else if (response.orderStatus === 'Aborted') {
         await CCAvenueService.postAbortedResponseToPhp(response);
       } else {

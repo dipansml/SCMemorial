@@ -108,7 +108,8 @@ const PayAcademicFeesModal = ({
         advancedAmount,
         dueAmount,
       );
-      const amount = Number(finalCashAmount).toFixed(2);
+      //const amount = Number(finalCashAmount).toFixed(2);
+      const amount = "1.00";
       const customerName = payeeName.trim() || merchantMeta?.customerName || 'Student';
 
       const merchantParam2 = merchantMeta
@@ -145,20 +146,8 @@ const PayAcademicFeesModal = ({
       }
 
       if (response.orderStatus === 'Success') {
-        Alert.alert(
-          'Payment Successful',
-          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: ₹${amount}`,
-          [{ text: 'OK', onPress: () => {
-            onProceedToPay({
-              tuitionFine,
-              busFine,
-              advancedAmount,
-              dueAmount,
-              cashAmount,
-              payeeName,
-            });
-          }}],
-        );
+        await CCAvenueService.postAbortedResponseToPhp(response);
+        return;
       } else {
         Alert.alert(
           'Payment Failed',
@@ -220,6 +209,7 @@ const PayAcademicFeesModal = ({
                 keyboardType="numeric"
                 value={tuitionFine}
                 onChangeText={setTuitionFine}
+                editable={false}
               />
             </View>
 
@@ -233,6 +223,7 @@ const PayAcademicFeesModal = ({
                 keyboardType="numeric"
                 value={busFine}
                 onChangeText={setBusFine}
+                editable={false}
               />
             </View>
 
@@ -246,6 +237,7 @@ const PayAcademicFeesModal = ({
                 keyboardType="numeric"
                 value={advancedAmount}
                 onChangeText={setAdvancedAmount}
+                editable={false}
               />
             </View>
 
@@ -259,6 +251,7 @@ const PayAcademicFeesModal = ({
                 keyboardType="numeric"
                 value={dueAmount}
                 onChangeText={setDueAmount}
+                editable={false}
               />
             </View>
 
@@ -272,6 +265,7 @@ const PayAcademicFeesModal = ({
                 keyboardType="numeric"
                 value={cashAmount}
                 onChangeText={setCashAmount}
+                editable={false}
               />
             </View>
 
@@ -284,6 +278,7 @@ const PayAcademicFeesModal = ({
                 placeholderTextColor={Colors.text_light}
                 value={payeeName}
                 onChangeText={setPayeeName}
+                editable={false}
               />
             </View>
 

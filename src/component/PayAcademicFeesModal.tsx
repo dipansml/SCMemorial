@@ -108,8 +108,8 @@ const PayAcademicFeesModal = ({
         advancedAmount,
         dueAmount,
       );
-      //const amount = Number(finalCashAmount).toFixed(2);
-      const amount = "1.00";
+      const amount = Number(finalCashAmount).toFixed(2);
+      //const amount = "1.00";
       const customerName = payeeName.trim() || merchantMeta?.customerName || 'Student';
 
       const merchantParam2 = merchantMeta

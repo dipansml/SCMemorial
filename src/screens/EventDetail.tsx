@@ -66,7 +66,8 @@ const EventDetail = ({ navigation, route }: Props) => {
 
     try {
       const orderId = generateOrderId();
-      const amount = Number(event?.event_fee ?? 0).toFixed(2);
+      //const amount = Number(event?.event_fee ?? 0).toFixed(2);
+      const amount = Number(1).toFixed(2);
 
       const response: CCAvenuePaymentResponse = await CCAvenueService.startPayment({
         orderId,
@@ -238,7 +239,7 @@ const EventDetail = ({ navigation, route }: Props) => {
               <View style={styles.modalContainer}>
 
                 <Text style={styles.modalTitle}>
-                  Join Event
+                  Register Event
                 </Text>
 
                 <Text style={styles.modalSubtitle}>

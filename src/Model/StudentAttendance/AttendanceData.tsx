@@ -12,6 +12,7 @@ export interface AttendanceData {
   holiday: number;
   halfday: number;
   gender: string;
+  image: string;
   attendance_percentage: number;
   AttendanceItem: AttendanceItem[];
   ExtraClass: ExtraClassItem[];

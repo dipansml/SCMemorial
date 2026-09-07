@@ -11,6 +11,7 @@ import {
   BackHandler,
   AppState,
   AppStateStatus,
+  StatusBar,
 } from 'react-native';
 
 import AppHeader from '../component/AppHeader';
@@ -42,9 +43,7 @@ const { ExamMode } = NativeModules;
 type Props = NativeStackScreenProps<RootStackParamList, 'StartExam'>;
 
 const StartExam = ({ navigation, route }: Props) => {
-  const appState = useRef<AppStateStatus>(
-    AppState.currentState,
-  );
+  const appState = useRef<AppStateStatus>(AppState.currentState);
 
   const autoSubmittedRef = useRef(false);
   const { examDetail } = route.params;
@@ -602,6 +601,7 @@ const StartExam = ({ navigation, route }: Props) => {
     if (ExamMode && ExamMode.enableExamMode) {
       ExamMode.enableExamMode();
     }
+    StatusBar.setHidden(true, 'none');
 
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
@@ -616,85 +616,66 @@ const StartExam = ({ navigation, route }: Props) => {
       if (ExamMode && ExamMode.disableExamMode) {
         ExamMode.disableExamMode();
       }
+      StatusBar.setHidden(false, 'slide');
 
       backHandler.remove();
     };
   }, []);
 
-
   useEffect(() => {
-      const subscription = AppState.addEventListener(
-        'change',
-        (nextAppState: AppStateStatus) => {
-          const previousState = appState.current;
+    const subscription = AppState.addEventListener(
+      'change',
+      (nextAppState: AppStateStatus) => {
+        const previousState = appState.current;
 
-          console.log(
-            'App State:',
-            previousState,
-            '->',
-            nextAppState,
-          );
+        console.log('App State:', previousState, '->', nextAppState);
 
-          // App has gone to background/minimized
-          if (
-            previousState === 'active' &&
-            (nextAppState === 'background' ||
-              nextAppState === 'inactive')
-          ) {
-            console.log(
-              'Exam app minimized. Auto submitting exam...',
-            );
-            navigation.goBack();
-            submitExamAutomatically();
-          }
+        // App has gone to background/minimized
+        if (
+          previousState === 'active' &&
+          (nextAppState === 'background' || nextAppState === 'inactive')
+        ) {
+          console.log('Exam app minimized. Auto submitting exam...');
+          navigation.goBack();
+          submitExamAutomatically();
+        }
 
-          appState.current = nextAppState;
-        },
-      );
+        appState.current = nextAppState;
+      },
+    );
 
-      return () => {
-        subscription.remove();
-      };
-    }, [examData,selectedAnswers]);
-
-
-    const submitExamAutomatically = async () => {
-      // Prevent multiple submissions
-      if (autoSubmittedRef.current) {
-        return;
-      }
-
-      autoSubmittedRef.current = true;
-
-      try {
-        const answerData: StudentExamAnswer = {
-          user_id: examData?.user_id ?? '',
-          set_unique_id: examData?.set_unique_id ?? '',
-          set_id: examData?.set_id ?? '',
-          result_id: examData?.result_id ?? '',
-
-          questionids: Object.keys(selectedAnswers).map(
-            id => Number(id),
-          ),
-
-          optionids: Object.values(selectedAnswers).map(
-            id => Number(id),
-          ),
-        };
-
-        console.log(
-          'Auto Submit Exam:',
-          JSON.stringify(answerData, null, 2),
-        );
-
-        await callSubmitExamApi(answerData, true);
-      } catch (error) {
-        console.log(
-          'Auto Submit Error:',
-          error,
-        );
-      }
+    return () => {
+      subscription.remove();
     };
+  }, [examData, selectedAnswers]);
+
+  const submitExamAutomatically = async () => {
+    // Prevent multiple submissions
+    if (autoSubmittedRef.current) {
+      return;
+    }
+
+    autoSubmittedRef.current = true;
+
+    try {
+      const answerData: StudentExamAnswer = {
+        user_id: examData?.user_id ?? '',
+        set_unique_id: examData?.set_unique_id ?? '',
+        set_id: examData?.set_id ?? '',
+        result_id: examData?.result_id ?? '',
+
+        questionids: Object.keys(selectedAnswers).map(id => Number(id)),
+
+        optionids: Object.values(selectedAnswers).map(id => Number(id)),
+      };
+
+      console.log('Auto Submit Exam:', JSON.stringify(answerData, null, 2));
+
+      await callSubmitExamApi(answerData, true);
+    } catch (error) {
+      console.log('Auto Submit Error:', error);
+    }
+  };
 
   /*
    * =========================================================

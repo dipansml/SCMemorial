@@ -8,7 +8,7 @@ import { navigationRef } from './src/navigation/navigationRef';
 
 import SplashScreen from './src/screens/SplashScreen';
 import Login from './src/screens/Login';
-import ForgotPassword from './src/screens/ForgotPassword'
+import ForgotPassword from './src/screens/ForgotPassword';
 import ResetPassword from './src/screens/ResetPassword';
 //import DashboardParents from './src/screens/DashboardParents';
 import StudentSelection from './src/screens/StudentSelection';
@@ -37,7 +37,7 @@ import StudentAttemptExamData from './src/Model/Exam/StudentAttemptExam';
 import PaymentResultScreen, {
   PaymentResultRouteParams,
 } from './src/screens/PaymentResult/PaymentResultScreen';
-import CCAvenuePayment from './src/screens/CCAvenuePayment'
+import CCAvenuePayment from './src/screens/CCAvenuePayment';
 
 enableScreens();
 
@@ -77,11 +77,11 @@ export type RootStackParamList = {
   };
   StartExam: {
     examDetail: StudentAttemptExamData;
-  }
+  };
   PaymentResult: PaymentResultRouteParams;
   CCAvenuePayment: {
     paymentUrl: string;
-  }
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -112,6 +112,7 @@ const App = () => {
               options={{
                 headerShown: false,
                 animation: 'slide_from_left',
+                presentation: 'transparentModal',
                 contentStyle: { backgroundColor: 'transparent' },
               }}
             />
@@ -121,6 +122,7 @@ const App = () => {
               options={{
                 headerShown: false,
                 animation: 'slide_from_left',
+                presentation: 'transparentModal',
                 contentStyle: { backgroundColor: 'transparent' },
               }}
             />
@@ -203,17 +205,17 @@ const App = () => {
               name="ExamDetail"
               component={ExamDetail}
               options={{ headerShown: false }}
-            />    
-             <Stack.Screen
+            />
+            <Stack.Screen
               name="StartExam"
               component={StartExam}
               options={{ headerShown: false }}
-            />      
+            />
             <Stack.Screen
               name="PaymentResult"
               component={PaymentResultScreen}
               options={{ headerShown: false }}
-            /> 
+            />
             <Stack.Screen
               name="CCAvenuePayment"
               component={CCAvenuePayment}

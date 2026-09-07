@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
   useWindowDimensions,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -22,10 +23,19 @@ import StorageManager from '../services/StorageManager';
 
 type DrawerNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+type DrawerRoute =
+  | 'LandingStudent'
+  | 'Attendance'
+  | 'Fees'
+  | 'PaymentHistory'
+  | 'Events'
+  | 'Library'
+  | 'OnlineExam';
+
 type MenuItem = {
   key: string;
   label: string;
-  route: keyof RootStackParamList;
+  route: DrawerRoute;
   icon: any;
 };
 
@@ -42,12 +52,12 @@ const menuItems: MenuItem[] = [
     route: 'Attendance',
     icon: require('../assets/images/icons/attendance.png'),
   },
-  // {
-  //   key: 'Fees',
-  //   label: 'Fees Overview',
-  //   route: 'Fees',
-  //   icon: require('../assets/images/icons/fees_overview.png'),
-  // },
+  {
+    key: 'Fees',
+    label: 'Fees Overview',
+    route: 'Fees',
+    icon: require('../assets/images/icons/fees_overview.png'),
+  },
   {
     key: 'PaymentHistory',
     label: 'Payment History',
@@ -78,12 +88,12 @@ const menuItems: MenuItem[] = [
     route: 'Library',
     icon: require('../assets/images/icons/book.png'),
   },
-  // {
-  //   key: 'OnlineExam',
-  //   label: 'Online Exam',
-  //   route: 'OnlineExam',
-  //   icon: require('../assets/images/icons/academic.png'),
-  // },
+  {
+    key: 'OnlineExam',
+    label: 'Online Exam',
+    route: 'OnlineExam',
+    icon: require('../assets/images/icons/academic.png'),
+  },
 ];
 
 const StudentDrawer = () => {
@@ -102,9 +112,22 @@ const StudentDrawer = () => {
   const currentRoute =
     state.routes[state.routes.length - 2]?.name || 'LandingStudent';
 
-  const handleLogout = async () => {
-    await StorageManager.clearLoginData();
-    navigation.replace('Login');
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Do you want to logout?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await StorageManager.clearLoginData();
+            navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+          },
+        },
+      ],
+      { cancelable: true },
+    );
   };
 
   return (
@@ -180,7 +203,7 @@ const StudentDrawer = () => {
             </Pressable>
           </View>
         </View>
-        <Pressable style={styles.overlay} onPress={() => navigation.goBack()} />
+        {/* <Pressable style={styles.overlay} onPress={() => navigation.goBack()} /> */}
       </View>
     </SafeAreaView>
   );
@@ -278,7 +301,7 @@ const styles = StyleSheet.create({
   drawer: {
     backgroundColor: Colors.white,
     flexDirection: 'column',
-    marginTop: Header.paddingTop,
+    marginTop: 0,
 
     ...Platform.select({
       android: {

@@ -2,6 +2,7 @@ export interface StudentDetails {
   student_id: number;
   code: string;
   name: string;
+  image: string;
   class_name: string;
   section_name: string;
   roll_number: string;
@@ -18,4 +19,5 @@ export interface StudentDetails {
   mother_mobile: string;
   email: string;
   bus_no: string;
+  aadhaar_no: string;
 }

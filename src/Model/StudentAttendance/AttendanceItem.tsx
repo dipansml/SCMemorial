@@ -1,4 +1,4 @@
-export type StatusType = 'Present' | 'Absent' | 'Holi Day' | 'Half Day' | 'Default';
+export type StatusType = 'Present' | 'Absent' | 'Holiday' | 'Half Day' | 'Default';
 
 export interface AttendanceItem {
   date: string;

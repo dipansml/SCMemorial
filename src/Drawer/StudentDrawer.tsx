@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
   useWindowDimensions,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -111,9 +112,22 @@ const StudentDrawer = () => {
   const currentRoute =
     state.routes[state.routes.length - 2]?.name || 'LandingStudent';
 
-  const handleLogout = async () => {
-    await StorageManager.clearLoginData();
-    navigation.replace('Login');
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Do you want to logout?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await StorageManager.clearLoginData();
+            navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+          },
+        },
+      ],
+      { cancelable: true },
+    );
   };
 
   return (
@@ -189,7 +203,7 @@ const StudentDrawer = () => {
             </Pressable>
           </View>
         </View>
-        <Pressable style={styles.overlay} onPress={() => navigation.goBack()} />
+        {/* <Pressable style={styles.overlay} onPress={() => navigation.goBack()} /> */}
       </View>
     </SafeAreaView>
   );

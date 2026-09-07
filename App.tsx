@@ -112,7 +112,6 @@ const App = () => {
               options={{
                 headerShown: false,
                 animation: 'slide_from_left',
-                presentation: 'transparentModal',
                 contentStyle: { backgroundColor: 'transparent' },
               }}
             />
@@ -122,7 +121,6 @@ const App = () => {
               options={{
                 headerShown: false,
                 animation: 'slide_from_left',
-                presentation: 'transparentModal',
                 contentStyle: { backgroundColor: 'transparent' },
               }}
             />

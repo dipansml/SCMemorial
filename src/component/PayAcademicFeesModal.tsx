@@ -20,6 +20,9 @@ import type {
   CCAvenuePaymentResponse,
 } from '../services/ccavenue/CCAvenueTypes';
 import { generateOrderId } from '../utils/orderId';
+import { Api } from '../services/Api';
+import StorageManager from '../services/StorageManager';
+import { navigationRef } from '../navigation/navigationRef';
 
 export type PaymentFormData = {
   tuitionFine: string;
@@ -46,6 +49,102 @@ const safeStr = (v: number | null | undefined): string => {
     return '0';
   }
   return String(v);
+};
+
+const postCcavenueFeeResponseToPhp = async (
+  response: CCAvenuePaymentResponse,
+): Promise<void> => {
+  try {
+    const payload = {
+      orderId: response.orderId,
+      trackingId: response.trackingId,
+      bankRefNo: response.bankRefNo,
+      orderStatus: response.orderStatus,
+      failureMessage: response.failureMessage,
+      paymentMode: response.paymentMode,
+      statusMessage: response.statusMessage,
+      currency: response.currency,
+      amount: response.amount,
+      billingName: response.billingName,
+      cardName: response.cardName,
+      statusCode: response.statusCode,
+      responseCode: response.responseCode,
+      merchantParam1: response.merchantParam1,
+      merchantParam2: response.merchantParam2,
+      merchantParam3: response.merchantParam3,
+      merchantParam4: response.merchantParam4,
+      merchantParam5: response.merchantParam5,
+    };
+
+    console.log('===== CCAVENUE RESPONSE (MONTHLY FEES) =====');
+    console.log('orderId     = ', payload.orderId);
+    console.log('amount      = ', payload.amount);
+    console.log('orderStatus = ', payload.orderStatus);
+    console.log('trackingId  = ', payload.trackingId);
+    console.log('merchantParam1 = ', payload.merchantParam1);
+    console.log('merchantParam2 = ', payload.merchantParam2);
+    console.log('merchantParam3 = ', payload.merchantParam3);
+    console.log('merchantParam4 = ', payload.merchantParam4);
+    console.log('merchantParam5 = ', payload.merchantParam5);
+    console.log('=============================');
+
+    const phpResponse = await Api.sendCcavenueResponse(payload);
+    const phpBody = phpResponse?.data ?? phpResponse;
+
+    console.log('===== PHP RESPONSE (MONTHLY FEES) =====');
+    console.log(phpBody);
+    console.log('=============================');
+
+    // const alertMessage =
+    //   typeof phpBody === 'string'
+    //     ? phpBody
+    //     : JSON.stringify(phpBody, null, 2);
+    // Alert.alert('Alert For Test', alertMessage);
+  } catch (error: any) {
+    console.log(
+      'PHP response API failed: ',
+      error?.message || 'Unknown error',
+    );
+    // Alert.alert(
+    //   'Alert For Test',
+    //   `PHP response API failed: ${error?.message || 'Unknown error'}`,
+    // );
+  }
+
+  let title = '';
+  if (response.orderStatus === 'Success') {
+    title = 'Payment Succesfully Done';
+  } else if (response.orderStatus === 'Aborted') {
+    title = 'Payment Aborted';
+  } else if (
+    response.orderStatus === 'Cancelled' ||
+    response.orderStatus === 'Cancel'
+  ) {
+    title = 'Payment cancel';
+  } else {
+    Alert.alert(
+      'Payment Failed',
+      `Status: ${response.orderStatus}\n${
+        response.failureMessage || response.statusMessage || 'Unknown error'
+      }`,
+    );
+    return;
+  }
+
+  const dashboardRoute = (await StorageManager.isLoggedInStudent())
+    ? 'LandingStudent'
+    : 'LandingParents';
+
+  Alert.alert(title, undefined, [
+    {
+      text: 'OK',
+      onPress: () => {
+        if (navigationRef.isReady()) {
+          navigationRef.navigate(dashboardRoute);
+        }
+      },
+    },
+  ]);
 };
 
 const PayAcademicFeesModal = ({
@@ -149,12 +248,12 @@ const PayAcademicFeesModal = ({
       setPaying(false);
 
       if (response.orderStatus === 'Aborted') {
-        await CCAvenueService.postAbortedResponseToPhp(response);
+        await postCcavenueFeeResponseToPhp(response);
         return;
       }
 
       if (response.orderStatus === 'Success') {
-        await CCAvenueService.postAbortedResponseToPhp(response);
+        await postCcavenueFeeResponseToPhp(response);
         return;
       } else {
         Alert.alert(

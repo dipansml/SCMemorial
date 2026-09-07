@@ -22,6 +22,7 @@ import type { CCAvenuePaymentResponse } from '../services/ccavenue/CCAvenueTypes
 import { generateOrderId } from '../utils/orderId';
 import { Api } from '../services/Api';
 import StorageManager from '../services/StorageManager';
+import { navigationRef } from '../navigation/navigationRef';
 import type { ReAdmissionFormDetails } from '../Model/ReAdmission/ReAdmissionFormDetails';
 import type { ReAdmissionStationaryApiItem } from '../Model/ReAdmission/ReAdmissionStationaryApiItem';
 import type { ReAdmissionStoppage } from '../Model/ReAdmission/ReAdmissionStoppage';
@@ -70,18 +71,56 @@ const postCcavenueReadmissionResponseToPhp = async (
     console.log(phpBody);
     console.log('=============================');
 
-    const alertMessage =
-      typeof phpBody === 'string'
-        ? phpBody
-        : JSON.stringify(phpBody, null, 2);
-
-    Alert.alert('Alert For Test', alertMessage);
+    // const alertMessage =
+    //   typeof phpBody === 'string'
+    //     ? phpBody
+    //     : JSON.stringify(phpBody, null, 2);
+    // Alert.alert('Alert For Test', alertMessage);
   } catch (error: any) {
-    Alert.alert(
-      'Alert For Test',
-      `PHP response API failed: ${error?.message || 'Unknown error'}`,
+    console.log(
+      'PHP response API failed: ',
+      error?.message || 'Unknown error',
     );
+    // Alert.alert(
+    //   'Alert For Test',
+    //   `PHP response API failed: ${error?.message || 'Unknown error'}`,
+    // );
   }
+
+  let title = '';
+  if (response.orderStatus === 'Success') {
+    title = 'Payment Succesfully Done';
+  } else if (response.orderStatus === 'Aborted') {
+    title = 'Payment Aborted';
+  } else if (
+    response.orderStatus === 'Cancelled' ||
+    response.orderStatus === 'Cancel'
+  ) {
+    title = 'Payment cancel';
+  } else {
+    Alert.alert(
+      'Payment Failed',
+      `Status: ${response.orderStatus}\n${
+        response.failureMessage || response.statusMessage || 'Unknown error'
+      }`,
+    );
+    return;
+  }
+
+  const dashboardRoute = (await StorageManager.isLoggedInStudent())
+    ? 'LandingStudent'
+    : 'LandingParents';
+
+  Alert.alert(title, undefined, [
+    {
+      text: 'OK',
+      onPress: () => {
+        if (navigationRef.isReady()) {
+          navigationRef.navigate(dashboardRoute);
+        }
+      },
+    },
+  ]);
 };
 
 type Props = {
@@ -315,8 +354,8 @@ const ReAdmission = ({ navigation }: Props) => {
     try {
       const orderId = generateOrderId();
       // TEST: fixed ₹1.00 amount for Re-Admission CCAvenue testing. Revert to the original line below.
-      // const amount = Number(paymentAmount).toFixed(2);
-      const amount = '1.00';
+       const amount = Number(paymentAmount).toFixed(2);
+     // const amount = '1.00';
       const payeeUserId = await StorageManager.getStudentId();
       const user = await StorageManager.getUser();
 

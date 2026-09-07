@@ -391,7 +391,7 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
 
         {/* Remarks */}
         <View style={styles.remarksCard}>
-          <Text style={styles.remarksTitle}>Remarks</Text>
+          {/* <Text style={styles.remarksTitle}>Remarks</Text>
           <TextInput
             style={styles.remarksInput}
             placeholder="Enter your remark"
@@ -401,7 +401,7 @@ const MothlyFeesPayment = ({ navigation }: Props) => {
             multiline
             numberOfLines={4}
             textAlignVertical="top"
-          />
+          /> */}
           <TouchableOpacity
             style={styles.proceedButton}
             activeOpacity={0.85}

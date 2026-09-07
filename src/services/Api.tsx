@@ -236,6 +236,11 @@ export const Api = {
     return response;
   },
 
+  sendCcavenueEventResponse: async (payload: any): Promise<any> => {
+    const response = await RestApi.post('/ccavenue-response-handler-events-api', payload);
+    return response;
+  },
+
   ccavenueRequestReadmission: async (payload: any): Promise<any> => {
     const response = await RestApi.post('/ccavenue-request-readmission-api', payload);
     return response;

@@ -34,6 +34,96 @@ import FullScreenLoader from '../view/FullScreenLoader';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
 
+const postCcavenueEventResponseToPhp = async (
+  response: CCAvenuePaymentResponse,
+  navigation: any,
+  savedMerchant?: PaymentData | null,
+): Promise<void> => {
+  try {
+    const payload = {
+      orderId: response.orderId,
+      trackingId: response.trackingId,
+      bankRefNo: response.bankRefNo,
+      orderStatus: response.orderStatus,
+      failureMessage: response.failureMessage,
+      paymentMode: response.paymentMode,
+      statusMessage: response.statusMessage,
+      currency: response.currency,
+      amount: response.amount,
+      billingName: response.billingName,
+      cardName: response.cardName,
+      statusCode: response.statusCode,
+      responseCode: response.responseCode,
+      merchantParam1: savedMerchant?.merchant_param1 ?? response.merchantParam1,
+      merchantParam2: savedMerchant?.merchant_param2 ?? response.merchantParam2,
+      merchantParam3: savedMerchant?.merchant_param3 ?? response.merchantParam3,
+      merchantParam4: savedMerchant?.merchant_param4 ?? response.merchantParam4,
+      merchantParam5: savedMerchant?.merchant_param5 ?? response.merchantParam5,
+    };
+
+    console.log('===== CCAVENUE RESPONSE (EVENT) =====');
+    console.log('orderId     = ', payload.orderId);
+    console.log('amount      = ', payload.amount);
+    console.log('orderStatus = ', payload.orderStatus);
+    console.log('trackingId  = ', payload.trackingId);
+    console.log('merchantParam1 = ', payload.merchantParam1);
+    console.log('merchantParam2 = ', payload.merchantParam2);
+    console.log('merchantParam3 = ', payload.merchantParam3);
+    console.log('merchantParam4 = ', payload.merchantParam4);
+    console.log('merchantParam5 = ', payload.merchantParam5);
+    console.log('=============================');
+
+    const phpResponse = await Api.sendCcavenueEventResponse(payload);
+    const phpBody = phpResponse?.data ?? phpResponse;
+
+    console.log('===== PHP RESPONSE (EVENT) =====');
+    console.log(phpBody);
+    console.log('=============================');
+
+    // const alertMessage =
+    //   typeof phpBody === 'string'
+    //     ? phpBody
+    //     : JSON.stringify(phpBody, null, 2);
+    // Alert.alert('Alert For Test', alertMessage);
+  } catch (error: any) {
+    console.log(
+      'PHP response API failed: ',
+      error?.message || 'Unknown error',
+    );
+    // Alert.alert(
+    //   'Alert For Test',
+    //   `PHP response API failed: ${error?.message || 'Unknown error'}`,
+    // );
+  }
+
+  let title = '';
+  if (response.orderStatus === 'Success') {
+    title = 'Payment Succesfully Done';
+  } else if (response.orderStatus === 'Aborted') {
+    title = 'Payment Aborted';
+  } else if (
+    response.orderStatus === 'Cancelled' ||
+    response.orderStatus === 'Cancel'
+  ) {
+    title = 'Payment cancel';
+  } else {
+    Alert.alert(
+      'Payment Failed',
+      `Status: ${response.orderStatus}\n${
+        response.failureMessage || response.statusMessage || 'Unknown error'
+      }`,
+    );
+    return;
+  }
+
+  Alert.alert(title, undefined, [
+    {
+      text: 'OK',
+      onPress: () => navigation.navigate('Events'),
+    },
+  ]);
+};
+
 const EventDetail = ({ navigation, route }: Props) => {
   const { event } = route.params;
   const [joinModalVisible, setJoinModalVisible] = useState(false);
@@ -92,13 +182,9 @@ const EventDetail = ({ navigation, route }: Props) => {
       setProcessing(false);
 
       if (response.orderStatus === 'Success') {
-        Alert.alert(
-          'Payment Successful',
-          `Order ID: ${response.orderId}\nTracking ID: ${response.trackingId}\nAmount: ₹${response.amount}`,
-          [{ text: 'OK', onPress: () => navigation.goBack() }],
-        );
+        await postCcavenueEventResponseToPhp(response, navigation, initiatePaymentData);
       } else if (response.orderStatus === 'Aborted') {
-        await CCAvenueService.postAbortedResponseToPhp(response);
+        await postCcavenueEventResponseToPhp(response, navigation, initiatePaymentData);
       } else {
         // Alert.alert(
         //   'Payment Failed',

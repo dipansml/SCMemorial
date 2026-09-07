@@ -224,6 +224,11 @@ export const Api = {
     return response;
   },
 
+  sendCcavenueReadmissionResponse: async (payload: any): Promise<any> => {
+    const response = await RestApi.post('/ccavenue-response-handler-readmission-api', payload);
+    return response;
+  },
+
   ccavenueRequestReadmission: async (payload: any): Promise<any> => {
     const response = await RestApi.post('/ccavenue-request-readmission-api', payload);
     return response;

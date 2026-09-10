@@ -162,7 +162,9 @@ const PayAcademicFeesModal = ({
   const [advancedAmount, setAdvancedAmount] = useState('');
   const [dueAmount, setDueAmount] = useState('');
   const [cashAmount, setCashAmount] = useState('');
-  const [payeeName, setPayeeName] = useState(initialPayeeName);
+  const [payeeName, setPayeeName] = useState(
+    initialPayeeName || merchantMeta?.customerName || '',
+  );
   const [paying, setPaying] = useState(false);
 
   const computeCashAmount = (
@@ -194,6 +196,12 @@ const PayAcademicFeesModal = ({
     }
   }, [visible, feeAmountData, totalAmount]);
 
+  useEffect(() => {
+    if (visible) {
+      setPayeeName(initialPayeeName || merchantMeta?.customerName || '');
+    }
+  }, [visible, initialPayeeName, merchantMeta]);
+
   if (!visible) {
     return null;
   }
@@ -213,8 +221,9 @@ const PayAcademicFeesModal = ({
         advancedAmount,
         dueAmount,
       );
-      const amount = Number(finalCashAmount).toFixed(2);
-      //const amount = "1.00";
+      // TEST: fixed ₹10 amount for CCAvenue testing. Revert to the original line below.
+       const amount = Number(finalCashAmount).toFixed(2);
+     //const amount = '1.00';
       const customerName =
         payeeName.trim() || merchantMeta?.customerName || 'Student';
 
